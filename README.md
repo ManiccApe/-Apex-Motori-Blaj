@@ -25,21 +25,6 @@ App motorsport Android **indipendente** con News, Calendario, Preferiti, Fonti p
 
 Qui è incluso il **progetto sorgente completo**, ma **non** un APK sperimentale ottenuto manualmente: le precedenti versioni 1.2–1.4 non si installavano sul dispositivo. Per creare un APK realmente standard usa la toolchain ufficiale Android Studio oppure GitHub Actions. Solo un test su un telefono/emulatore certifica che tutte le funzioni girino correttamente.
 
-## APK installabile con GitHub Actions (nessun Android Studio necessario)
-
-1. Crea un repository GitHub (può essere inizialmente privato) e carica **il contenuto di questa cartella**, inclusa `.github`.
-2. Vai in **Actions → Build Android APK standalone A.M.B. → Run workflow** (o attendi la build del push su `main`).
-3. La build compila codice Java e risorse Android con **Android SDK ufficiale**, quindi esegue `apksigner verify` e `aapt dump badging`.
-4. Sotto **Artifacts**, scarica **Apex-Motori-Blaj-AMB-2.0-standalone-APK** e estrai `app-debug.apk` dallo ZIP. Condividi questo APK agli amici: **non è un file di aggiornamento**.
-
-L'APK debug è firmato automaticamente con la chiave debug generata dall'ambiente GitHub Actions. **La chiave può cambiare tra build**: nuove versioni potrebbero richiedere disinstallazione, con perdita dei dati locali. Per distribuzione duratura, configura una chiave di firma *release* privata e stabile usando i segreti GitHub o Android Studio. Non pubblicare mai chiavi private con il codice.
-
-## Build con Android Studio
-
-1. Apri questa cartella in Android Studio; usa JDK 17, Android SDK Platform 36 e Build Tools 36.0.0.
-2. **Build → Build APK(s)**. Attendi `app/build/outputs/apk/debug/app-debug.apk`.
-3. Per una versione stabile usa **Build → Generate Signed Bundle / APK → APK** e conserva la chiave di firma.
-4. Installa sul telefono da Archivio → Download. Il file APK deve essere ottenuto dalla build ufficiale. Se anche la build ufficiale fallisce, estrai l'errore tramite `adb install -r app-debug.apk` sul PC, che restituisce un codice diagnostico specifico.
 
 ## Codice e privacy
 
