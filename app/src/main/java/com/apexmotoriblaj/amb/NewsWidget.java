@@ -25,11 +25,18 @@ public final class NewsWidget extends AppWidgetProvider {
     }
     static void updateOne(Context context, AppWidgetManager mgr, int id) {
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_shell);
-        boolean dark = WidgetPrefs.dark(context,id);
+        String mode=WidgetPrefs.appearance(context,id);
+        boolean dark = "amoled".equals(mode) || "dark".equals(mode) ||
+                ("transparent".equals(mode) && WidgetPrefs.dark(context,id));
         int opacity = WidgetPrefs.opacity(context,id);
-        int bg = Color.argb(Math.max(0,Math.min(100,opacity))*255/100,dark?15:248,dark?23:250,dark?33:253);
+        int bg = "amoled".equals(mode) ? Color.BLACK : "transparent".equals(mode) ? Color.TRANSPARENT :
+                Color.argb(Math.max(0,Math.min(100,opacity))*255/100,
+                        dark?15:248,dark?23:250,dark?33:253);
         int fg = dark ? Color.WHITE : Color.rgb(28,39,50);
-        rv.setInt(R.id.widget_root,"setBackgroundColor",bg);
+        if("amoled".equals(mode))
+            rv.setInt(R.id.widget_root,"setBackgroundResource",R.drawable.widget_bg_amoled);
+        else
+            rv.setInt(R.id.widget_root,"setBackgroundColor",bg);
         rv.setTextColor(R.id.widget_title,fg);
         rv.setTextColor(R.id.widget_refresh,fg);
         rv.setTextColor(R.id.widget_settings,fg);

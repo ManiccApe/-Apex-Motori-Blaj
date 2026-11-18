@@ -22,7 +22,7 @@ import java.util.Set;
 /** Per-widget configuration with category, density and transparency controls. */
 public final class WidgetConfigActivity extends Activity {
     private int widgetId=AppWidgetManager.INVALID_APPWIDGET_ID;
-    private Spinner count,opacity,contrast;
+    private Spinner count,opacity,contrast,appearance;
     private CheckBox images;
     private CheckBox[] cats;
     private final String[] levels={"100%","85%","70%","50%","30%","0%"};
@@ -47,7 +47,12 @@ public final class WidgetConfigActivity extends Activity {
         }
         label(list,"Notizie da visualizzare");count=spinner(list,names);
         int current=WidgetPrefs.count(this,widgetId);count.setSelection(current==20?0:current==60?2:1);
-        label(list,"Trasparenza sfondo");opacity=spinner(list,levels);
+        label(list,"Stile del widget");
+        appearance=spinner(list,new String[]{"Chiaro","Scuro","AMOLED · nero puro","Trasparente · sfondo invisibile"});
+        String mode=WidgetPrefs.appearance(this,widgetId);
+        appearance.setSelection("amoled".equals(mode)?2:"transparent".equals(mode)?3:"dark".equals(mode)?1:0);
+        sub(list,"AMOLED usa #000000; Trasparente mostra lo sfondo della Home. Ogni widget ha il proprio tema.");
+        label(list,"Opacità sfondo (per Chiaro e Scuro)");opacity=spinner(list,levels);
         int o=WidgetPrefs.opacity(this,widgetId);
         int selected=0;for(int i=0;i<values.length;i++)if(values[i]==o)selected=i;
         opacity.setSelection(selected);
@@ -72,8 +77,12 @@ public final class WidgetConfigActivity extends Activity {
         JSONArray selected=new JSONArray();for(int i=0;i<cats.length;i++)if(cats[i].isChecked())selected.put(WidgetPrefs.CATEGORIES[i]);
         SharedPreferences.Editor editor=WidgetPrefs.prefs(this).edit();
         editor.putInt(widgetId+"_count",new int[]{20,40,60}[count.getSelectedItemPosition()]);
+        editor.putString(widgetId+"_appearance",new String[]{"light","dark","amoled","transparent"}[appearance.getSelectedItemPosition()]);
         editor.putInt(widgetId+"_opacity",values[opacity.getSelectedItemPosition()]);
-        editor.putBoolean(widgetId+"_dark",contrast.getSelectedItemPosition()==1);
+        // The color preference controls readability on transparent wallpaper.
+        boolean lightText=appearance.getSelectedItemPosition()==1 || appearance.getSelectedItemPosition()==2 ||
+            (appearance.getSelectedItemPosition()==3 && contrast.getSelectedItemPosition()==1);
+        editor.putBoolean(widgetId+"_dark",lightText);
         editor.putBoolean(widgetId+"_images",images.isChecked());
         editor.putString(widgetId+"_cats",selected.toString());editor.apply();
         NewsWidget.notifyData(this);

@@ -12,9 +12,9 @@ assert 'android.appwidget.provider' in manifest
 assert 'WidgetListService' in manifest
 assert 'WidgetConfigActivity' in manifest
 java = list((root/'app/src/main/java').rglob('*.java'))
-assert len(java) >= 7
+assert len(java) >= 8
 web = (root/'app/src/main/assets/index.html').read_text()
-for q in ['Apex Motori Blaj','Emanuel Mihai Blaj','Widget Android','GreenFlag','Calendario','20, 40 o 60','AMBAndroid','GT3','GT4']:
+for q in ['Apex Motori Blaj','Emanuel Mihai Blaj','Widget Android','GreenFlag','Calendario','20, 40 o 60','AMBAndroid','GT3','AMOLED','amoled']:
     assert q in web, q
 for exclusion in ['Nürburgring','Misha Charoudin']:
     assert exclusion not in web
@@ -23,4 +23,6 @@ from tempfile import NamedTemporaryFile
 with NamedTemporaryFile(mode='w',suffix='.js') as f:
     f.write(js);f.flush()
     subprocess.run(['node','--check',f.name],check=True)
-print('OK: JS syntax, 7 Android classes, official widget declared, features verified')
+assert "const CATS=['Tutte','F1','WRC','WEC','GT3','MotoGP','Personali']" in web
+assert 'transparent' in (root/'app/src/main/java/com/apexmotoriblaj/amb/WidgetConfigActivity.java').read_text()
+print('OK: JS syntax, >=8 Android classes, category filters and widget themes verified')

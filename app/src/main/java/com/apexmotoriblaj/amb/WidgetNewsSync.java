@@ -43,7 +43,7 @@ public final class WidgetNewsSync {
         "{\"name\":\"Motorsport Italia F1\",\"category\":\"F1\",\"url\":\"https://it.motorsport.com/rss/f1/news/\",\"enabled\":true},"+
         "{\"name\":\"Motorsport Italia WRC\",\"category\":\"WRC\",\"url\":\"https://it.motorsport.com/rss/wrc/news/\",\"enabled\":true},"+
         "{\"name\":\"Motorsport Italia WEC\",\"category\":\"WEC\",\"url\":\"https://it.motorsport.com/rss/wec/news/\",\"enabled\":true},"+
-        "{\"name\":\"Motorsport Italia GT\",\"category\":\"GT\",\"url\":\"https://it.motorsport.com/rss/endurance-gt/news/\",\"enabled\":true},"+
+        "{\"name\":\"Motorsport Italia GT3\",\"category\":\"GT3\",\"url\":\"https://it.motorsport.com/rss/endurance-gt/news/\",\"enabled\":true},"+
         "{\"name\":\"Motorsport Italia MotoGP\",\"category\":\"MotoGP\",\"url\":\"https://it.motorsport.com/rss/motogp/news/\",\"enabled\":true}]";
 
     private WidgetNewsSync(){}
@@ -130,6 +130,9 @@ public final class WidgetNewsSync {
                 }
             }
             if(!link.startsWith("https://") || title.isEmpty())continue;
+            boolean defaultGT3="gt3".equals(source.optString("id")) ||
+                source.optString("name", "").startsWith("Motorsport Italia GT3");
+            if(defaultGT3 && !GT3Classifier.isGT3(title,get(item,"description","content:encoded","summary")))continue;
             JSONObject row=new JSONObject();
             row.put("title",title);row.put("link",link);
             row.put("source",source.optString("name","Motorsport"));
@@ -158,6 +161,11 @@ public final class WidgetNewsSync {
             }catch(Exception e){Log.w("AMB_Widget","RSS unavailable: "+source.optString("name"),e);}
         }
         if(successes==0)return; // Never overwrite a good cache on network failure.
+        // Removed championship categories must not come back from old saved widget sources.
+        items.removeIf(row -> {
+            String cat=row.optString("category", "");
+            return !(cat.equals("F1")||cat.equals("WRC")||cat.equals("WEC")||cat.equals("GT3")||cat.equals("MotoGP")||cat.equals("Personali"));
+        });
         items.sort((a,b)->Long.compare(b.optLong("date",0),a.optLong("date",0)));
         JSONArray out=new JSONArray();
         for(int i=0;i<Math.min(150,items.size());i++)out.put(items.get(i));

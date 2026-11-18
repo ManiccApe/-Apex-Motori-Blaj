@@ -39,13 +39,14 @@ public final class WidgetListService extends RemoteViewsService {
                     JSONObject o = arr.optJSONObject(i);
                     if(o == null) continue;
                     String cat=o.optString("category","");
-                    if(!enabled.isEmpty() && !enabled.contains(cat)) {
-                        if(!"GT".equals(cat))continue;
-                        String headline=o.optString("title","").toUpperCase(java.util.Locale.ROOT);
-                        if(!(enabled.contains("GT2")&&headline.contains("GT2"))
-                          && !(enabled.contains("GT3")&&headline.contains("GT3"))
-                          && !(enabled.contains("GT4")&&headline.contains("GT4")))continue;
+                    // Old cached GT items must explicitly concern GT3; retired categories are hidden.
+                    if("GT".equals(cat)) {
+                        if(!GT3Classifier.isGT3(o.optString("title", ""),""))continue;
+                        try{o.put("category","GT3");}catch(Exception ignored){}
+                        cat="GT3";
                     }
+                    if(!java.util.Arrays.asList(WidgetPrefs.CATEGORIES).contains(cat))continue;
+                    if(!enabled.isEmpty() && !enabled.contains(cat))continue;
                     if(o.optString("link","").startsWith("https://")) data.add(o);
                 }
             }catch(Exception ignored){}
@@ -55,7 +56,13 @@ public final class WidgetListService extends RemoteViewsService {
             if(position<0 || position>=data.size())return null;
             JSONObject o=data.get(position);
             RemoteViews rv=new RemoteViews(c.getPackageName(),R.layout.widget_row);
-            boolean dark=WidgetPrefs.dark(c,id);
+            String mode=WidgetPrefs.appearance(c,id);
+            boolean dark="amoled".equals(mode)||"dark".equals(mode)||
+                ("transparent".equals(mode) && WidgetPrefs.dark(c,id));
+            int rowBackground="transparent".equals(mode) ? Color.TRANSPARENT :
+                "amoled".equals(mode) ? Color.BLACK :
+                dark ? Color.argb(38,255,255,255) : Color.argb(18,0,0,0);
+            rv.setInt(R.id.widget_row,"setBackgroundColor",rowBackground);
             rv.setTextViewText(R.id.widget_category,o.optString("category","Motorsport"));
             rv.setTextViewText(R.id.widget_headline,o.optString("title",""));
             rv.setTextViewText(R.id.widget_source,o.optString("source",""));

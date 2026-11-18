@@ -60,6 +60,18 @@ public final class MainActivity extends Activity {
         WidgetNewsSync.refreshAsync(getApplicationContext(), false);
     }
 
+    /** Apply WebView theme to Android system bars, including AMOLED true black. */
+    private void setSystemAppearance(String theme) {
+        boolean amoled="amoled".equals(theme);
+        boolean dark=amoled || "dark".equals(theme);
+        int color=amoled ? Color.BLACK : dark ? Color.rgb(25,35,46) : Color.rgb(246,248,250);
+        getWindow().setStatusBarColor(color);
+        getWindow().setNavigationBarColor(color);
+        getWindow().getDecorView().setSystemUiVisibility(dark ? 0 :
+                (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR));
+        if(web!=null)web.setBackgroundColor(color);
+    }
+
     private final class Bridge {
         @JavascriptInterface public void fetch(String requestId, String url) {
             if (requestId == null || requestId.length() > 100 || url == null) return;
@@ -81,6 +93,10 @@ public final class MainActivity extends Activity {
         @JavascriptInterface public void setWidgetSources(String json) {
             if (json == null || json.length() > 35_000) return;
             getSharedPreferences("amb_shared", MODE_PRIVATE).edit().putString("sources", json).apply();
+        }
+        @JavascriptInterface public void setAppearance(String theme) {
+            if(theme==null || !(theme.equals("light") || theme.equals("dark") || theme.equals("amoled")))return;
+            runOnUiThread(() -> setSystemAppearance(theme));
         }
         @JavascriptInterface public void openWidgetSettings() {
             runOnUiThread(() -> startActivity(new Intent(MainActivity.this, WidgetConfigActivity.class)));
