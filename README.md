@@ -2,7 +2,7 @@
 
 **Creato da Emanuel Mihai Blaj** · codice open source con licenza MIT.
 
-App motorsport Android **indipendente** con News, Calendario, Preferiti, Fonti personalizzate, Impostazioni e **widget Android nativo scorrevole**. L'app è sviluppata in Java, HTML5, CSS3, JavaScript e XML, con Android SDK / Gradle. Non contiene player video interno, né sezioni Nürburgring o Misha Charoudin. I contenuti sono dei rispettivi editori.
+App motorsport Android **indipendente** con News, Calendario, Preferiti, Fonti personalizzate, Impostazioni e **widget Android nativo scorrevole**. L'app è sviluppata in Java, HTML5, CSS3, JavaScript e XML, con Android SDK / Gradle. Non contiene player video interno. I contenuti sono dei rispettivi editori.
 
 ## Compatibilità
 
