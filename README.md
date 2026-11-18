@@ -1,4 +1,4 @@
-# Apex Motori Blaj — A.M.B. 2.3
+# Apex Motori Blaj — A.M.B. 2.4
 
 **Creato da Emanuel Mihai Blaj** · codice open source con licenza MIT.
 
@@ -13,12 +13,12 @@ App motorsport Android **indipendente** con News, Calendario, Preferiti, Fonti p
 
 ## Funzioni
 
-- **Home e notizie**: F1, WRC, WEC, GT3 ed endurance, MotoGP, GT3; categorie in una riga orizzontale scorrevole, ricerca, schede dense ma leggibili, piccolo pulsante Aggiorna in testata, immagini dai feed originali quando disponibili.
+- **Home e notizie**: F1, WRC, WEC, GT3, MotoGP e Auto; categorie in una riga orizzontale scorrevole, ricerca, schede dense ma leggibili, piccolo pulsante Aggiorna in testata, immagini dai feed originali quando disponibili.
 - **Fonti**: feed italiani e inglesi da editori originali; aggiunta URL RSS/Atom o URL sito con auto-rilevamento feed, attivazione, rimozione delle fonti personali. Per siti senza feed non è possibile garantire un aggiornamento automatico. GT3 usa il feed ENDURANCE/GT di Motorsport.com e filtra le notizie pertinenti; la disponibilità dipende dalla fonte.
 - **Calendario**: eventi nelle stesse categorie, filtri, ricerca, prossimi 1/3/6/12 mesi, import .ics, sincronizzazione all'apertura e mentre è in uso. Orari Europe/Rome (se forniti dalle fonti); link informativi su trasmissioni e streaming, non garanzie di programmazione evento per evento.
 - **Preferiti**: offline; backup/importazione JSON dei preferiti e delle fonti.
-- **Impostazioni**: tema chiaro/scuro/automatico, dimensione testo, densità, immagini, cache, calendario, widget, riconoscimenti del creatore (Emanuel Mihai Blaj) e strumenti utilizzati.
-- **Widget scorrevole**: Android `AppWidgetProvider` + `RemoteViewsService`, 20/40/60 notizie (fino al limite delle fonti), immagini quando le forniscono gli editori, categorie selezionabili, temi Chiaro/Scuro/AMOLED/Trasparente, testo chiaro/scuro, più widget indipendenti, refresh. I dati vengono sincronizzati dall'app o dal widget; la frequenza in background è soggetta alle politiche Android/launcher. Nessun invio di dati personali a server propri.
+- **Impostazioni**: tema chiaro/scuro/AMOLED/automatico, dimensione testo, densità, layout schede, dimensione e adattamento fotografie, cache, calendario, widget, riconoscimenti del creatore (Emanuel Mihai Blaj) e strumenti utilizzati.
+- **Widget scorrevole**: Android `AppWidgetProvider` + `RemoteViewsService`, 20/40/60 notizie (fino al limite delle fonti), immagini quando le forniscono gli editori, categorie selezionabili, dimensioni Compatte/Normali/Grandi, temi Chiaro/Scuro/AMOLED/Trasparente, testo chiaro/scuro, più widget indipendenti, refresh. I dati vengono sincronizzati dall'app o dal widget; la frequenza in background è soggetta alle politiche Android/launcher. Nessun invio di dati personali a server propri.
 - **Media**: nessun player video; articoli e video si aprono nel browser esterno.
 
 ### AVVERTENZA sulle build
@@ -30,7 +30,7 @@ Qui è incluso il **progetto sorgente completo**, ma **non** un APK sperimentale
 1. Crea un repository GitHub (può essere inizialmente privato) e carica **il contenuto di questa cartella**, inclusa `.github`.
 2. Vai in **Actions → Build Android APK standalone A.M.B. → Run workflow** (o attendi la build del push su `main`).
 3. La build compila codice Java e risorse Android con **Android SDK ufficiale**, quindi esegue `apksigner verify` e `aapt dump badging`.
-4. Sotto **Artifacts**, scarica **Apex-Motori-Blaj-AMB-2.0-standalone-APK** e estrai `app-debug.apk` dallo ZIP. Condividi questo APK agli amici: **non è un file di aggiornamento**.
+4. Sotto **Artifacts**, scarica **Apex-Motori-Blaj-APK** e estrai `app-debug.apk` dallo ZIP. Condividi questo APK agli amici: **non è un file di aggiornamento**.
 
 L'APK debug è firmato automaticamente con la chiave debug generata dall'ambiente GitHub Actions. **La chiave può cambiare tra build**: nuove versioni potrebbero richiedere disinstallazione, con perdita dei dati locali. Per distribuzione duratura, configura una chiave di firma *release* privata e stabile usando i segreti GitHub o Android Studio. Non pubblicare mai chiavi private con il codice.
 
@@ -76,3 +76,10 @@ Test automatici del codice Java e dell'interfaccia web possono essere eseguiti l
 - I feed senza articoli fotografici vengono ignorati durante l'aggiornamento, senza cancellarli dalle preferenze; potranno tornare a fornire foto. Le nuove fonti personali sono verificate prima dell'aggiunta.
 - Cache delle notizie precedenti senza foto esclusa dai nuovi risultati, mentre i preferiti personali restano salvati. Anche il widget filtra gli articoli senza foto.
 - Le foto restano di proprietà degli editori. L'URL nei feed non garantisce che i siti consentano sempre il caricamento delle immagini (hotlinking).
+
+
+## Novità v2.4
+- Precaricamento automatico delle miniature nel widget anche dopo le notizie passate dall’app, con aggiornamento progressivo delle righe.
+- Download HTTPS delle foto fino a 5 MB e miniature ridimensionate per il widget. Le immagini bloccate dagli editori possono comunque non comparire.
+- Nuove Impostazioni per le notizie: compatta/normale/ampia, articoli con foto a lato o sopra, foto piccole/medie/grandi e ritaglio o immagine intera.
+- Impostazioni mantenute tra gli avvii e nei backup.

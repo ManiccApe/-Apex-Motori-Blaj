@@ -27,8 +27,20 @@ with sync_playwright() as p:
         assert 'Calendario motorsport' in page.locator('#main').inner_text()
         page.locator('#tab-settings').click()
         assert 'Creato da Emanuel Mihai Blaj' in page.locator('#main').inner_text()
-        assert '2.3' in page.locator('#main').inner_text()
+        assert '2.4' in page.locator('#main').inner_text()
         assert page.get_by_text('AMOLED',exact=True).count() >= 1
+        # Layout choices are functional and persist without horizontal overflow.
+        page.evaluate("go('news')")
+        for mode in ['row','stacked']:
+            for size in ['small','medium','large']:
+                page.evaluate('([mode,size]) => {changePref("articleLayout",mode);changePref("photoSize",size)}',[mode,size])
+                assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth'), f'Articles overflow {width}px / {mode}/{size}'
+                assert page.locator('.article').count()==12
+        page.evaluate("changePref('photoFit','contain')")
+        assert page.evaluate('document.body.dataset.photoFit')=='contain'
+        page.evaluate("changePref('articleLayout','row')")
+        page.evaluate("changePref('photoSize','medium')")
+        page.evaluate("go('settings')")
         page.evaluate("changePref('theme','amoled')")
         assert page.evaluate("getComputedStyle(document.body).backgroundColor") == 'rgb(0, 0, 0)'
         assert not page.locator('.cat').filter(has_text='GT2').count()

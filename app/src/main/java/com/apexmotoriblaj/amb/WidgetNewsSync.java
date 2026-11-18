@@ -1,6 +1,8 @@
 package com.apexmotoriblaj.amb;
 
 import android.content.Context;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -38,7 +41,10 @@ import java.util.regex.Pattern;
 /** Direct RSS/Atom aggregation from user-configured sources for Android widgets. */
 public final class WidgetNewsSync {
     private static final ExecutorService WORK = Executors.newSingleThreadExecutor();
+    private static final ExecutorService IMAGE_WORK = Executors.newSingleThreadExecutor();
     private static final AtomicBoolean BUSY = new AtomicBoolean(false);
+    private static final AtomicBoolean IMAGES_BUSY = new AtomicBoolean(false);
+    private static final AtomicBoolean IMAGES_DIRTY = new AtomicBoolean(false);
     private static final String DEFAULT = "["+
         "{\"name\":\"Motorsport Italia F1\",\"category\":\"F1\",\"url\":\"https://it.motorsport.com/rss/f1/news/\",\"enabled\":true},"+
         "{\"name\":\"Motorsport Italia WRC\",\"category\":\"WRC\",\"url\":\"https://it.motorsport.com/rss/wrc/news/\",\"enabled\":true},"+
@@ -208,24 +214,73 @@ public final class WidgetNewsSync {
             .putString("widget_news",out.toString())
             .putLong("widget_updated",System.currentTimeMillis()).apply();
         NewsWidget.notifyData(c);
-        // Prefetch thumbnails in a small parallel pool so 20/40/60-row widgets
-        // do not stall on a single publisher's slow image server.
-        ExecutorService photos=Executors.newFixedThreadPool(4);
-        List<java.util.concurrent.Future<?>> photoJobs=new ArrayList<>();
-        try {
-            for(int i=0;i<Math.min(60,items.size());i++) {
-                String url=items.get(i).optString("image","");
-                if(url.startsWith("https://"))photoJobs.add(photos.submit(()->{
-                    try{saveThumbnail(c,url);}catch(Exception ignored){}
+        // Download thumbnails for the rows actually displayed in each widget.
+        prefetchWidgetImagesAsync(c);
+    }
+
+    /** Called both after WebView transfers news and when a widget is created/refreshed.
+     * Never download images on the UI thread or inside RemoteViewsFactory.getViewAt(). */
+    public static void prefetchWidgetImagesAsync(Context context) {
+        final Context app=context.getApplicationContext();
+        IMAGES_DIRTY.set(true);
+        if(!IMAGES_BUSY.compareAndSet(false,true))return;
+        IMAGE_WORK.execute(() -> {
+            try{
+                do {
+                    IMAGES_DIRTY.set(false);
+                    prefetchWidgetImages(app);
+                } while (IMAGES_DIRTY.get());
+            }catch(Exception e){Log.w("AMB_Widget","Thumbnail sync failed",e);}
+            finally{
+                IMAGES_BUSY.set(false);
+                // A new data set may have arrived just as the worker was completing.
+                if(IMAGES_DIRTY.get())prefetchWidgetImagesAsync(app);
+            }
+        });
+    }
+
+    private static void prefetchWidgetImages(Context c) throws Exception {
+        int[] widgetIds=AppWidgetManager.getInstance(c).getAppWidgetIds(new ComponentName(c,NewsWidget.class));
+        if(widgetIds==null || widgetIds.length==0)return;
+        JSONArray feed=new JSONArray(c.getSharedPreferences("amb_shared",Context.MODE_PRIVATE).getString("widget_news","[]"));
+        LinkedHashSet<String> urls=new LinkedHashSet<>();
+        for(int widgetId:widgetIds){
+            if(!WidgetPrefs.images(c,widgetId))continue;
+            Set<String> allowed=WidgetPrefs.categories(c,widgetId);
+            int desired=WidgetPrefs.count(c,widgetId),selected=0;
+            for(int i=0;i<feed.length() && selected<desired;i++){
+                JSONObject item=feed.optJSONObject(i);
+                if(item==null)continue;
+                String category=item.optString("category","");
+                if("GT".equals(category))category="GT3";
+                if(!allowed.isEmpty() && !allowed.contains(category))continue;
+                String url=item.optString("image","");
+                if(!item.optString("link","").startsWith("https://") || !url.startsWith("https://"))continue;
+                urls.add(url);selected++;
+                if(urls.size()>=180)break;
+            }
+        }
+        if(urls.isEmpty())return;
+        ExecutorService pool=Executors.newFixedThreadPool(4);
+        try{
+            List<java.util.concurrent.Future<?>> jobs=new ArrayList<>();
+            for(String url:urls){
+                jobs.add(pool.submit(() -> {
+                    try{saveThumbnail(c,url);}catch(Exception e){Log.d("AMB_Widget","Image unavailable: "+e.getMessage());}
                 }));
             }
-            for(java.util.concurrent.Future<?> job:photoJobs){
-                try{job.get(12,java.util.concurrent.TimeUnit.SECONDS);}
+            // Notify the launcher in batches, so visible thumbnails appear progressively.
+            int processed=0;
+            for(java.util.concurrent.Future<?> job:jobs){
+                try{job.get(16,java.util.concurrent.TimeUnit.SECONDS);}
                 catch(Exception e){job.cancel(true);}
+                processed++;
+                if(processed%8==0)NewsWidget.notifyData(c);
             }
-        }finally{photos.shutdownNow();}
-        NewsWidget.notifyData(c);
+            NewsWidget.notifyData(c);
+        }finally{pool.shutdownNow();}
     }
+
     private static String thumbnailName(String url) throws Exception {
         byte[] hash=MessageDigest.getInstance("SHA-256").digest(url.getBytes(StandardCharsets.UTF_8));
         StringBuilder b=new StringBuilder();for(int i=0;i<8;i++)b.append(String.format("%02x",hash[i]));
@@ -237,25 +292,43 @@ public final class WidgetNewsSync {
         catch(Exception e){return null;}
     }
     private static void saveThumbnail(Context c,String url) throws Exception {
-        if(!url.startsWith("https://"))return;
+        if(url==null || !url.startsWith("https://"))return;
         File file=new File(c.getCacheDir(),"ambthumb_"+thumbnailName(url));
-        if(file.exists() && file.length()>50)return;
-        URL u=new URL(url);
-        HttpURLConnection con=(HttpURLConnection)u.openConnection();
-        try {
-            con.setConnectTimeout(4000);con.setReadTimeout(4000);
-            if(con.getResponseCode()!=200 || con.getContentLengthLong()>850_000)return;
+        if(file.exists() && file.length()>100)return;
+        HttpURLConnection con=(HttpURLConnection)new URL(url).openConnection();
+        try{
+            con.setConnectTimeout(7000);con.setReadTimeout(9000);
+            con.setInstanceFollowRedirects(true);
+            con.setRequestProperty("User-Agent","Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36");
+            con.setRequestProperty("Accept","image/jpeg,image/png,image/webp,image/*;q=0.8,*/*;q=0.5");
+            if(con.getResponseCode()!=200 || !"https".equalsIgnoreCase(con.getURL().getProtocol()))return;
+            final int MAX_IMAGE=5_000_000;
+            if(con.getContentLengthLong()>MAX_IMAGE)return;
             ByteArrayOutputStream out=new ByteArrayOutputStream();
             try(InputStream in=con.getInputStream()){
-                byte[] b=new byte[4096];int n;
-                while((n=in.read(b))!=-1){if(out.size()+n>850_000)return;out.write(b,0,n);}
+                byte[] b=new byte[8192];int n;
+                while((n=in.read(b))!=-1){
+                    if(out.size()+n>MAX_IMAGE)return;
+                    out.write(b,0,n);
+                }
             }
-            BitmapFactory.Options opt=new BitmapFactory.Options();opt.inSampleSize=4;
-            Bitmap bm=BitmapFactory.decodeByteArray(out.toByteArray(),0,out.size(),opt);
-            if(bm==null)return;
-            Bitmap small=Bitmap.createScaledBitmap(bm,105,95,true);
-            try(FileOutputStream f=new FileOutputStream(file)){small.compress(Bitmap.CompressFormat.JPEG,75,f);}
-            if(small!=bm)small.recycle();bm.recycle();
+            byte[] data=out.toByteArray();
+            BitmapFactory.Options bounds=new BitmapFactory.Options();bounds.inJustDecodeBounds=true;
+            BitmapFactory.decodeByteArray(data,0,data.length,bounds);
+            if(bounds.outWidth<48 || bounds.outHeight<48)return;
+            BitmapFactory.Options options=new BitmapFactory.Options();
+            options.inSampleSize=1;
+            while(bounds.outWidth/options.inSampleSize>420 || bounds.outHeight/options.inSampleSize>420)
+                options.inSampleSize*=2;
+            Bitmap bitmap=BitmapFactory.decodeByteArray(data,0,data.length,options);
+            if(bitmap==null)return;
+            Bitmap cropped=Bitmap.createScaledBitmap(bitmap,200,180,true);
+            try(FileOutputStream f=new FileOutputStream(file)){
+                if(!cropped.compress(Bitmap.CompressFormat.JPEG,82,f))file.delete();
+            }finally{
+                if(cropped!=bitmap)cropped.recycle();
+                bitmap.recycle();
+            }
         }finally{con.disconnect();}
     }
 }

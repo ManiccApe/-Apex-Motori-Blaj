@@ -23,6 +23,10 @@ final class WidgetPrefs {
     }
     static boolean dark(Context c,int id) { return prefs(c).getBoolean(id+"_dark",false); }
     static boolean images(Context c,int id) { return prefs(c).getBoolean(id+"_images",true); }
+    static String rowSize(Context c,int id) {
+        String value=prefs(c).getString(id+"_rowSize","normal");
+        return "compact".equals(value) || "large".equals(value) ? value : "normal";
+    }
     static Set<String> categories(Context c,int id) {
         Set<String> out = new HashSet<>();
         try { JSONArray a = new JSONArray(prefs(c).getString(id+"_cats", "[]")); for (int i=0;i<a.length();i++) out.add(a.optString(i)); }
@@ -30,5 +34,5 @@ final class WidgetPrefs {
         out.retainAll(new HashSet<>(java.util.Arrays.asList(CATEGORIES)));
         return out;
     }
-    static void remove(Context c,int id) { prefs(c).edit().remove(id+"_count").remove(id+"_opacity").remove(id+"_dark").remove(id+"_images").remove(id+"_cats").remove(id+"_appearance").apply(); }
+    static void remove(Context c,int id) { prefs(c).edit().remove(id+"_count").remove(id+"_opacity").remove(id+"_dark").remove(id+"_images").remove(id+"_cats").remove(id+"_appearance").remove(id+"_rowSize").apply(); }
 }

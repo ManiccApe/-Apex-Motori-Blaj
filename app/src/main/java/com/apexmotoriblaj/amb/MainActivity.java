@@ -89,6 +89,8 @@ public final class MainActivity extends Activity {
             if (data == null || data.length() > 450_000) return;
             getSharedPreferences("amb_shared", MODE_PRIVATE).edit().putString("widget_news", data).apply();
             NewsWidget.notifyData(getApplicationContext());
+            // After the WebView sends fresh headlines, fetch thumbnails as well.
+            WidgetNewsSync.prefetchWidgetImagesAsync(getApplicationContext());
         }
         @JavascriptInterface public void setWidgetSources(String json) {
             if (json == null || json.length() > 35_000) return;

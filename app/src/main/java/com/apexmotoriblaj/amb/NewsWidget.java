@@ -65,10 +65,14 @@ public final class NewsWidget extends AppWidgetProvider {
     @Override public void onUpdate(Context c,AppWidgetManager mgr,int[] ids) {
         for(int id:ids) updateOne(c,mgr,id);
         WidgetNewsSync.refreshAsync(c.getApplicationContext(),false);
+        WidgetNewsSync.prefetchWidgetImagesAsync(c.getApplicationContext());
     }
     @Override public void onReceive(Context c,Intent intent) {
         super.onReceive(c,intent);
-        if (ACTION_REFRESH.equals(intent.getAction())) WidgetNewsSync.refreshAsync(c.getApplicationContext(),true);
+        if (ACTION_REFRESH.equals(intent.getAction())) {
+            WidgetNewsSync.refreshAsync(c.getApplicationContext(),true);
+            WidgetNewsSync.prefetchWidgetImagesAsync(c.getApplicationContext());
+        }
     }
     @Override public void onDeleted(Context c,int[] ids) { for(int id:ids) WidgetPrefs.remove(c,id); }
 }

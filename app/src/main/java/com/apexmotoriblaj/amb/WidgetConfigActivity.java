@@ -22,7 +22,7 @@ import java.util.Set;
 /** Per-widget configuration with category, density and transparency controls. */
 public final class WidgetConfigActivity extends Activity {
     private int widgetId=AppWidgetManager.INVALID_APPWIDGET_ID;
-    private Spinner count,opacity,contrast,appearance;
+    private Spinner count,opacity,contrast,appearance,rowSize;
     private CheckBox images;
     private CheckBox[] cats;
     private final String[] levels={"100%","85%","70%","50%","30%","0%"};
@@ -52,6 +52,11 @@ public final class WidgetConfigActivity extends Activity {
         String mode=WidgetPrefs.appearance(this,widgetId);
         appearance.setSelection("amoled".equals(mode)?2:"transparent".equals(mode)?3:"dark".equals(mode)?1:0);
         sub(list,"AMOLED usa #000000; Trasparente mostra lo sfondo della Home. Ogni widget ha il proprio tema.");
+        label(list,"Dimensione notizie e fotografie");
+        rowSize=spinner(list,new String[]{"Compatta · più notizie","Normale · bilanciata","Grande · foto ampie"});
+        String size=WidgetPrefs.rowSize(this,widgetId);
+        rowSize.setSelection("compact".equals(size)?0:"large".equals(size)?2:1);
+        sub(list,"La larghezza del widget si adatta alla Home; puoi anche ridimensionarlo dal launcher.");
         label(list,"Opacità sfondo (per Chiaro e Scuro)");opacity=spinner(list,levels);
         int o=WidgetPrefs.opacity(this,widgetId);
         int selected=0;for(int i=0;i<values.length;i++)if(values[i]==o)selected=i;
@@ -84,9 +89,11 @@ public final class WidgetConfigActivity extends Activity {
             (appearance.getSelectedItemPosition()==3 && contrast.getSelectedItemPosition()==1);
         editor.putBoolean(widgetId+"_dark",lightText);
         editor.putBoolean(widgetId+"_images",images.isChecked());
+        editor.putString(widgetId+"_rowSize",new String[]{"compact","normal","large"}[rowSize.getSelectedItemPosition()]);
         editor.putString(widgetId+"_cats",selected.toString());editor.apply();
         NewsWidget.notifyData(this);
         WidgetNewsSync.refreshAsync(getApplicationContext(),false);
+        if(images.isChecked())WidgetNewsSync.prefetchWidgetImagesAsync(getApplicationContext());
         Intent result=new Intent();result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,widgetId);
         setResult(RESULT_OK,result);finish();
     }

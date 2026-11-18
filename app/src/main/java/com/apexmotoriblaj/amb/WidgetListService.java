@@ -55,7 +55,10 @@ public final class WidgetListService extends RemoteViewsService {
         @Override public RemoteViews getViewAt(int position) {
             if(position<0 || position>=data.size())return null;
             JSONObject o=data.get(position);
-            RemoteViews rv=new RemoteViews(c.getPackageName(),R.layout.widget_row);
+            String rowSize=WidgetPrefs.rowSize(c,id);
+            int layout="compact".equals(rowSize) ? R.layout.widget_row_compact :
+                "large".equals(rowSize) ? R.layout.widget_row_large : R.layout.widget_row;
+            RemoteViews rv=new RemoteViews(c.getPackageName(),layout);
             String mode=WidgetPrefs.appearance(c,id);
             boolean dark="amoled".equals(mode)||"dark".equals(mode)||
                 ("transparent".equals(mode) && WidgetPrefs.dark(c,id));
@@ -81,7 +84,7 @@ public final class WidgetListService extends RemoteViewsService {
             return rv;
         }
         @Override public RemoteViews getLoadingView(){return null;}
-        @Override public int getViewTypeCount(){return 1;}
+        @Override public int getViewTypeCount(){return 3;}
         @Override public long getItemId(int position){return position;}
         @Override public boolean hasStableIds(){return false;}
         @Override public void onDestroy(){data.clear();}
