@@ -13,7 +13,7 @@ App motorsport Android **indipendente** con News, Calendario, Preferiti, Fonti p
 
 ## Funzioni
 
-- **Home e notizie**: F1, WRC, WEC, GT2/GT3/GT4 ed endurance, MotoGP, storiche, Goodwood; categorie in una riga orizzontale scorrevole, ricerca, schede dense ma leggibili, piccolo pulsante Aggiorna in testata, immagini dai feed originali quando disponibili.
+- **Home e notizie**: F1, WRC, WEC,GT3 ed endurance, MotoGP; categorie in una riga orizzontale scorrevole, ricerca, schede dense ma leggibili, piccolo pulsante Aggiorna in testata, immagini dai feed originali quando disponibili.
 - **Fonti**: feed italiani e inglesi da editori originali; aggiunta URL RSS/Atom o URL sito con auto-rilevamento feed, attivazione, rimozione delle fonti personali. Per siti senza feed non è possibile garantire un aggiornamento automatico. Goodwood è presente come categoria; il sito ufficiale non è attivo come RSS predefinito finché non pubblica un feed verificato.
 - **Calendario**: eventi nelle stesse categorie, filtri, ricerca, prossimi 1/3/6/12 mesi, import .ics, sincronizzazione all'apertura e mentre è in uso. Orari Europe/Rome (se forniti dalle fonti); link informativi su trasmissioni e streaming, non garanzie di programmazione evento per evento.
 - **Preferiti**: offline; backup/importazione JSON dei preferiti e delle fonti.
