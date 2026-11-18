@@ -20,6 +20,9 @@
   --accent:#e28c7e; --accentSoft:#3e282b; --accentInk:#f1ad9d;
   --nav:#19232e; --shadow:0 3px 14px rgba(0,0,0,.07);
 }
+.auto-topic{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:-1px 0 9px;color:var(--sub);font-size:.73rem;font-weight:700}
+.auto-topic select{max-width:230px;width:auto;min-width:128px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:7px 10px;font:inherit}
+.sources-filter{margin:9px 0 2px}
 *{box-sizing:border-box}
 html{font-size:calc(16px * var(--textScale));scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 .875rem/1.45 Roboto,'Noto Sans',system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
@@ -189,16 +192,258 @@ body.images-off .article-photo{display:none}
 </nav>
 <script>
 'use strict';
-const APP_VERSION='2.1';
-const CATS=['Tutte','F1','WRC','WEC','GT3','MotoGP','Personali'];
+const APP_VERSION='2.2';
+const CATS=['Tutte','F1','WRC','WEC','GT3','MotoGP','Auto','Personali'];
+const RACE_CATS=CATS.filter(x=>x!=='Auto'&&x!=='Personali');
+const AUTO_TOPICS=['Tutti','Utilitarie','Novità','Motori','Tecnologia','Competizione'];
+const AUTO_REGEX={
+ 'Utilitarie':/(utilitari|city[ -]?car|supermini|hatchback|compatt|low[ -]?cost|economich|panda|yaris|clio|corsa|sandero|polo|i20|500e|picanto|aygo|swift|fiesta|fabia)/i,
+ 'Novità':/(nuov|new|debut|present|reveals?|svelat|launch|202[6-9]|2030|restyling|facelift|concept|prezzi|price|listin|in arriv|release)/i,
+ 'Motori':/(motor|engine|diesel|benzina|petrol|turbo|cavall|horsepower|hybrid|ibrid|cilindr|combust|powertrain|trasmission|cambio|gearbox|pistoni|piston)/i,
+ 'Tecnologia':/(tecnolog|tech|software|batter|battery|ricaric|charging|elettric|electric|EV\b|autonom|ADAS|intelligenza|safety|sensori|digital|AI\b)/i,
+ 'Competizione':/(racing|race|rally|competizion|motorsport|supercar|gt3|gt4|track|circuit|pista|porsche cup|performance|sportiva|sportscar|racer|drift|tuning)/i
+};
 const DEFAULTS=[
- {id:'f1',name:'Motorsport Italia · F1',category:'F1',url:'https://it.motorsport.com/rss/f1/news/',enabled:true,locked:true},
- {id:'wrc',name:'Motorsport Italia · WRC',category:'WRC',url:'https://it.motorsport.com/rss/wrc/news/',enabled:true,locked:true},
- {id:'wec',name:'Motorsport Italia · WEC',category:'WEC',url:'https://it.motorsport.com/rss/wec/news/',enabled:true,locked:true},
- {id:'gt3',name:'Motorsport Italia · GT3 e GT World',category:'GT3',url:'https://it.motorsport.com/rss/endurance-gt/news/',enabled:true,locked:true},
- {id:'moto',name:'Motorsport Italia · MotoGP',category:'MotoGP',url:'https://it.motorsport.com/rss/motogp/news/',enabled:true,locked:true},
- {id:'en-f1',name:'Motorsport EN · F1',category:'F1',url:'https://www.motorsport.com/rss/f1/news/',enabled:true,locked:true},
- {id:'en-wrc',name:'Autosport EN · WRC',category:'WRC',url:'https://www.autosport.com/rss/wrc/news/',enabled:false,locked:true},
+ {
+  "id": "f1",
+  "name": "Motorsport Italia · Formula 1",
+  "category": "F1",
+  "url": "https://it.motorsport.com/rss/f1/news/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "wrc",
+  "name": "Motorsport Italia · WRC",
+  "category": "WRC",
+  "url": "https://it.motorsport.com/rss/wrc/news/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "wec",
+  "name": "Motorsport Italia · WEC",
+  "category": "WEC",
+  "url": "https://it.motorsport.com/rss/wec/news/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "gt3",
+  "name": "Motorsport Italia · GT3 e GT World",
+  "category": "GT3",
+  "url": "https://it.motorsport.com/rss/endurance-gt/news/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "moto",
+  "name": "Motorsport Italia · MotoGP",
+  "category": "MotoGP",
+  "url": "https://it.motorsport.com/rss/motogp/news/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "en-f1",
+  "name": "Motorsport EN · Formula 1",
+  "category": "F1",
+  "url": "https://www.motorsport.com/rss/f1/news/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "en-wrc",
+  "name": "Autosport EN · WRC",
+  "category": "WRC",
+  "url": "https://www.autosport.com/rss/wrc/news/",
+  "enabled": false,
+  "locked": true
+ },
+ {
+  "id": "auto-motor1-it",
+  "name": "Motor1 Italia · Novità auto",
+  "category": "Auto",
+  "url": "https://it.motor1.com/rss/news/all/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-automoto",
+  "name": "Automoto.it · Novità e motori",
+  "category": "Auto",
+  "url": "https://www.automoto.it/rss/news.xml",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-alvolante",
+  "name": "alVolante · Utilitarie e nuovi modelli",
+  "category": "Auto",
+  "url": "https://www.alvolante.it/frontpage/rss.xml",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-insideevs-it",
+  "name": "InsideEVs Italia · Elettriche",
+  "category": "Auto",
+  "url": "https://insideevs.it/rss/news/all/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-autoevolution",
+  "name": "autoevolution · Motori e auto",
+  "category": "Auto",
+  "url": "https://www.autoevolution.com/rss/backend-auto.xml",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-carscoops",
+  "name": "Carscoops · Auto nuove",
+  "category": "Auto",
+  "url": "https://www.carscoops.com/feed/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-caranddriver",
+  "name": "Car and Driver · Prove auto",
+  "category": "Auto",
+  "url": "https://www.caranddriver.com/rss/all.xml/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-roadandtrack",
+  "name": "Road & Track · Motori e sportive",
+  "category": "Auto",
+  "url": "https://www.roadandtrack.com/rss/all.xml",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-autocar",
+  "name": "Autocar · Novità e test",
+  "category": "Auto",
+  "url": "https://www.autocar.co.uk/rss",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-thedrive",
+  "name": "The Drive · Tecnica e motori",
+  "category": "Auto",
+  "url": "https://www.thedrive.com/feed",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-electrek",
+  "name": "Electrek · Auto elettriche",
+  "category": "Auto",
+  "url": "https://electrek.co/feed/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-cleantechnica",
+  "name": "CleanTechnica · Tecnologia auto",
+  "category": "Auto",
+  "url": "https://cleantechnica.com/feed/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-autopian",
+  "name": "The Autopian · Meccanica e utilitarie",
+  "category": "Auto",
+  "url": "https://www.theautopian.com/feed/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-carbuzz",
+  "name": "CarBuzz · Auto nuove e sportive",
+  "category": "Auto",
+  "url": "https://carbuzz.com/rss/news",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-autoexpress",
+  "name": "Auto Express · Test e novità",
+  "category": "Auto",
+  "url": "https://www.autoexpress.co.uk/car-news/feed",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-jalopnik",
+  "name": "Jalopnik · Motori e auto",
+  "category": "Auto",
+  "url": "https://jalopnik.com/rss",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-autoblog",
+  "name": "Autoblog · Auto e mercato",
+  "category": "Auto",
+  "url": "https://www.autoblog.com/rss.xml",
+  "enabled": false,
+  "locked": true
+ },
+ {
+  "id": "auto-arstechnica",
+  "name": "Ars Technica · Tecnica auto",
+  "category": "Auto",
+  "url": "https://arstechnica.com/cars/feed/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-autoevolution-racing",
+  "name": "autoevolution · Auto da competizione",
+  "category": "Auto",
+  "url": "https://www.autoevolution.com/rss/backend-auto-motorsport.xml",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "auto-motor1-en",
+  "name": "Motor1 EN · Nuovi modelli",
+  "category": "Auto",
+  "url": "https://www.motor1.com/rss/news/all/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "en-racefans",
+  "name": "RaceFans · Formula 1",
+  "category": "F1",
+  "url": "https://www.racefans.net/feed/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "en-the-race",
+  "name": "The Race · Motorsport indipendente",
+  "category": "Personali",
+  "url": "https://www.the-race.com/rss/",
+  "enabled": true,
+  "locked": true
+ },
+ {
+  "id": "en-sportscar365",
+  "name": "Sportscar365 · GT ed endurance",
+  "category": "Personali",
+  "url": "https://sportscar365.com/feed/",
+  "enabled": true,
+  "locked": true
+ }
 ];
 const CAL_DEFAULTS=[
  {id:'cal-f1',name:'Formula 1',category:'F1',url:'https://www.greenflagtv.com/calendars/f1.ics',enabled:true,locked:true},
@@ -217,7 +462,7 @@ const WATCH_GUIDE={
 const main=document.getElementById('main');
 function readStore(k,def){try{let v=JSON.parse(localStorage.getItem(k));return v===null?def:v}catch{return def}}
 function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){console.warn('Memoria non disponibile',e)}}
-const state={sources:readStore('amb_sources_v1',DEFAULTS),saved:readStore('amb_saved_v1',[]),items:readStore('amb_news_cache_v1',[]),updated:readStore('amb_refresh_time',''),settings:readStore('amb_settings_v2',{theme:'light',density:'balanced',font:100,images:true,auto:true}),tab:'news',category:'Tutte',query:'',loading:false,adding:false,error:'',sourceError:''};
+const state={sources:readStore('amb_sources_v1',DEFAULTS),saved:readStore('amb_saved_v1',[]),items:readStore('amb_news_cache_v1',[]),updated:readStore('amb_refresh_time',''),settings:readStore('amb_settings_v2',{theme:'light',density:'balanced',font:100,images:true,auto:true}),tab:'news',category:'Tutte',query:'',loading:false,adding:false,error:'',sourceError:'',autoTopic:'Tutti',sourceCategory:'Tutte'};
 if(!Array.isArray(state.sources))state.sources=DEFAULTS;if(!Array.isArray(state.saved))state.saved=[];if(!Array.isArray(state.items))state.items=[];
 state.settings=Object.assign({theme:'light',density:'balanced',font:100,images:true,auto:true},state.settings||{});
 const calendar={sources:readStore('amb_calendar_sources_v1',CAL_DEFAULTS),items:readStore('amb_calendar_cache_v1',[]),updated:readStore('amb_calendar_updated_v1',''),category:'Tutte',range:'180',query:'',loading:false,err:'',manage:false,adding:false,sourceError:''};
@@ -244,6 +489,10 @@ function migrateSources(){
   return x;
  }).filter(x=>x.category);
  if(!state.sources.some(x=>x.id==='gt3'))state.sources.push({...DEFAULTS.find(x=>x.id==='gt3')});
+ // v2.2: add new preconfigured feeds while preserving enabled/disabled preferences.
+ const existingIds=new Set(state.sources.map(x=>x.id));
+ const existingUrls=new Set(state.sources.map(x=>x.url));
+ for(const source of DEFAULTS){if(!existingIds.has(source.id)&&!existingUrls.has(source.url)){state.sources.push({...source});existingIds.add(source.id);existingUrls.add(source.url)}}
  state.items=state.items.filter(x=>!REMOVED_CATEGORIES.has(x.category)||x.category==='GT').map(x=>{if(x.category==='GT'){return {...x,category:'GT3'}}return x}).filter(x=>x.category!=='GT3'||x.custom||isGT3Story(x));
  // Saved articles remain accessible even when their old category is retired.
  state.saved=state.saved.map(x=>({...x,category:migrateCategory(x.category,!!x.custom)||'Personali'}));
@@ -294,25 +543,33 @@ async function fetchText(url,timeout=16000){
  try{const r=await fetch(url,{cache:'no-store',redirect:'follow',signal:ctrl.signal});if(!r.ok)throw Error('HTTP '+r.status);const b=await r.text();if(b.length>4000000)throw Error('Risposta troppo grande');return b}finally{clearTimeout(timer)}
 }
 function syncWidgetSources(){try{window.AMBAndroid?.setWidgetSources(JSON.stringify(state.sources.filter(s=>s.enabled && s.url.startsWith('https://'))))}catch{}}
-function syncWidgetNews(){try{const payload=state.items.filter(x=>CATS.includes(x.category)&&x.category!=='Tutte').slice(0,150).map(x=>({title:x.title,category:x.category,source:x.source,image:x.image,link:x.link,date:x.date}));window.AMBAndroid?.setWidgetData(JSON.stringify(payload))}catch{}}
+function syncWidgetNews(){try{const payload=state.items.filter(x=>CATS.includes(x.category)&&x.category!=='Tutte').slice(0,350).map(x=>({title:x.title,category:x.category,source:x.source,image:x.image,link:x.link,date:x.date}));window.AMBAndroid?.setWidgetData(JSON.stringify(payload))}catch{}}
 function openWidgetSetup(){if(window.AMBAndroid?.openWidgetSettings)window.AMBAndroid.openWidgetSettings();else alert('Apri A.M.B. su Android, quindi aggiungi il widget dalla schermata Home.')}
 function exportAMB(){const json=JSON.stringify({app:'Apex Motori Blaj',version:2,sources:state.sources,saved:state.saved,settings:state.settings,calendars:calendar.sources},null,2);const area=document.getElementById('amb-backup');if(area){area.value=json;area.focus();area.select()}}
 function importAMB(){const area=document.getElementById('amb-backup');try{const info=JSON.parse(area?.value||'');if(info.app!=='Apex Motori Blaj')throw Error('Backup non riconosciuto');if(Array.isArray(info.sources))state.sources=info.sources.filter(s=>safeUrl(s.url)&&typeof s.name==='string').slice(0,60);if(Array.isArray(info.saved))state.saved=info.saved.slice(0,350);if(info.settings && typeof info.settings==='object')state.settings=Object.assign({},state.settings,info.settings);if(Array.isArray(info.calendars))calendar.sources=info.calendars.filter(s=>safeUrl(s.url)).slice(0,50);persist();store('amb_settings_v2',state.settings);calendarSave();syncWidgetSources();render();alert('Preferiti e impostazioni importati.')}catch(e){alert('Importazione non riuscita: '+e.message)}}
 async function readFeed(source){return parseFeed(await fetchText(source.url),source)}
 function updateRefreshIcon(){const b=document.getElementById('refresh');const busy=state.tab==='calendar'?calendar.loading:state.loading;b.classList.toggle('loading',busy);b.disabled=busy;b.title=busy?'Aggiornamento in corso':state.tab==='calendar'?'Aggiorna il calendario':'Aggiorna le notizie'}
-async function loadFeeds(force){if(state.loading)return;const active=state.sources.filter(x=>x.enabled);if(!active.length){state.error='Nessuna fonte attiva: abilita una fonte nella sezione Fonti.';render();return}state.loading=true;state.error='';render();updateRefreshIcon();const outcomes=await Promise.allSettled(active.map(readFeed));let merged=[],success=0;outcomes.forEach((v,i)=>{if(v.status==='fulfilled'){success++;merged.push(...v.value)}else console.warn('Fonte non disponibile:',active[i].name,v.reason)});if(success){const seen=new Set();state.items=merged.sort((a,b)=>b.date-a.date).filter(x=>{if(seen.has(x.link))return false;seen.add(x.link);return true}).slice(0,240);store('amb_news_cache_v1',state.items);syncWidgetNews();state.updated=new Date().toISOString();store('amb_refresh_time',state.updated)}if(success===0)state.error='Non riesco a raggiungere i feed. Controlla la connessione oppure prova fonti RSS differenti. I dati già salvati restano disponibili.';else if(success<active.length)state.error='Alcune fonti non rispondono: '+(active.length-success)+' su '+active.length+'. Le altre sono state aggiornate.';state.loading=false;render();updateRefreshIcon()}
+// Limits HTTP bursts across 25+ sources to avoid exhausting the Android bridge.
+async function limitedResults(input,concurrency,task){
+ const out=new Array(input.length);let next=0;
+ await Promise.all(Array.from({length:Math.min(concurrency,input.length)},async()=>{
+   while(next<input.length){const i=next++;try{out[i]={status:'fulfilled',value:await task(input[i])}}catch(reason){out[i]={status:'rejected',reason}}}
+ }));
+ return out;
+}
+async function loadFeeds(force){if(state.loading)return;const active=state.sources.filter(x=>x.enabled);if(!active.length){state.error='Nessuna fonte attiva: abilita una fonte nella sezione Fonti.';render();return}state.loading=true;state.error='';render();updateRefreshIcon();const outcomes=await limitedResults(active,4,readFeed);let merged=[],success=0;outcomes.forEach((v,i)=>{if(v.status==='fulfilled'){success++;merged.push(...v.value)}else console.warn('Fonte non disponibile:',active[i].name,v.reason)});if(success){const seen=new Set();state.items=merged.sort((a,b)=>b.date-a.date).filter(x=>{if(seen.has(x.link))return false;seen.add(x.link);return true}).slice(0,600);store('amb_news_cache_v1',state.items);syncWidgetNews();state.updated=new Date().toISOString();store('amb_refresh_time',state.updated)}if(success===0)state.error='Non riesco a raggiungere i feed. Controlla la connessione oppure prova fonti RSS differenti. I dati già salvati restano disponibili.';else if(success<active.length)state.error='Alcune fonti non rispondono: '+(active.length-success)+' su '+active.length+'. Le altre sono state aggiornate.';state.loading=false;render();updateRefreshIcon()}
 function ago(date){if(!date)return 'Data non disponibile';const m=Math.max(0,Math.floor((Date.now()-date)/60000));if(m<60)return m<2?'Adesso':m+' min fa';if(m<1440)return Math.floor(m/60)+' h fa';if(m<10080)return Math.floor(m/1440)+' g fa';return new Date(date).toLocaleDateString('it-IT',{day:'2-digit',month:'short'})}
-function visible(){const input=state.tab==='faves'?state.saved:state.items;return input.filter(x=>(state.tab==='faves'||state.category==='Tutte'||(state.category==='Personali'?x.custom||x.category==='Personali':x.category===state.category))&&(!state.query||[x.title,x.desc,x.source].join(' ').toLocaleLowerCase().includes(state.query.toLocaleLowerCase())))}
+function visible(){const input=state.tab==='faves'?state.saved:state.items;return input.filter(x=>(state.tab==='faves'||state.category==='Tutte'||(state.category==='Personali'?x.custom||x.category==='Personali':x.category===state.category))&&(state.tab==='faves'||state.category!=='Auto'||state.autoTopic==='Tutti'||AUTO_REGEX[state.autoTopic]?.test([x.title,x.desc].join(' ')))&&(!state.query||[x.title,x.desc,x.source].join(' ').toLocaleLowerCase().includes(state.query.toLocaleLowerCase())))}
 function isSaved(link){return state.saved.some(x=>x.link===link)}
 function toggleSave(link){const a=state.items.concat(state.saved).find(x=>x.link===link);if(!a)return;if(isSaved(link))state.saved=state.saved.filter(x=>x.link!==link);else state.saved.unshift(a);persist();render()}
 function openNews(link){const linkSafe=safeUrl(link);if(linkSafe)location.href=linkSafe}
-function mark(cat){return {F1:'F1',WRC:'R',WEC:'W',GT3:'GT3',MotoGP:'GP',Personali:'+'}[cat]||'AM'}
+function mark(cat){return {F1:'F1',WRC:'R',WEC:'W',GT3:'GT3',MotoGP:'GP',Auto:'AUTO',Personali:'+'}[cat]||'AM'}
 function articles(){const list=visible();if(!list.length)return '<div class="empty"><div class="empty-icon">'+(state.tab==='faves'?'♡':'⌕')+'</div><h3>'+(state.tab==='faves'?'Nessun articolo salvato':'Nessuna notizia da mostrare')+'</h3><p>'+(state.tab==='faves'?'Tocca il cuore in una notizia per ritrovarla qui.':'Controlla i filtri, aggiungi una fonte o aggiorna le notizie.')+'</p>'+(state.tab==='faves'?'':'<button class="btn primary" onclick="go(\'sources\')">Gestisci fonti</button>')+'</div>';return '<div class="articles">'+list.map(x=>{const fav=isSaved(x.link),img=safeUrl(x.image);const key=encodeURIComponent(x.link);return '<article class="article"><div class="article-photo" aria-hidden="true"><span class="photo-fallback">'+esc(mark(x.category))+'</span>'+(img?'<img src="'+esc(img)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()" alt="">':'')+'</div><div class="article-info"><div class="article-tags"><span class="category-label">'+esc(x.category)+'</span><span class="source-label">'+esc(x.source)+'</span></div><button class="article-title" onclick="openNews(decodeURIComponent(\''+key+'\'))">'+esc(x.title)+'</button><div class="article-foot"><span>'+ago(x.date)+'</span><button class="save-btn '+(fav?'on':'')+'" aria-label="'+(fav?'Rimuovi dai salvati':'Salva articolo')+'" onclick="toggleSave(decodeURIComponent(\''+key+'\'))">'+(fav?'♥':'♡')+'</button></div></div></article>'}).join('')+'</div>'}
-function newsView(){const active=state.sources.filter(x=>x.enabled).length;return '<div class="home-head"><div><div class="kicker">LA TUA RASSEGNA MOTORSPORT</div><h1 class="page-title">Le ultime dal paddock</h1><p class="lede">F1, rally, endurance, GT3 e MotoGP.</p></div></div><div class="statusline"><span class="statusdot '+(state.loading?'busy':!state.updated?'off':'')+'"></span><span>'+(state.loading?'Aggiornamento delle fonti in corso…':state.updated?'Aggiornato '+ago(new Date(state.updated).getTime()):'In attesa del primo aggiornamento')+'</span><span>·</span><span>'+active+' fonti attive</span></div><div class="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input id="q" type="search" placeholder="Cerca notizie e campionati" aria-label="Cerca notizie" value="'+esc(state.query)+'" oninput="searchInput(this.value)"></div><div class="categories" aria-label="Categorie motorsport">'+CATS.map(c=>'<button class="cat '+(state.category===c?'active':'')+'" aria-pressed="'+(state.category===c)+'" onclick="selectCat(\''+c+'\')">'+esc(c)+'</button>').join('')+'</div><div class="section-head"><h2>Ultime notizie</h2><span class="counter">'+visible().length+' articoli</span></div>'+(state.error?'<div class="alert">'+esc(state.error)+'</div>':'')+articles()+'<p class="footer-note">Articoli e immagini appartengono agli editori originali. I contenuti si aprono nel browser esterno.</p>'}
+function newsView(){const active=state.sources.filter(x=>x.enabled).length;return '<div class="home-head"><div><div class="kicker">'+(state.category==='Auto'?'IL MONDO DELL’AUTO':'LA TUA RASSEGNA MOTORSPORT')+'</div><h1 class="page-title">'+(state.category==='Auto'?'Auto, motori e novità':'Le ultime dal paddock')+'</h1><p class="lede">'+(state.category==='Auto'?'Utilitarie, nuovi modelli, prove, motori e auto da competizione.':'F1, rally, endurance, GT3, MotoGP e auto.')+'</p></div></div><div class="statusline"><span class="statusdot '+(state.loading?'busy':!state.updated?'off':'')+'"></span><span>'+(state.loading?'Aggiornamento delle fonti in corso…':state.updated?'Aggiornato '+ago(new Date(state.updated).getTime()):'In attesa del primo aggiornamento')+'</span><span>·</span><span>'+active+' fonti attive</span></div><div class="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input id="q" type="search" placeholder="Cerca notizie e campionati" aria-label="Cerca notizie" value="'+esc(state.query)+'" oninput="searchInput(this.value)"></div><div class="categories" aria-label="Categorie motorsport">'+CATS.map(c=>'<button class="cat '+(state.category===c?'active':'')+'" aria-pressed="'+(state.category===c)+'" onclick="selectCat(\''+c+'\')">'+esc(c)+'</button>').join('')+'</div>'+(state.category==='Auto'?'<div class="auto-topic"><label for="auto-topic-select">Argomento</label><select id="auto-topic-select" onchange="state.autoTopic=this.value;render()">'+AUTO_TOPICS.map(t=>'<option value="'+t+'" '+(state.autoTopic===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>':'')+'<div class="section-head"><h2>Ultime notizie</h2><span class="counter">'+visible().length+' articoli</span></div>'+(state.error?'<div class="alert">'+esc(state.error)+'</div>':'')+articles()+'<p class="footer-note">Articoli e immagini appartengono agli editori originali. I contenuti si aprono nel browser esterno.</p>'}
 function favesView(){return '<div class="kicker">LA TUA RACCOLTA</div><h1 class="page-title subpage-title">Articoli salvati</h1><p class="lede">I tuoi preferiti, sempre a portata di mano.</p><div class="section-head" style="margin-top:15px"><h2>La mia raccolta</h2><span class="counter">'+state.saved.length+' salvati</span></div>'+articles()}
-function sourcesView(){return '<div class="kicker">FONTI PERSONALIZZATE</div><h1 class="page-title subpage-title">Gestisci le fonti</h1><p class="lede">Attiva i siti che preferisci o aggiungi nuovi feed.</p><div class="section-head" style="margin-top:14px"><h2>'+state.sources.length+' fonti disponibili</h2><button class="btn primary tiny" onclick="state.adding=!state.adding;state.sourceError=\'\';render()">'+(state.adding?'Chiudi':'＋ Aggiungi sito')+'</button></div>'+(state.adding?'<form class="panel" onsubmit="addSite(event)"><div class="form-row"><label for="sname">Nome del sito</label><input id="sname" required maxlength="60" placeholder="Es. Rally News"><label for="surl">Indirizzo sito o feed RSS/Atom</label><input id="surl" required type="url" placeholder="https://esempio.it/feed/"><label for="scat">Categoria</label><select id="scat">'+CATS.filter(x=>x!=='Tutte'&&x!=='Personali').concat(['Personali']).map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select></div><p class="helper">Puoi inserire l’URL di un feed RSS/Atom o del sito da cui rilevarlo. Se il sito non pubblica feed, le sue notizie non saranno disponibili.</p>'+(state.sourceError?'<div class="alert">'+esc(state.sourceError)+'</div>':'')+'<div class="form-actions"><button type="button" class="btn" onclick="state.adding=false;render()">Annulla</button><button id="add-btn" class="btn primary" type="submit">Salva fonte</button></div></form>':'')+'<div class="sources-list">'+state.sources.map((s,i)=>'<section class="source-card"><div class="source-main"><div class="source-name">'+esc(s.name)+'</div><div class="source-meta">'+esc(s.category)+' · '+(s.locked?'Predefinita':'Personale')+'</div><div class="source-url">'+esc(s.url)+'</div></div><div class="source-actions"><button class="switch '+(s.enabled?'active':'')+'" role="switch" aria-checked="'+!!s.enabled+'" aria-label="'+(s.enabled?'Disattiva':'Attiva')+' '+esc(s.name)+'" onclick="toggleSite('+i+')"></button>'+(s.locked?'':'<button class="delete-btn" aria-label="Elimina '+esc(s.name)+'" onclick="deleteSite('+i+')">×</button>')+'</div></section>').join('')+'</div><p class="footer-note">Le fonti vengono salvate su questo dispositivo. I feed sono richiesti ai rispettivi siti: alcuni potrebbero non consentire l’accesso.</p>'}
+function sourcesView(){return '<div class="kicker">FONTI PERSONALIZZATE</div><h1 class="page-title subpage-title">Gestisci le fonti</h1><p class="lede">Attiva i siti che preferisci o aggiungi nuovi feed.</p><div class="section-head" style="margin-top:14px"><h2>'+state.sources.length+' fonti disponibili</h2><button class="btn primary tiny" onclick="state.adding=!state.adding;state.sourceError=\'\';render()">'+(state.adding?'Chiudi':'＋ Aggiungi sito')+'</button></div>'+(state.adding?'<form class="panel" onsubmit="addSite(event)"><div class="form-row"><label for="sname">Nome del sito</label><input id="sname" required maxlength="60" placeholder="Es. Rally News"><label for="surl">Indirizzo sito o feed RSS/Atom</label><input id="surl" required type="url" placeholder="https://esempio.it/feed/"><label for="scat">Categoria</label><select id="scat">'+CATS.filter(x=>x!=='Tutte'&&x!=='Personali').concat(['Personali']).map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select></div><p class="helper">Puoi inserire l’URL di un feed RSS/Atom o del sito da cui rilevarlo. Se il sito non pubblica feed, le sue notizie non saranno disponibili.</p>'+(state.sourceError?'<div class="alert">'+esc(state.sourceError)+'</div>':'')+'<div class="form-actions"><button type="button" class="btn" onclick="state.adding=false;render()">Annulla</button><button id="add-btn" class="btn primary" type="submit">Salva fonte</button></div></form>':'')+'<div class="categories sources-filter" aria-label="Filtra fonti per categoria">'+CATS.map(c=>'<button class="cat '+(state.sourceCategory===c?'active':'')+'" onclick="state.sourceCategory=\''+c+'\';render()">'+esc(c)+'</button>').join('')+'</div><div class="sources-list">'+state.sources.map((s,i)=>({...s,idx:i})).filter(s=>state.sourceCategory==='Tutte'||s.category===state.sourceCategory).map(s=>'<section class="source-card"><div class="source-main"><div class="source-name">'+esc(s.name)+'</div><div class="source-meta">'+esc(s.category)+' · '+(s.locked?'Predefinita':'Personale')+'</div><div class="source-url">'+esc(s.url)+'</div></div><div class="source-actions"><button class="switch '+(s.enabled?'active':'')+'" role="switch" aria-checked="'+!!s.enabled+'" aria-label="'+(s.enabled?'Disattiva':'Attiva')+' '+esc(s.name)+'" onclick="toggleSite('+s.idx+')"></button>'+(s.locked?'':'<button class="delete-btn" aria-label="Elimina '+esc(s.name)+'" onclick="deleteSite('+s.idx+')">×</button>')+'</div></section>').join('')+'</div><p class="footer-note">Le fonti vengono salvate su questo dispositivo. I feed sono richiesti ai rispettivi siti: alcuni potrebbero non consentire l’accesso.</p>'}
 function seg(field,options){return '<div class="segment '+(field==='theme'?'theme-picker':'')+'" role="group" aria-label="'+field+'">'+options.map(([v,t])=>'<button aria-pressed="'+(state.settings[field]===v)+'" class="'+(state.settings[field]===v?'active':'')+'" onclick="changePref(\''+field+'\',\''+v+'\')">'+t+'</button>').join('')+'</div>'}
-function settingsView(){return '<div class="kicker">PERSONALIZZAZIONE A.M.B.</div><h1 class="page-title subpage-title">Impostazioni</h1><p class="lede">Tutto sotto controllo, senza complicazioni.</p><section class="setting-group"><h2>Aspetto e leggibilità</h2><div class="setting theme-setting"><div class="setting-copy"><strong>Tema dell’app</strong><p>Chiaro, scuro, AMOLED nero puro o automatico.</p></div>'+seg('theme',[['light','Chiaro'],['dark','Scuro'],['amoled','AMOLED'],['auto','Auto']])+'</div><div class="setting"><div class="setting-copy"><strong>Dimensione testo</strong><p>Adatta la lettura alle tue esigenze.</p></div><div class="segment"><button aria-label="Riduci testo" onclick="changePref(\'font\',Math.max(90,state.settings.font-10))">A−</button><span class="value-readout">'+state.settings.font+'%</span><button aria-label="Ingrandisci testo" onclick="changePref(\'font\',Math.min(120,state.settings.font+10))">A+</button></div></div><div class="setting"><div class="setting-copy"><strong>Spaziatura notizie</strong><p>Schede più compatte o più ariose.</p></div>'+seg('density',[['compact','Compatta'],['balanced','Normale']])+'</div><div class="setting"><div class="setting-copy"><strong>Immagini negli articoli</strong><p>Disattivale per usare meno dati.</p></div><button role="switch" aria-label="Mostra immagini" aria-checked="'+state.settings.images+'" class="switch '+(state.settings.images?'active':'')+'" onclick="changePref(\'images\',!state.settings.images)"></button></div></section><section class="setting-group"><h2>Notizie e aggiornamenti</h2><div class="setting"><div class="setting-copy"><strong>Aggiorna all’apertura</strong><p>Controlla automaticamente i feed disponibili.</p></div><button role="switch" aria-label="Aggiorna all’apertura" aria-checked="'+state.settings.auto+'" class="switch '+(state.settings.auto?'active':'')+'" onclick="changePref(\'auto\',!state.settings.auto)"></button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento</strong><p>'+(state.updated?new Date(state.updated).toLocaleString('it-IT'):'Non ancora eseguito')+'</p></div><button class="btn tiny" onclick="go(\'news\');loadFeeds(true)">↻ Aggiorna</button></div><div class="setting"><div class="setting-copy"><strong>Fonti delle notizie</strong><p>'+state.sources.filter(x=>x.enabled).length+' attive su '+state.sources.length+' disponibili.</p></div><button class="btn tiny" onclick="go(\'sources\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Cache articoli</strong><p>'+state.items.length+' notizie memorizzate sul dispositivo.</p></div><button class="btn tiny" onclick="clearCache()">Svuota</button></div></section><section class="setting-group"><h2>Calendario eventi</h2><div class="setting"><div class="setting-copy"><strong>Sincronizzazione automatica</strong><p>All’apertura e mentre usi l’app, se è trascorso l’intervallo scelto.</p></div><button role="switch" aria-label="Sincronizzazione calendario" aria-checked="'+!!state.settings.calAuto+'" class="switch '+(state.settings.calAuto?'active':'')+'" onclick="changePref(\'calAuto\',!state.settings.calAuto);if(state.settings.calAuto)maybeAutoCalendar()"></button></div><div class="setting"><div class="setting-copy"><strong>Frequenza aggiornamenti</strong><p>Evita richieste inutili ai siti.</p></div><select style="font-size:.72rem;max-width:120px;border:1px solid var(--line);border-radius:8px;padding:7px;background:var(--card);color:var(--ink)" aria-label="Frequenza aggiornamento calendari" onchange="changePref(\'calInterval\',Number(this.value))">'+[[1,'1 ora'],[3,'3 ore'],[6,'6 ore'],[24,'24 ore']].map(([v,l])=>'<option value="'+v+'" '+(Number(state.settings.calInterval)===v?'selected':'')+'>'+l+'</option>').join('')+'</select></div><div class="setting"><div class="setting-copy"><strong>Fonti gare ed eventi</strong><p>'+calendar.sources.filter(x=>x.enabled).length+' calendari attivi · orari Europe/Rome</p></div><button class="btn tiny" onclick="calendar.manage=true;go(\'calendar\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento calendario</strong><p>'+(calendar.updated?new Date(calendar.updated).toLocaleString('it-IT'):'Non ancora aggiornato')+'</p></div><button class="btn tiny" onclick="go(\'calendar\');loadCalendar(true)">↻ Aggiorna</button></div></section><section class="setting-group" aria-labelledby="about-amb"><h2 id="about-amb">Informazioni sull’app</h2><div class="panel about-box"><div class="about-mark">A.M.B.</div><div class="about-content"><strong class="about-title">Apex Motori Blaj</strong><p class="about-version">Versione 2.1 · app completa e widget nativo</p><p class="about-credit"><strong>Creato da Emanuel Mihai Blaj</strong></p><p class="helper">Tecnologie: Java, Android SDK, WebView, HTML5, CSS3, JavaScript, XML, RSS/Atom e iCalendar (.ics). Widget nativo: Android AppWidget, RemoteViews e RSS. Progetto sorgente: licenza MIT.</p><p class="helper">Compatibilità: Android 10 e versioni successive. Le notizie e i programmi appartengono ai rispettivi editori e organizzatori.</p></div></div></section><section class="setting-group"><h2>Widget Android</h2><div class="setting"><div class="setting-copy"><strong>Configura il widget</strong><p>Lista scorrevole da 20, 40 o 60 notizie, miniature, categorie e temi Chiaro, Scuro, AMOLED o Trasparente.</p></div><button class="btn tiny" onclick="openWidgetSetup()">Configura ↗</button></div><p class="helper">Aggiungi A.M.B. dalla raccolta widget del launcher. Ogni widget può avere filtri diversi. L’aggiornamento in background dipende dal sistema Android.</p></section><section class="setting-group"><h2>Backup preferiti e fonti</h2><div class="panel"><div class="form-row"><label for="amb-backup">Dati da copiare o incollare in formato JSON</label><textarea id="amb-backup" style="width:100%;min-height:90px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--card);color:var(--ink);font-size:.7rem" placeholder="Qui comparirà il backup"></textarea></div><div class="form-actions"><button class="btn tiny" onclick="exportAMB()">Esporta</button><button class="btn tiny" onclick="importAMB()">Importa</button></div></div></section><div class="footer-note">Apex Motori Blaj · A.M.B. · v2.1<br>Android 10+ · Nessuna sezione video interna.<br>Aggregatore indipendente, non affiliato ai siti citati.</div>'}
+function settingsView(){return '<div class="kicker">PERSONALIZZAZIONE A.M.B.</div><h1 class="page-title subpage-title">Impostazioni</h1><p class="lede">Tutto sotto controllo, senza complicazioni.</p><section class="setting-group"><h2>Aspetto e leggibilità</h2><div class="setting theme-setting"><div class="setting-copy"><strong>Tema dell’app</strong><p>Chiaro, scuro, AMOLED nero puro o automatico.</p></div>'+seg('theme',[['light','Chiaro'],['dark','Scuro'],['amoled','AMOLED'],['auto','Auto']])+'</div><div class="setting"><div class="setting-copy"><strong>Dimensione testo</strong><p>Adatta la lettura alle tue esigenze.</p></div><div class="segment"><button aria-label="Riduci testo" onclick="changePref(\'font\',Math.max(90,state.settings.font-10))">A−</button><span class="value-readout">'+state.settings.font+'%</span><button aria-label="Ingrandisci testo" onclick="changePref(\'font\',Math.min(120,state.settings.font+10))">A+</button></div></div><div class="setting"><div class="setting-copy"><strong>Spaziatura notizie</strong><p>Schede più compatte o più ariose.</p></div>'+seg('density',[['compact','Compatta'],['balanced','Normale']])+'</div><div class="setting"><div class="setting-copy"><strong>Immagini negli articoli</strong><p>Disattivale per usare meno dati.</p></div><button role="switch" aria-label="Mostra immagini" aria-checked="'+state.settings.images+'" class="switch '+(state.settings.images?'active':'')+'" onclick="changePref(\'images\',!state.settings.images)"></button></div></section><section class="setting-group"><h2>Notizie e aggiornamenti</h2><div class="setting"><div class="setting-copy"><strong>Aggiorna all’apertura</strong><p>Controlla automaticamente i feed disponibili.</p></div><button role="switch" aria-label="Aggiorna all’apertura" aria-checked="'+state.settings.auto+'" class="switch '+(state.settings.auto?'active':'')+'" onclick="changePref(\'auto\',!state.settings.auto)"></button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento</strong><p>'+(state.updated?new Date(state.updated).toLocaleString('it-IT'):'Non ancora eseguito')+'</p></div><button class="btn tiny" onclick="go(\'news\');loadFeeds(true)">↻ Aggiorna</button></div><div class="setting"><div class="setting-copy"><strong>Fonti delle notizie</strong><p>'+state.sources.filter(x=>x.enabled).length+' attive su '+state.sources.length+' disponibili.</p></div><button class="btn tiny" onclick="go(\'sources\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Cache articoli</strong><p>'+state.items.length+' notizie memorizzate sul dispositivo.</p></div><button class="btn tiny" onclick="clearCache()">Svuota</button></div></section><section class="setting-group"><h2>Calendario eventi</h2><div class="setting"><div class="setting-copy"><strong>Sincronizzazione automatica</strong><p>All’apertura e mentre usi l’app, se è trascorso l’intervallo scelto.</p></div><button role="switch" aria-label="Sincronizzazione calendario" aria-checked="'+!!state.settings.calAuto+'" class="switch '+(state.settings.calAuto?'active':'')+'" onclick="changePref(\'calAuto\',!state.settings.calAuto);if(state.settings.calAuto)maybeAutoCalendar()"></button></div><div class="setting"><div class="setting-copy"><strong>Frequenza aggiornamenti</strong><p>Evita richieste inutili ai siti.</p></div><select style="font-size:.72rem;max-width:120px;border:1px solid var(--line);border-radius:8px;padding:7px;background:var(--card);color:var(--ink)" aria-label="Frequenza aggiornamento calendari" onchange="changePref(\'calInterval\',Number(this.value))">'+[[1,'1 ora'],[3,'3 ore'],[6,'6 ore'],[24,'24 ore']].map(([v,l])=>'<option value="'+v+'" '+(Number(state.settings.calInterval)===v?'selected':'')+'>'+l+'</option>').join('')+'</select></div><div class="setting"><div class="setting-copy"><strong>Fonti gare ed eventi</strong><p>'+calendar.sources.filter(x=>x.enabled).length+' calendari attivi · orari Europe/Rome</p></div><button class="btn tiny" onclick="calendar.manage=true;go(\'calendar\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento calendario</strong><p>'+(calendar.updated?new Date(calendar.updated).toLocaleString('it-IT'):'Non ancora aggiornato')+'</p></div><button class="btn tiny" onclick="go(\'calendar\');loadCalendar(true)">↻ Aggiorna</button></div></section><section class="setting-group" aria-labelledby="about-amb"><h2 id="about-amb">Informazioni sull’app</h2><div class="panel about-box"><div class="about-mark">A.M.B.</div><div class="about-content"><strong class="about-title">Apex Motori Blaj</strong><p class="about-version">Versione 2.2 · app completa e widget nativo</p><p class="about-credit"><strong>Creato da Emanuel Mihai Blaj</strong></p><p class="helper">Tecnologie: Java, Android SDK, WebView, HTML5, CSS3, JavaScript, XML, RSS/Atom e iCalendar (.ics). Widget nativo: Android AppWidget, RemoteViews e RSS. Progetto sorgente: licenza MIT.</p><p class="helper">Compatibilità: Android 10 e versioni successive. Le notizie e i programmi appartengono ai rispettivi editori e organizzatori.</p></div></div></section><section class="setting-group"><h2>Widget Android</h2><div class="setting"><div class="setting-copy"><strong>Configura il widget</strong><p>Lista scorrevole da 20, 40 o 60 notizie, miniature, categorie e temi Chiaro, Scuro, AMOLED o Trasparente.</p></div><button class="btn tiny" onclick="openWidgetSetup()">Configura ↗</button></div><p class="helper">Aggiungi A.M.B. dalla raccolta widget del launcher. Ogni widget può avere filtri diversi. L’aggiornamento in background dipende dal sistema Android.</p></section><section class="setting-group"><h2>Backup preferiti e fonti</h2><div class="panel"><div class="form-row"><label for="amb-backup">Dati da copiare o incollare in formato JSON</label><textarea id="amb-backup" style="width:100%;min-height:90px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--card);color:var(--ink);font-size:.7rem" placeholder="Qui comparirà il backup"></textarea></div><div class="form-actions"><button class="btn tiny" onclick="exportAMB()">Esporta</button><button class="btn tiny" onclick="importAMB()">Importa</button></div></div></section><div class="footer-note">Apex Motori Blaj · A.M.B. · v2.2<br>Android 10+ · Nessuna sezione video interna.<br>Aggregatore indipendente, non affiliato ai siti citati.</div>'}
 
 function refreshCurrent(){if(state.tab==='calendar')loadCalendar(true);else loadFeeds(true)}
 function calendarSave(){store('amb_calendar_sources_v1',calendar.sources)}
@@ -396,14 +653,14 @@ function calendarView(){
  const count=calendarVisible().length;
  return '<div class="kicker">EVENTI & GARE · A.M.B.</div><div class="calendar-head"><div><h1 class="page-title">Calendario motorsport</h1><p class="lede">Prossime gare, orari in Italia e collegamenti per seguirle.</p></div><div class="calendar-actions"><button class="btn tiny" onclick="calendar.manage=true;render()">⚙ Fonti</button></div></div>'+
  '<div class="statusline"><span class="statusdot '+(calendar.loading?'busy':calendar.updated?'':'off')+'"></span><span>'+(calendar.loading?'Aggiornamento calendari…':calendar.updated?'Sincronizzato · '+ago(new Date(calendar.updated).getTime()).toLowerCase():'In attesa del primo aggiornamento')+'</span><span>·</span><span>'+calendar.sources.filter(x=>x.enabled).length+' calendari</span></div>'+
- '<div class="categories cal-filters" aria-label="Filtra categoria gare">'+CATS.filter(x=>x!=='Personali').map(c=>'<button class="cat '+(calendar.category===c?'active':'')+'" onclick="calendar.category=\''+c+'\';render()">'+esc(c)+'</button>').join('')+'</div>'+
+ '<div class="categories cal-filters" aria-label="Filtra categoria gare">'+RACE_CATS.map(c=>'<button class="cat '+(calendar.category===c?'active':'')+'" onclick="calendar.category=\''+c+'\';render()">'+esc(c)+'</button>').join('')+'</div>'+
  '<div class="cal-tools"><div class="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" placeholder="Cerca evento" aria-label="Cerca nel calendario" value="'+esc(calendar.query)+'" oninput="calendarSearch(this.value)" id="cal-search"></div><select aria-label="Periodo da mostrare" onchange="calendar.range=this.value;render()">'+[['30','30 giorni'],['90','3 mesi'],['180','6 mesi'],['365','12 mesi']].map(x=>'<option value="'+x[0]+'" '+(calendar.range===x[0]?'selected':'')+'>'+x[1]+'</option>').join('')+'</select></div>'+
  '<div class="section-head"><h2>Prossimi appuntamenti</h2><span class="counter">'+count+' eventi</span></div>'+(calendar.err?'<div class="alert">'+esc(calendar.err)+'</div>':'')+
  calEvents()+'<p class="cal-foot">I calendari vengono aggiornati automaticamente all’apertura e durante l’uso dell’app. Gli orari mancanti sono indicati come da confermare. Le emittenti sono guide generali per l’Italia: controlla la programmazione del singolo evento sui siti collegati. Fonti calendario: GreenFlag TV, basate sui programmi pubblicati dagli organizzatori.</p>';
 }
 function calendarSearch(q){calendar.query=q;const elem=document.getElementById('cal-search'),start=elem?.selectionStart??q.length;render();const next=document.getElementById('cal-search');next?.focus();try{next?.setSelectionRange(start,start)}catch{}}
 function calendarSourcesView(){return '<div class="kicker">CALENDARIO & SORGENTI</div><div class="calendar-head"><div><h1 class="page-title">Fonti del calendario</h1><p class="lede">Scegli le categorie e aggiungi calendari iCalendar (.ics) di altri siti.</p></div><button class="btn tiny" onclick="calendar.manage=false;render()">← Gare</button></div><div class="section-head"><h2>'+calendar.sources.length+' fonti</h2><button class="btn primary tiny" onclick="calendar.adding=!calendar.adding;calendar.sourceError=\'\';render()">'+(calendar.adding?'Chiudi':'＋ Aggiungi .ics')+'</button></div>'+
- (calendar.adding?'<form class="panel" onsubmit="addCalendarSource(event)"><div class="form-row"><label for="cal-name">Nome calendario</label><input id="cal-name" required maxlength="60" placeholder="Es. Campionato locale"><label for="cal-url">URL diretto al calendario .ics</label><input id="cal-url" type="url" required placeholder="https://esempio.it/eventi.ics"><label for="cal-cat">Categoria</label><select id="cal-cat">'+CATS.filter(x=>x!=='Tutte'&&x!=='Personali').map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select></div><p class="helper">Il sito deve pubblicare un feed iCalendar accessibile in HTTPS. L’app non inventa orari né emittenti mancanti.</p>'+(calendar.sourceError?'<div class="alert">'+esc(calendar.sourceError)+'</div>':'')+'<div class="form-actions"><button type="button" class="btn" onclick="calendar.adding=false;render()">Annulla</button><button id="cal-add-btn" class="btn primary" type="submit">Aggiungi</button></div></form>':'')+
+ (calendar.adding?'<form class="panel" onsubmit="addCalendarSource(event)"><div class="form-row"><label for="cal-name">Nome calendario</label><input id="cal-name" required maxlength="60" placeholder="Es. Campionato locale"><label for="cal-url">URL diretto al calendario .ics</label><input id="cal-url" type="url" required placeholder="https://esempio.it/eventi.ics"><label for="cal-cat">Categoria</label><select id="cal-cat">'+RACE_CATS.filter(x=>x!=='Tutte').map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select></div><p class="helper">Il sito deve pubblicare un feed iCalendar accessibile in HTTPS. L’app non inventa orari né emittenti mancanti.</p>'+(calendar.sourceError?'<div class="alert">'+esc(calendar.sourceError)+'</div>':'')+'<div class="form-actions"><button type="button" class="btn" onclick="calendar.adding=false;render()">Annulla</button><button id="cal-add-btn" class="btn primary" type="submit">Aggiungi</button></div></form>':'')+
  calendar.sources.map((s,i)=>'<div class="cal-source-card"><div class="cal-source-info"><strong>'+esc(s.name)+'</strong><small>'+esc(s.category)+' · '+(s.locked?'Predefinita':'Personalizzata')+'</small><small>'+esc(s.url)+'</small></div><div class="cal-source-actions"><button class="switch '+(s.enabled?'active':'')+'" aria-label="'+(s.enabled?'Disattiva':'Attiva')+' '+esc(s.name)+'" aria-checked="'+!!s.enabled+'" role="switch" onclick="toggleCalendarSource('+i+')"></button>'+(s.locked?'':'<button class="delete-btn" aria-label="Elimina fonte calendario" onclick="removeCalendarSource('+i+')">×</button>')+'</div></div>').join('')+'<p class="cal-foot">I calendari vengono salvati su questo telefono. Il calendario usa feed esterni: alcune fonti potrebbero temporaneamente non rispondere o cambiare indirizzo.</p>'}
 function toggleCalendarSource(i){if(!calendar.sources[i])return;calendar.sources[i].enabled=!calendar.sources[i].enabled;calendarSave();loadCalendar(true)}
 function removeCalendarSource(i){if(!calendar.sources[i]||calendar.sources[i].locked)return;if(confirm('Rimuovere questa fonte calendario?')){calendar.sources.splice(i,1);calendarSave();loadCalendar(true)}}

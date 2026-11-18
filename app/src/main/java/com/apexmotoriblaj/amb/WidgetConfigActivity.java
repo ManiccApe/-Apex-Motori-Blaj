@@ -40,7 +40,7 @@ public final class WidgetConfigActivity extends Activity {
         LinearLayout list=new LinearLayout(this);list.setOrientation(LinearLayout.VERTICAL);list.setPadding(dp(18),dp(12),dp(18),dp(22));
         list.setBackgroundColor(Color.rgb(246,248,250));scroll.addView(list);
         title(list,"A.M.B. · Configurazione widget",20);
-        sub(list,"Scegli le categorie, il numero di notizie, le immagini e l'aspetto del widget.");
+        sub(list,"Scegli anche Auto, il numero di notizie, le immagini e l'aspetto del widget.");
         if(widgetId==AppWidgetManager.INVALID_APPWIDGET_ID){
             sub(list,"Aggiungi prima il widget dalla schermata Home di Android, quindi apri nuovamente queste impostazioni.");
             Button close=button("Chiudi");close.setOnClickListener(v->finish());list.addView(close);setContentView(scroll);return;

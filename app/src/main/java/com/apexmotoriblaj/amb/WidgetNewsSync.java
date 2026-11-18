@@ -44,7 +44,9 @@ public final class WidgetNewsSync {
         "{\"name\":\"Motorsport Italia WRC\",\"category\":\"WRC\",\"url\":\"https://it.motorsport.com/rss/wrc/news/\",\"enabled\":true},"+
         "{\"name\":\"Motorsport Italia WEC\",\"category\":\"WEC\",\"url\":\"https://it.motorsport.com/rss/wec/news/\",\"enabled\":true},"+
         "{\"name\":\"Motorsport Italia GT3\",\"category\":\"GT3\",\"url\":\"https://it.motorsport.com/rss/endurance-gt/news/\",\"enabled\":true},"+
-        "{\"name\":\"Motorsport Italia MotoGP\",\"category\":\"MotoGP\",\"url\":\"https://it.motorsport.com/rss/motogp/news/\",\"enabled\":true}]";
+        "{\"name\":\"Motorsport Italia MotoGP\",\"category\":\"MotoGP\",\"url\":\"https://it.motorsport.com/rss/motogp/news/\",\"enabled\":true},"+
+        "{\"name\":\"Motor1 Italia\",\"category\":\"Auto\",\"url\":\"https://it.motor1.com/rss/news/all/\",\"enabled\":true},"+
+        "{\"name\":\"Automoto.it\",\"category\":\"Auto\",\"url\":\"https://www.automoto.it/rss/news.xml\",\"enabled\":true}]";
 
     private WidgetNewsSync(){}
     public static void refreshAsync(Context context,boolean force) {
@@ -64,7 +66,7 @@ public final class WidgetNewsSync {
         HttpURLConnection conn=(HttpURLConnection)url.openConnection();
         try {
             conn.setConnectTimeout(8000);conn.setReadTimeout(10000);
-            conn.setRequestProperty("User-Agent","ApexMotoriBlaj/2.0 (Android RSS Reader)");
+            conn.setRequestProperty("User-Agent","ApexMotoriBlaj/2.2 (Android RSS Reader)");
             conn.setRequestProperty("Accept","application/rss+xml, application/atom+xml, text/calendar, application/xml, text/xml, */*");
             conn.setInstanceFollowRedirects(true);
             if(conn.getResponseCode()<200 || conn.getResponseCode()>299)throw new Exception("HTTP "+conn.getResponseCode());
@@ -149,26 +151,34 @@ public final class WidgetNewsSync {
         try{entries=new JSONArray(sources);}catch(Exception e){entries=new JSONArray(DEFAULT);}
         List<JSONObject> items=new ArrayList<>();Set<String> seen=new HashSet<>();
         int successes=0;
-        for(int i=0;i<entries.length() && i<18;i++) {
-            JSONObject source=entries.optJSONObject(i);
-            if(source==null || !source.optBoolean("enabled",true))continue;
-            String url=source.optString("url","");
-            if(!url.startsWith("https://"))continue;
-            try {
-                List<JSONObject> rows=parse(readHttps(url,2_000_000),source);
-                successes++;
-                for(JSONObject row:rows)if(seen.add(row.optString("link")))items.add(row);
-            }catch(Exception e){Log.w("AMB_Widget","RSS unavailable: "+source.optString("name"),e);}
-        }
+        // Independent requests in a small bounded pool: widget remains usable with 20+ sites.
+        java.util.concurrent.ExecutorService feeds=Executors.newFixedThreadPool(4);
+        List<java.util.concurrent.Future<List<JSONObject>>> pending=new ArrayList<>();
+        try {
+            for(int i=0;i<entries.length() && i<48;i++) {
+                JSONObject source=entries.optJSONObject(i);
+                if(source==null || !source.optBoolean("enabled",true))continue;
+                String url=source.optString("url","");
+                if(!url.startsWith("https://"))continue;
+                pending.add(feeds.submit(()->parse(readHttps(url,2_000_000),source)));
+            }
+            for(java.util.concurrent.Future<List<JSONObject>> future:pending) {
+                try {
+                    List<JSONObject> rows=future.get(24,java.util.concurrent.TimeUnit.SECONDS);
+                    successes++;
+                    for(JSONObject row:rows)if(seen.add(row.optString("link")))items.add(row);
+                }catch(Exception e){future.cancel(true);Log.w("AMB_Widget","RSS unavailable during widget update",e);}
+            }
+        }finally{feeds.shutdownNow();}
         if(successes==0)return; // Never overwrite a good cache on network failure.
         // Removed championship categories must not come back from old saved widget sources.
         items.removeIf(row -> {
             String cat=row.optString("category", "");
-            return !(cat.equals("F1")||cat.equals("WRC")||cat.equals("WEC")||cat.equals("GT3")||cat.equals("MotoGP")||cat.equals("Personali"));
+            return !(cat.equals("F1")||cat.equals("WRC")||cat.equals("WEC")||cat.equals("GT3")||cat.equals("MotoGP")||cat.equals("Auto")||cat.equals("Personali"));
         });
         items.sort((a,b)->Long.compare(b.optLong("date",0),a.optLong("date",0)));
         JSONArray out=new JSONArray();
-        for(int i=0;i<Math.min(150,items.size());i++)out.put(items.get(i));
+        for(int i=0;i<Math.min(300,items.size());i++)out.put(items.get(i));
         c.getSharedPreferences("amb_shared",Context.MODE_PRIVATE).edit()
             .putString("widget_news",out.toString())
             .putLong("widget_updated",System.currentTimeMillis()).apply();

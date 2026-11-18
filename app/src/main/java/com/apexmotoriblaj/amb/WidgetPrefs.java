@@ -9,7 +9,7 @@ import java.util.Set;
 
 final class WidgetPrefs {
     private WidgetPrefs() {}
-    static final String[] CATEGORIES = {"F1","WRC","WEC","GT3","MotoGP","Personali"};
+    static final String[] CATEGORIES = {"F1","WRC","WEC","GT3","MotoGP","Auto","Personali"};
     static SharedPreferences prefs(Context c) { return c.getSharedPreferences("amb_widget", Context.MODE_PRIVATE); }
     static int count(Context c,int id) { return prefs(c).getInt(id+"_count",40); }
     static String appearance(Context c,int id) {

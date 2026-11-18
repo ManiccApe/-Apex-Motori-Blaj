@@ -1,4 +1,4 @@
-# Apex Motori Blaj — A.M.B. 2.1
+# Apex Motori Blaj — A.M.B. 2.2
 
 **Creato da Emanuel Mihai Blaj** · codice open source con licenza MIT.
 
@@ -55,3 +55,15 @@ Il progetto usa internet per RSS/ICS e immagini degli articoli. Non ci sono acco
 ### Test eseguiti
 
 Test automatici del codice Java e dell'interfaccia web possono essere eseguiti localmente. La compilazione ufficiale con tool Android e l'installazione fisica **non sono verificabili in un ambiente senza Android SDK**. I test statici **non equivalgono** alla prova su smartphone.
+
+## Novità 2.2 — Auto & 20+ testate
+
+- Sezione **Auto**: utilitarie, nuovi modelli, motori, tecnologia, auto elettriche e auto da competizione. Filtro per argomento nella Home.
+- 20+ siti editoriali distinti, inclusi Motor1, Automoto, alVolante, InsideEVs Italia, Carscoops, Car and Driver, Road & Track, Autocar, The Drive, Electrek, CleanTechnica, The Autopian, CarBuzz, Auto Express, Jalopnik, Autoblog, autoevolution, Ars Technica, RaceFans, The Race e Sportscar365.
+- La sezione **Fonti** permette il filtro per categoria, l'attivazione/disattivazione delle singole fonti e l'aggiunta di siti personali.
+- Il widget Android ora supporta anche la categoria **Auto** senza perdere i temi AMOLED e Trasparente.
+- Aggiornamenti distribuiti in pool di quattro richieste; gli articoli vengono deduplicati. Una fonte RSS presente non garantisce accesso continuo: siti e URL possono cambiare o bloccare le richieste dall'app.
+- Icona A.M.B. con angoli **RGBA trasparenti** (PNG), a cinque densità, ottenuta dall'immagine fornita per A.M.B. Non usare un fondo nero pieno agli angoli.
+- Conserva le preferenze locali e i preferiti delle versioni precedenti. Il backup resta disponibile dalle Impostazioni.
+
+**Nota di rilascio**: compilare con GitHub Actions o Android Studio. Non è ancora un APK compilato/testato in questa consegna.
