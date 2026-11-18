@@ -66,7 +66,7 @@ public final class WidgetNewsSync {
         HttpURLConnection conn=(HttpURLConnection)url.openConnection();
         try {
             conn.setConnectTimeout(8000);conn.setReadTimeout(10000);
-            conn.setRequestProperty("User-Agent","ApexMotoriBlaj/2.2 (Android RSS Reader)");
+            conn.setRequestProperty("User-Agent","ApexMotoriBlaj/2.3 (Android RSS Reader)");
             conn.setRequestProperty("Accept","application/rss+xml, application/atom+xml, text/calendar, application/xml, text/xml, */*");
             conn.setInstanceFollowRedirects(true);
             if(conn.getResponseCode()<200 || conn.getResponseCode()>299)throw new Exception("HTTP "+conn.getResponseCode());
@@ -92,18 +92,41 @@ public final class WidgetNewsSync {
         }
         return "";
     }
+    /** Only image links belonging to an item; rejects favicons, videos and tracking pixels. */
+    private static String validPhoto(String value){
+        if(value==null || !value.startsWith("https://"))return "";
+        try{
+            String path=new URL(value).getPath().toLowerCase(java.util.Locale.ROOT);
+            if(path.matches(".*\\.(svg|gif|ico|mp4|webm|mp3|m3u8|pdf)$"))return "";
+            if(path.matches(".*\\/(pixel|spacer|tracking|favicon)([._/-].*|$)"))return "";
+        }catch(Exception ignored){return "";}
+        return value.replace("&amp;","&");
+    }
     private static String image(Element el) {
-        for(String name:new String[]{"media:thumbnail","media:content","enclosure","thumbnail"}) {
+        for(String name:new String[]{"media:thumbnail","media:content","enclosure","thumbnail","image"}){
             NodeList list=el.getElementsByTagName(name);
             for(int i=0;i<list.getLength();i++) {
                 Element e=(Element)list.item(i);
+                String type=e.getAttribute("type").toLowerCase(java.util.Locale.ROOT);
+                if(type.startsWith("video/")||type.startsWith("audio/"))continue;
+                try{
+                    int w=Integer.parseInt(e.getAttribute("width"));if(w>0 && w<48)continue;
+                }catch(NumberFormatException ignored){}
                 String url=e.getAttribute("url");
-                if(url.startsWith("https://") && !url.matches("(?i).*\\.(mp4|webm|mp3)(\\?.*)?$"))return url;
+                if(url.isEmpty())url=e.getAttribute("src");
+                if(url.isEmpty() && "image".equals(name))url=get(e,"url");
+                url=validPhoto(url);
+                if(!url.isEmpty())return url;
             }
         }
-        String desc=get(el,"description","content:encoded","summary");
-        Matcher m=Pattern.compile("<img[^>]+src=[\\\"'](https://[^\\\"']+)",Pattern.CASE_INSENSITIVE).matcher(desc);
-        return m.find()?m.group(1):"";
+        for(String tag:new String[]{"content:encoded","description","summary","content"}){
+            String html=get(el,tag);if(html.isEmpty())continue;
+            Matcher m=Pattern.compile("<img\\b[^>]*(?:data-src|data-original|src)\\s*=\\s*[\\\"'](https://[^\\\"']+)",Pattern.CASE_INSENSITIVE).matcher(html);
+            while(m.find()){
+                String url=validPhoto(m.group(1));if(!url.isEmpty())return url;
+            }
+        }
+        return "";
     }
     private static long epoch(String date) {
         try{return ZonedDateTime.parse(date,DateTimeFormatter.RFC_1123_DATE_TIME).toInstant().toEpochMilli();}
@@ -139,7 +162,9 @@ public final class WidgetNewsSync {
             row.put("title",title);row.put("link",link);
             row.put("source",source.optString("name","Motorsport"));
             row.put("category",source.optString("category","Personali"));
-            row.put("image",image(item));
+            String photo=image(item);
+            if(photo.isEmpty())continue; // sources without article photos are ignored
+            row.put("image",photo);
             row.put("date",epoch(get(item,"pubDate","dc:date","published","updated")));
             result.add(row);
         }
@@ -183,10 +208,22 @@ public final class WidgetNewsSync {
             .putString("widget_news",out.toString())
             .putLong("widget_updated",System.currentTimeMillis()).apply();
         NewsWidget.notifyData(c);
-        for(int i=0;i<Math.min(16,items.size());i++) {
-            String url=items.get(i).optString("image","");
-            try{saveThumbnail(c,url);}catch(Exception ignored){}
-        }
+        // Prefetch thumbnails in a small parallel pool so 20/40/60-row widgets
+        // do not stall on a single publisher's slow image server.
+        ExecutorService photos=Executors.newFixedThreadPool(4);
+        List<java.util.concurrent.Future<?>> photoJobs=new ArrayList<>();
+        try {
+            for(int i=0;i<Math.min(60,items.size());i++) {
+                String url=items.get(i).optString("image","");
+                if(url.startsWith("https://"))photoJobs.add(photos.submit(()->{
+                    try{saveThumbnail(c,url);}catch(Exception ignored){}
+                }));
+            }
+            for(java.util.concurrent.Future<?> job:photoJobs){
+                try{job.get(12,java.util.concurrent.TimeUnit.SECONDS);}
+                catch(Exception e){job.cancel(true);}
+            }
+        }finally{photos.shutdownNow();}
         NewsWidget.notifyData(c);
     }
     private static String thumbnailName(String url) throws Exception {
@@ -207,11 +244,11 @@ public final class WidgetNewsSync {
         HttpURLConnection con=(HttpURLConnection)u.openConnection();
         try {
             con.setConnectTimeout(4000);con.setReadTimeout(4000);
-            if(con.getResponseCode()!=200 || con.getContentLengthLong()>400_000)return;
+            if(con.getResponseCode()!=200 || con.getContentLengthLong()>850_000)return;
             ByteArrayOutputStream out=new ByteArrayOutputStream();
             try(InputStream in=con.getInputStream()){
                 byte[] b=new byte[4096];int n;
-                while((n=in.read(b))!=-1){if(out.size()+n>400_000)return;out.write(b,0,n);}
+                while((n=in.read(b))!=-1){if(out.size()+n>850_000)return;out.write(b,0,n);}
             }
             BitmapFactory.Options opt=new BitmapFactory.Options();opt.inSampleSize=4;
             Bitmap bm=BitmapFactory.decodeByteArray(out.toByteArray(),0,out.size(),opt);

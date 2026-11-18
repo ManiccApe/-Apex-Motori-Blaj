@@ -47,7 +47,7 @@ public final class WidgetListService extends RemoteViewsService {
                     }
                     if(!java.util.Arrays.asList(WidgetPrefs.CATEGORIES).contains(cat))continue;
                     if(!enabled.isEmpty() && !enabled.contains(cat))continue;
-                    if(o.optString("link","").startsWith("https://")) data.add(o);
+                    if(o.optString("link","").startsWith("https://") && o.optString("image","").startsWith("https://")) data.add(o);
                 }
             }catch(Exception ignored){}
         }

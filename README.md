@@ -1,4 +1,4 @@
-# Apex Motori Blaj — A.M.B. 2.2
+# Apex Motori Blaj — A.M.B. 2.3
 
 **Creato da Emanuel Mihai Blaj** · codice open source con licenza MIT.
 
@@ -67,3 +67,12 @@ Test automatici del codice Java e dell'interfaccia web possono essere eseguiti l
 - Conserva le preferenze locali e i preferiti delle versioni precedenti. Il backup resta disponibile dalle Impostazioni.
 
 **Nota di rilascio**: compilare con GitHub Actions o Android Studio. Non è ancora un APK compilato/testato in questa consegna.
+
+
+## Novità 2.3 — Foto obbligatorie e Home pulita
+
+- Rimossa la notifica rossa sulle fonti non raggiungibili dalla Home. Gli esiti delle singole fonti sono visibili in **Fonti**.
+- La sincronizzazione accetta **soltanto articoli con URL fotografico HTTPS** fornito dal feed RSS/Atom. Legge Media RSS (`media:thumbnail`, `media:content`), enclosure e immagini dei contenuti HTML quando presenti.
+- I feed senza articoli fotografici vengono ignorati durante l'aggiornamento, senza cancellarli dalle preferenze; potranno tornare a fornire foto. Le nuove fonti personali sono verificate prima dell'aggiunta.
+- Cache delle notizie precedenti senza foto esclusa dai nuovi risultati, mentre i preferiti personali restano salvati. Anche il widget filtra gli articoli senza foto.
+- Le foto restano di proprietà degli editori. L'URL nei feed non garantisce che i siti consentano sempre il caricamento delle immagini (hotlinking).
