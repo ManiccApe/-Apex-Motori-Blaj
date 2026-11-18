@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f6f8">
+<title>Apex Motori Blaj · A.M.B.</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg:#f5f6f8; --card:#ffffff; --ink:#1e2732; --sub:#687788;
+  --line:#e5eaf0; --faint:#eef1f5; --chip:#ffffff;
+  --accent:#bb473c; --accentSoft:#fff0ec; --accentInk:#9e3028;
+  --nav:#ffffff; --shadow:0 3px 15px rgba(23,38,51,.035);
+  --textScale:1;
+}
+:root[data-theme="dark"]{
+  color-scheme:dark; --bg:#101821; --card:#1a2530; --ink:#e8edf2; --sub:#a4b0be;
+  --line:#2b3946; --faint:#24313d; --chip:#1a2530;
+  --accent:#e28c7e; --accentSoft:#3e282b; --accentInk:#f1ad9d;
+  --nav:#19232e; --shadow:0 3px 14px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box}
+html{font-size:calc(16px * var(--textScale));scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 .875rem/1.45 Roboto,'Noto Sans',system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit}button{border:0;cursor:pointer;color:inherit;background:none;-webkit-appearance:none}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.55;cursor:default}h1,h2,h3,p{margin-top:0}
+.app{max-width:1180px;margin:auto;min-height:100vh;padding-bottom:calc(85px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:10;background:var(--nav);border-bottom:1px solid var(--line);padding:calc(8px + env(safe-area-inset-top)) clamp(12px,3vw,26px) 8px}
+.top-inner{max-width:1120px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brandmark{height:43px;width:46px;flex:none;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,#2c3946,#1e2832);color:#fff;font-size:.86rem;font-weight:900;letter-spacing:.1px}
+.brandname{font-size:.95rem;font-weight:850;line-height:1.2;letter-spacing:-.25px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.branddesc{font-size:.64rem;font-weight:800;color:var(--sub);letter-spacing:1.1px;margin-top:2px}
+.refreshBtn{height:34px;width:34px;min-width:34px;display:grid;place-items:center;background:var(--faint);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:6px}
+.refreshBtn svg{width:17px;height:17px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}
+.refreshBtn.loading svg{animation:spin 1.2s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.screen{padding:15px clamp(12px,3vw,26px) 20px;max-width:1150px;margin:auto}
+.page-title{font-weight:850;font-size:clamp(1.32rem,3.6vw,1.63rem);line-height:1.15;letter-spacing:-.65px;margin:4px 0 4px}
+.kicker{color:var(--accentInk);font-size:.63rem;font-weight:900;letter-spacing:1.25px;text-transform:uppercase}
+.lede{color:var(--sub);font-size:.8rem;line-height:1.45;margin:0}
+.home-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.home-head .page-title{margin-bottom:5px}
+.statusline{display:flex;align-items:center;gap:7px;margin:10px 0 0;color:var(--sub);font-size:.72rem}
+.statusdot{height:7px;width:7px;border-radius:50%;background:#7ca987;flex:none}
+.statusdot.off{background:#b6a2a2}.statusdot.busy{background:#e9ab5d}
+.search{display:flex;align-items:center;gap:9px;background:var(--card);height:43px;padding:0 13px;border:1px solid var(--line);border-radius:12px;margin:13px 0 11px}
+.search svg{width:17px;height:17px;stroke:var(--sub);stroke-width:2;stroke-linecap:round;fill:none;flex:none}
+.search input{width:100%;min-width:0;color:var(--ink);background:transparent;border:0;outline:none;font-size:.82rem}
+.search input::placeholder{color:var(--sub)}
+.categories{display:flex;gap:7px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;max-width:100%;padding:1px 0 10px;scrollbar-width:none;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+.categories::-webkit-scrollbar{display:none}
+.cat{display:inline-flex;justify-content:center;align-items:center;flex:0 0 auto;white-space:nowrap;min-height:33px;max-width:none;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--chip);color:var(--sub);font-weight:750;font-size:.73rem;scroll-snap-align:start}
+.cat.active{background:#2b3946;border-color:#2b3946;color:#fff}
+:root[data-theme="dark"] .cat.active{background:#e0d5d0;border-color:#e0d5d0;color:#19232e}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 0 10px;min-height:24px}
+.section-head h2{font-size:.93rem;letter-spacing:-.2px;margin:0;font-weight:850}
+.counter{color:var(--sub);font-size:.72rem;white-space:nowrap}
+.articles{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+.article{display:flex;min-width:0;min-height:122px;overflow:hidden;border-radius:14px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow)}
+.article-photo{width:116px;flex:0 0 116px;min-height:122px;position:relative;overflow:hidden;background:linear-gradient(140deg,#394955,#23323f);display:grid;place-items:center}
+.article-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+.photo-fallback{font-size:1.48rem;letter-spacing:-1px;font-weight:850;color:#b9c8d2;z-index:1}
+.article-info{min-width:0;flex:1;display:flex;flex-direction:column;gap:5px;padding:10px 11px 8px}
+.article-tags{display:flex;align-items:center;gap:6px;min-width:0}
+.category-label{flex:none;max-width:95px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.59rem;font-weight:900;color:var(--accentInk);background:var(--accentSoft);padding:3px 5px;border-radius:5px}
+.source-label{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:700;font-size:.63rem;color:var(--sub)}
+.article-title{text-align:left;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;line-height:1.32;font-size:.83rem;font-weight:790;letter-spacing:-.15px;padding:0;word-break:normal}
+.article-title:active{text-decoration:underline}
+.article-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--sub);font-size:.65rem;margin-top:auto}
+.save-btn{display:grid;place-items:center;height:29px;width:31px;flex:none;font-size:1.27rem;border-radius:8px;border:1px solid var(--line);color:var(--sub);line-height:1}
+.save-btn.on{color:var(--accentInk);background:var(--accentSoft);border-color:transparent}
+body.compact .article{min-height:103px}body.compact .article-photo{min-height:103px;width:100px;flex-basis:100px}
+body.compact .article-info{padding:8px 10px 6px;gap:4px}body.compact .article-title{-webkit-line-clamp:2}
+body.images-off .article-photo{display:none}
+.alert{padding:12px 13px;background:var(--accentSoft);color:var(--accentInk);font-size:.76rem;border-radius:10px;margin:8px 0 12px;line-height:1.5}
+.empty{padding:25px 18px;text-align:center;border:1px dashed var(--line);border-radius:14px;background:var(--card)}
+.empty-icon{font-size:1.65rem;color:var(--sub)}.empty h3{margin:6px 0;font-size:.95rem}.empty p{font-size:.78rem;color:var(--sub);margin-bottom:13px;line-height:1.5}
+.btn{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;gap:6px;min-height:36px;padding:8px 12px;border-radius:9px;font-size:.73rem;font-weight:850;background:var(--faint);border:1px solid var(--line)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.tiny{min-height:31px;padding:6px 9px;font-size:.7rem}
+.footer-note{text-align:center;margin:18px auto 2px;font-size:.67rem;color:var(--sub);line-height:1.5;max-width:550px}
+.subpage-title{margin:5px 0 5px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-top:11px}
+.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:5px}
+.panel-heading h2{font-size:.86rem;margin:0;font-weight:850}
+.sources-list{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.source-card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+.source-main{min-width:0;flex:1}.source-name{font-size:.8rem;font-weight:850;line-height:1.3;word-break:break-word}
+.source-meta{margin-top:3px;color:var(--accentInk);font-size:.67rem;font-weight:750}
+.source-url{font-size:.65rem;color:var(--sub);margin-top:3px;word-break:break-all;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.source-actions{display:flex;align-items:center;gap:7px;flex:none}
+.switch{position:relative;width:40px;height:24px;border-radius:20px;background:var(--faint);border:1px solid var(--line);flex:none;display:inline-block}
+.switch:after{content:"";position:absolute;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15);width:18px;height:18px;border-radius:50%;top:2px;left:2px;transition:transform .15s}
+.switch.active{background:#5c9b73;border-color:#5c9b73}.switch.active:after{transform:translateX(16px)}
+.delete-btn{font-size:1.1rem;min-width:29px;min-height:30px;border-radius:8px;background:var(--faint);color:var(--accentInk)}
+.form-row label{display:block;font-size:.72rem;font-weight:750;margin:10px 0 5px}
+.form-row input,.form-row select{display:block;width:100%;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:9px;padding:10px 11px;font-size:.81rem;min-height:41px}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:13px}
+.helper{font-size:.71rem;color:var(--sub);line-height:1.55;margin:8px 0 0}
+.setting-group{margin-top:16px}.setting-group>h2{font-size:.74rem;text-transform:uppercase;letter-spacing:.85px;color:var(--sub);font-weight:850;margin:0 0 7px 4px}
+.setting{background:var(--card);border:1px solid var(--line);border-bottom:0;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+.setting:first-of-type{border-radius:13px 13px 0 0}.setting:last-of-type{border-bottom:1px solid var(--line);border-radius:0 0 13px 13px}.setting:only-of-type{border-radius:13px;border-bottom:1px solid var(--line)}
+.setting-copy{min-width:0;flex:1}.setting strong{font-size:.78rem;font-weight:850;display:block;line-height:1.25}.setting p{font-size:.68rem;color:var(--sub);margin:3px 0 0;line-height:1.35}
+.segment{display:flex;flex-wrap:nowrap;align-items:center;gap:2px;padding:3px;border-radius:10px;background:var(--faint);border:1px solid var(--line);flex:none}
+.segment button{padding:7px 9px;border-radius:7px;font-size:.67rem;font-weight:800;white-space:nowrap}
+.segment button.active{background:var(--card);color:var(--accentInk);box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.value-readout{font-size:.72rem;font-weight:750;color:var(--sub);min-width:32px;text-align:center}
+.stat-pill{font-size:.68rem;font-weight:850;color:#46805a;background:#e8f5ea;border-radius:7px;padding:5px 8px}
+:root[data-theme="dark"] .stat-pill{background:#294435;color:#a3d5af}
+.bottom{position:fixed;z-index:10;bottom:0;left:0;right:0;background:var(--nav);border-top:1px solid var(--line);padding:6px max(8px,calc((100vw - 1180px)/2 + 20px)) calc(7px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;gap:4px}
+.navtab{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:47px;border-radius:10px;font-weight:800;font-size:.64rem;color:var(--sub);padding:4px}
+.navtab.active{background:var(--accentSoft);color:var(--accentInk)}.navtab svg{height:21px;width:21px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round}
+@media(min-width:650px){.articles{grid-template-columns:repeat(2,minmax(0,1fr))}.sources-list{grid-template-columns:repeat(2,minmax(0,1fr))}.screen{padding-top:20px}.article-photo{width:37%;flex-basis:37%}}
+@media(min-width:1080px){.articles{grid-template-columns:repeat(3,minmax(0,1fr))}.article-photo{width:34%;flex-basis:34%}}
+@media(max-width:365px){.brandmark{height:37px;width:40px;font-size:.77rem}.brandname{font-size:.83rem}.branddesc{font-size:.58rem}.article-photo{width:98px;flex-basis:98px}.article-title{font-size:.78rem}.article-info{padding:9px 9px 7px}.setting{align-items:flex-start;flex-direction:column}.setting .segment{align-self:flex-end}.setting>.switch{align-self:flex-end}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Calendario: compatto, responsivo, senza pulsanti sovrapposti */
+.calendar-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:12px}
+.calendar-head .page-title{margin-bottom:2px}.calendar-head .lede{max-width:560px}
+.calendar-actions{display:flex;align-items:center;gap:7px;flex:none}
+.calendar-meta{font-size:.69rem;color:var(--sub);margin:2px 0 10px}
+.cal-filters{margin-bottom:5px}
+.cal-tools{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:9px 0 12px}
+.cal-tools select{border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 10px;min-height:34px;font-weight:650;font-size:.73rem;max-width:100%}
+.cal-tools .search{margin:0;min-width:150px;flex:1;max-width:330px;height:37px}
+.cal-tools .search input{font-size:.76rem}
+.cal-month{font-size:.84rem;letter-spacing:-.1px;margin:15px 0 8px;font-weight:850;display:flex;align-items:center;gap:8px}
+.cal-month:before{content:'';display:block;width:3px;height:15px;border-radius:2px;background:var(--accent)}
+.cal-list{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.cal-event{display:flex;align-items:stretch;gap:10px;padding:11px;background:var(--card);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);min-width:0}
+.cal-date{min-width:54px;width:54px;flex:none;border-radius:10px;background:var(--faint);padding:6px 3px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cal-date span{font-size:.64rem;color:var(--sub);font-weight:850;text-transform:uppercase;letter-spacing:.4px}
+.cal-date strong{font-size:1.25rem;font-weight:900;line-height:1.25}
+.cal-data{min-width:0;flex:1}.cal-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.cal-title{font-size:.84rem;font-weight:800;line-height:1.3;overflow-wrap:anywhere;margin:0 0 5px}
+.cal-time{font-size:.75rem;color:var(--ink);font-weight:750;margin-bottom:4px;display:flex;gap:5px;align-items:baseline}
+.cal-time small{font-size:.66rem;color:var(--sub);font-weight:550}
+.cal-watch{font-size:.72rem;color:var(--sub);margin-bottom:6px;line-height:1.35}
+.cal-links{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.cal-link{font-size:.7rem;padding:5px 8px;border-radius:8px;background:var(--faint);border:1px solid var(--line);color:var(--ink);font-weight:780;text-decoration:none;display:inline-flex;align-items:center;min-height:30px}
+.cal-link.primary-link{color:var(--accentInk);background:var(--accentSoft);border-color:transparent}
+.cal-foot{color:var(--sub);font-size:.67rem;line-height:1.5;margin:12px 0 8px}
+.cal-source-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;margin:8px 0;display:flex;gap:12px;justify-content:space-between;align-items:center;min-width:0}
+.cal-source-info{min-width:0;flex:1}.cal-source-info strong{font-size:.77rem;display:block}.cal-source-info small{font-size:.65rem;color:var(--sub);overflow-wrap:anywhere;display:block}
+.cal-source-actions{display:flex;align-items:center;gap:6px;flex:none}
+.cal-source-actions button{flex:none}
+.cal-highlight{color:var(--accentInk);background:var(--accentSoft);padding:3px 6px;border-radius:6px;font-size:.62rem;font-weight:850}
+@media(min-width:700px){.cal-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1100px){.cal-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:370px){.calendar-head{align-items:flex-start;flex-direction:column;gap:8px}.cal-event{gap:7px;padding:8px}.cal-date{width:45px;min-width:45px}.cal-title{font-size:.79rem}.cal-link{font-size:.65rem;padding:5px}.bottom{gap:0}.navtab{font-size:.55rem;padding:3px}.navtab svg{width:19px;height:19px}}
+.about-box{display:flex;gap:13px;align-items:flex-start;margin-top:0}.about-mark{flex:0 0 auto;display:grid;place-items:center;width:57px;height:57px;border-radius:13px;background:#293745;color:white;font-size:.89rem;font-weight:900;letter-spacing:.1px}.about-content{min-width:0;flex:1}.about-title{font-size:1rem;display:block;margin-bottom:2px}.about-version{font-size:.72rem;color:var(--sub);margin:0 0 10px}.about-credit{font-size:.81rem;margin:0 0 6px;color:var(--ink)}.about-content .helper{margin-top:5px}@media(max-width:355px){.about-box{gap:9px;padding:11px}.about-mark{height:48px;width:48px;font-size:.75rem}}
+@media(max-width:359px){.brandname{font-size:.84rem}.top{padding-left:9px;padding-right:9px}.screen{padding-left:10px;padding-right:10px}.setting{gap:8px}.setting-copy strong{font-size:.76rem}.segment button{font-size:.65rem}.cat{min-height:34px}}
+@media(min-width:700px){.articles{grid-template-columns:repeat(2,minmax(0,1fr))}.screen{padding-top:17px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="top-inner">
+ <div class="brand"><div class="brandmark" aria-hidden="true">A.M.B.</div><div><div class="brandname">Apex Motori Blaj</div><div class="branddesc">MOTORSPORT NEWS</div></div></div>
+ <button id="refresh" class="refreshBtn" aria-label="Aggiorna la sezione corrente" title="Aggiorna" onclick="refreshCurrent()"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9a7.3 7.3 0 0 1 12.9-2L20 12M4 12l1.5 5A7.3 7.3 0 0 0 18.5 15"/></svg></button>
+</div></header>
+<main id="main" class="screen" aria-live="polite"></main>
+</div>
+<nav class="bottom" aria-label="Navigazione principale">
+ <button id="tab-news" class="navtab active" onclick="go('news')" aria-label="Notizie"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h5m-5 4h5m3-4h3m-3 4h3M7 17h11"/></svg>Notizie</button>
+ <button id="tab-calendar" class="navtab" onclick="go('calendar')" aria-label="Calendario gare"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 14h3m-3 4h3m3-4h3"/></svg>Calendario</button>
+ <button id="tab-faves" class="navtab" onclick="go('faves')" aria-label="Preferiti"><svg viewBox="0 0 24 24"><path d="m12 20-2-1.8C4.5 13.5 3 11.8 3 9a4.5 4.5 0 0 1 8-2.8L12 7.3l1-1.1A4.5 4.5 0 0 1 21 9c0 2.8-1.5 4.5-7 9.2z"/></svg>Salvati</button>
+ <button id="tab-sources" class="navtab" onclick="go('sources')" aria-label="Fonti"><svg viewBox="0 0 24 24"><circle cx="5" cy="5" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="5" cy="19" r="1"/><path d="M9 5h11M9 12h11M9 19h11"/></svg>Fonti</button>
+ <button id="tab-settings" class="navtab" onclick="go('settings')" aria-label="Impostazioni"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19 13 2-1-2-3-2 .4-1.5-1.3V6h-4V4l-3 1 .5 2L7 8.5 5 8l-2 4 2 1 .3 2L4 17l3 3 2-1 2 .5 1 2 4-1v-2l1-1 2 .5 2-4z"/></svg>Opzioni</button>
+</nav>
+<script>
+'use strict';
+const APP_VERSION='2.0';
+const CATS=['Tutte','F1','WRC','WEC','GT','GT2','GT3','GT4','MotoGP','Storiche','Goodwood','Personali'];
+const DEFAULTS=[
+ {id:'f1',name:'Motorsport Italia · F1',category:'F1',url:'https://it.motorsport.com/rss/f1/news/',enabled:true,locked:true},
+ {id:'wrc',name:'Motorsport Italia · WRC',category:'WRC',url:'https://it.motorsport.com/rss/wrc/news/',enabled:true,locked:true},
+ {id:'wec',name:'Motorsport Italia · WEC',category:'WEC',url:'https://it.motorsport.com/rss/wec/news/',enabled:true,locked:true},
+ {id:'gt',name:'Motorsport Italia · Endurance/GT',category:'GT',url:'https://it.motorsport.com/rss/endurance-gt/news/',enabled:true,locked:true},
+ {id:'moto',name:'Motorsport Italia · MotoGP',category:'MotoGP',url:'https://it.motorsport.com/rss/motogp/news/',enabled:true,locked:true},
+ {id:'en-f1',name:'Motorsport EN · F1',category:'F1',url:'https://www.motorsport.com/rss/f1/news/',enabled:true,locked:true},
+ {id:'en-wrc',name:'Autosport EN · WRC',category:'WRC',url:'https://www.autosport.com/rss/wrc/news/',enabled:false,locked:true},
+ {id:'historic',name:'News Classic Racing · Storiche',category:'Storiche',url:'https://www.newsclassicracing.com/spip.php?page=rss',enabled:true,locked:true},
+ {id:'goodwood',name:'Goodwood · sito ufficiale',category:'Goodwood',url:'https://www.goodwood.com/grr/',enabled:false,locked:true}
+];
+const CAL_DEFAULTS=[
+ {id:'cal-f1',name:'Formula 1',category:'F1',url:'https://www.greenflagtv.com/calendars/f1.ics',enabled:true,locked:true},
+ {id:'cal-wrc',name:'World Rally Championship',category:'WRC',url:'https://www.greenflagtv.com/calendars/wrc.ics',enabled:true,locked:true},
+ {id:'cal-wec',name:'FIA WEC',category:'WEC',url:'https://www.greenflagtv.com/calendars/wec.ics',enabled:true,locked:true},
+ {id:'cal-gt',name:'GT World Challenge Europe',category:'GT',url:'https://www.greenflagtv.com/calendars/gtwc-europe.ics',enabled:true,locked:true},
+ {id:'cal-moto',name:'MotoGP',category:'MotoGP',url:'https://www.greenflagtv.com/calendars/motogp.ics',enabled:true,locked:true},
+ {id:'cal-storiche',name:'Goodwood Revival · auto storiche',category:'Storiche',url:'https://www.greenflagtv.com/calendars/goodwood-revival.ics',enabled:true,locked:true},
+ {id:'cal-goodwood',name:'Goodwood Festival of Speed',category:'Goodwood',url:'https://www.greenflagtv.com/calendars/goodwood-festival-of-speed.ics',enabled:true,locked:true}
+];
+const WATCH_GUIDE={
+ 'F1':{label:'Sky Sport F1 / NOW',url:'https://www.nowtv.it/sport/formula1'},
+ 'WRC':{label:'Rally.TV / Sky Sport',url:'https://www.rally.tv/'},
+ 'WEC':{label:'FIAWEC+',url:'https://www.fiawec.com/'},
+ 'GT':{label:'GT World (YouTube)',url:'https://www.gt-world-challenge-europe.com/gt-tv'},
+ 'MotoGP':{label:'Sky Sport MotoGP / NOW',url:'https://www.nowtv.it/sport/moto-gp'},
+ 'Storiche':{label:'Goodwood Road & Racing',url:'https://www.goodwood.com/grr/'},
+ 'Goodwood':{label:'Goodwood Road & Racing',url:'https://www.goodwood.com/grr/'}
+};
+const main=document.getElementById('main');
+function readStore(k,def){try{let v=JSON.parse(localStorage.getItem(k));return v===null?def:v}catch{return def}}
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){console.warn('Memoria non disponibile',e)}}
+const state={sources:readStore('amb_sources_v1',DEFAULTS),saved:readStore('amb_saved_v1',[]),items:readStore('amb_news_cache_v1',[]),updated:readStore('amb_refresh_time',''),settings:readStore('amb_settings_v2',{theme:'light',density:'balanced',font:100,images:true,auto:true}),tab:'news',category:'Tutte',query:'',loading:false,adding:false,error:'',sourceError:''};
+if(!Array.isArray(state.sources))state.sources=DEFAULTS;if(!Array.isArray(state.saved))state.saved=[];if(!Array.isArray(state.items))state.items=[];
+state.settings=Object.assign({theme:'light',density:'balanced',font:100,images:true,auto:true},state.settings||{});
+const calendar={sources:readStore('amb_calendar_sources_v1',CAL_DEFAULTS),items:readStore('amb_calendar_cache_v1',[]),updated:readStore('amb_calendar_updated_v1',''),category:'Tutte',range:'180',query:'',loading:false,err:'',manage:false,adding:false,sourceError:''};
+if(!Array.isArray(calendar.sources))calendar.sources=CAL_DEFAULTS;
+if(!Array.isArray(calendar.items))calendar.items=[];
+state.settings=Object.assign({calAuto:true,calInterval:3},state.settings);
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function safeUrl(s){try{const u=new URL(String(s));return (u.protocol==='https:'||u.protocol==='http:')?u.href:''}catch{return ''}}
+function textOnly(s){return String(s||'').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/gi,' ').replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&quot;/gi,'"').replace(/&#39;/g,"'").replace(/\s+/g,' ').trim()}
+function persist(){store('amb_sources_v1',state.sources);store('amb_saved_v1',state.saved);syncWidgetSources()}
+function applyPrefs(){const s=state.settings;document.documentElement.dataset.theme=s.theme==='auto'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):s.theme;document.documentElement.style.setProperty('--textScale',String(Math.max(.9,Math.min(1.2,(Number(s.font)||100)/100))));document.body.classList.toggle('compact',s.density==='compact');document.body.classList.toggle('images-off',!s.images);document.querySelector('meta[name="theme-color"]').content=document.documentElement.dataset.theme==='dark'?'#19232e':'#f5f6f8'}
+function changePref(k,v){state.settings[k]=v;store('amb_settings_v2',state.settings);applyPrefs();render()}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(state.settings.theme==='auto')applyPrefs()})}catch{}
+applyPrefs();
+function nodeText(n,tag){const e=n.getElementsByTagName(tag)[0];return e?.textContent?.trim()||''}
+function mediaImage(el){for(const tag of ['media:thumbnail','media:content','enclosure','image','thumbnail']){const n=el.getElementsByTagName(tag)[0];if(!n)continue;const type=n.getAttribute('type')||'';if(type&&(/video|audio/i.test(type)))continue;let u=n.getAttribute('url')||n.getAttribute('src')||nodeText(n,'url');if(u&&safeUrl(u)&&!(/\.(mp4|webm|mp3|m3u8)(\?|$)/i.test(u)))return safeUrl(u)}const content=nodeText(el,'description')||nodeText(el,'content:encoded')||nodeText(el,'summary');const match=content.match(/<img\b[^>]*?\bsrc\s*=\s*["']([^"']+)/i);return match?safeUrl(match[1]):''}
+function parseFeed(xmlString,source){let xml=new DOMParser().parseFromString(xmlString,'application/xml');if(xml.getElementsByTagName('parsererror').length)throw Error('XML non valido');let list=Array.from(xml.getElementsByTagName('item')),atom=false;if(!list.length){list=Array.from(xml.getElementsByTagName('entry'));atom=true}if(!list.length)throw Error('Feed RSS/Atom vuoto');return list.slice(0,45).map((n,i)=>{let link=nodeText(n,'link');if(atom){const ls=Array.from(n.getElementsByTagName('link'));link=(ls.find(e=>e.getAttribute('rel')==='alternate')||ls[0])?.getAttribute('href')||link}const date=nodeText(n,'pubDate')||nodeText(n,'dc:date')||nodeText(n,'published')||nodeText(n,'updated');return {id:source.id+':'+(nodeText(n,'guid')||nodeText(n,'id')||link||i),link:safeUrl(link),title:textOnly(nodeText(n,'title'))||'Articolo senza titolo',desc:textOnly(nodeText(n,'description')||nodeText(n,'summary')||'').slice(0,240),date:Number(new Date(date))||0,source:source.name,category:source.category,custom:!source.locked,image:mediaImage(n)}}).filter(x=>x.link)}
+const nativePending=new Map();let nativeSequence=0;
+window.AMBBridgeResult=function(id,value,error){const pending=nativePending.get(id);if(!pending)return;nativePending.delete(id);clearTimeout(pending.timer);if(error)pending.reject(Error(error));else pending.resolve(value)};
+async function fetchText(url,timeout=16000){
+ if(window.AMBAndroid && typeof window.AMBAndroid.fetch==='function')return new Promise((resolve,reject)=>{
+  const id=String(++nativeSequence),timer=setTimeout(()=>{nativePending.delete(id);reject(Error('Tempo scaduto'))},timeout+1000);
+  nativePending.set(id,{resolve,reject,timer});try{window.AMBAndroid.fetch(id,url)}catch(e){clearTimeout(timer);nativePending.delete(id);reject(e)}
+ });
+ const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),timeout);
+ try{const r=await fetch(url,{cache:'no-store',redirect:'follow',signal:ctrl.signal});if(!r.ok)throw Error('HTTP '+r.status);const b=await r.text();if(b.length>4000000)throw Error('Risposta troppo grande');return b}finally{clearTimeout(timer)}
+}
+function syncWidgetSources(){try{window.AMBAndroid?.setWidgetSources(JSON.stringify(state.sources.filter(s=>s.enabled && s.url.startsWith('https://'))))}catch{}}
+function syncWidgetNews(){try{const payload=state.items.slice(0,150).map(x=>({title:x.title,category:x.category,source:x.source,image:x.image,link:x.link,date:x.date}));window.AMBAndroid?.setWidgetData(JSON.stringify(payload))}catch{}}
+function openWidgetSetup(){if(window.AMBAndroid?.openWidgetSettings)window.AMBAndroid.openWidgetSettings();else alert('Apri A.M.B. su Android, quindi aggiungi il widget dalla schermata Home.')}
+function exportAMB(){const json=JSON.stringify({app:'Apex Motori Blaj',version:2,sources:state.sources,saved:state.saved,settings:state.settings,calendars:calendar.sources},null,2);const area=document.getElementById('amb-backup');if(area){area.value=json;area.focus();area.select()}}
+function importAMB(){const area=document.getElementById('amb-backup');try{const info=JSON.parse(area?.value||'');if(info.app!=='Apex Motori Blaj')throw Error('Backup non riconosciuto');if(Array.isArray(info.sources))state.sources=info.sources.filter(s=>safeUrl(s.url)&&typeof s.name==='string').slice(0,60);if(Array.isArray(info.saved))state.saved=info.saved.slice(0,350);if(info.settings && typeof info.settings==='object')state.settings=Object.assign({},state.settings,info.settings);if(Array.isArray(info.calendars))calendar.sources=info.calendars.filter(s=>safeUrl(s.url)).slice(0,50);persist();store('amb_settings_v2',state.settings);calendarSave();syncWidgetSources();render();alert('Preferiti e impostazioni importati.')}catch(e){alert('Importazione non riuscita: '+e.message)}}
+async function readFeed(source){return parseFeed(await fetchText(source.url),source)}
+function updateRefreshIcon(){const b=document.getElementById('refresh');const busy=state.tab==='calendar'?calendar.loading:state.loading;b.classList.toggle('loading',busy);b.disabled=busy;b.title=busy?'Aggiornamento in corso':state.tab==='calendar'?'Aggiorna il calendario':'Aggiorna le notizie'}
+async function loadFeeds(force){if(state.loading)return;const active=state.sources.filter(x=>x.enabled);if(!active.length){state.error='Nessuna fonte attiva: abilita una fonte nella sezione Fonti.';render();return}state.loading=true;state.error='';render();updateRefreshIcon();const outcomes=await Promise.allSettled(active.map(readFeed));let merged=[],success=0;outcomes.forEach((v,i)=>{if(v.status==='fulfilled'){success++;merged.push(...v.value)}else console.warn('Fonte non disponibile:',active[i].name,v.reason)});if(success){const seen=new Set();state.items=merged.sort((a,b)=>b.date-a.date).filter(x=>{if(seen.has(x.link))return false;seen.add(x.link);return true}).slice(0,240);store('amb_news_cache_v1',state.items);syncWidgetNews();state.updated=new Date().toISOString();store('amb_refresh_time',state.updated)}if(success===0)state.error='Non riesco a raggiungere i feed. Controlla la connessione oppure prova fonti RSS differenti. I dati già salvati restano disponibili.';else if(success<active.length)state.error='Alcune fonti non rispondono: '+(active.length-success)+' su '+active.length+'. Le altre sono state aggiornate.';state.loading=false;render();updateRefreshIcon()}
+function ago(date){if(!date)return 'Data non disponibile';const m=Math.max(0,Math.floor((Date.now()-date)/60000));if(m<60)return m<2?'Adesso':m+' min fa';if(m<1440)return Math.floor(m/60)+' h fa';if(m<10080)return Math.floor(m/1440)+' g fa';return new Date(date).toLocaleDateString('it-IT',{day:'2-digit',month:'short'})}
+function visible(){const input=state.tab==='faves'?state.saved:state.items;return input.filter(x=>(state.tab==='faves'||state.category==='Tutte'||(state.category==='Personali'?x.custom:(x.category===state.category || (['GT2','GT3','GT4'].includes(state.category) && x.category==='GT' && [x.title,x.desc].join(' ').toUpperCase().includes(state.category)))))&&(!state.query||[x.title,x.desc,x.source].join(' ').toLocaleLowerCase().includes(state.query.toLocaleLowerCase())))}
+function isSaved(link){return state.saved.some(x=>x.link===link)}
+function toggleSave(link){const a=state.items.concat(state.saved).find(x=>x.link===link);if(!a)return;if(isSaved(link))state.saved=state.saved.filter(x=>x.link!==link);else state.saved.unshift(a);persist();render()}
+function openNews(link){const linkSafe=safeUrl(link);if(linkSafe)location.href=linkSafe}
+function mark(cat){return {F1:'F1',WRC:'R',WEC:'W',GT:'GT',MotoGP:'GP',Storiche:'S',Goodwood:'G',Personali:'+'}[cat]||'AM'}
+function articles(){const list=visible();if(!list.length)return '<div class="empty"><div class="empty-icon">'+(state.tab==='faves'?'♡':'⌕')+'</div><h3>'+(state.tab==='faves'?'Nessun articolo salvato':'Nessuna notizia da mostrare')+'</h3><p>'+(state.tab==='faves'?'Tocca il cuore in una notizia per ritrovarla qui.':'Controlla i filtri, aggiungi una fonte o aggiorna le notizie.')+'</p>'+(state.tab==='faves'?'':'<button class="btn primary" onclick="go(\'sources\')">Gestisci fonti</button>')+'</div>';return '<div class="articles">'+list.map(x=>{const fav=isSaved(x.link),img=safeUrl(x.image);const key=encodeURIComponent(x.link);return '<article class="article"><div class="article-photo" aria-hidden="true"><span class="photo-fallback">'+esc(mark(x.category))+'</span>'+(img?'<img src="'+esc(img)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()" alt="">':'')+'</div><div class="article-info"><div class="article-tags"><span class="category-label">'+esc(x.category)+'</span><span class="source-label">'+esc(x.source)+'</span></div><button class="article-title" onclick="openNews(decodeURIComponent(\''+key+'\'))">'+esc(x.title)+'</button><div class="article-foot"><span>'+ago(x.date)+'</span><button class="save-btn '+(fav?'on':'')+'" aria-label="'+(fav?'Rimuovi dai salvati':'Salva articolo')+'" onclick="toggleSave(decodeURIComponent(\''+key+'\'))">'+(fav?'♥':'♡')+'</button></div></div></article>'}).join('')+'</div>'}
+function newsView(){const active=state.sources.filter(x=>x.enabled).length;return '<div class="home-head"><div><div class="kicker">LA TUA RASSEGNA MOTORSPORT</div><h1 class="page-title">Le ultime dal paddock</h1><p class="lede">F1, rally, endurance, GT e molto altro.</p></div></div><div class="statusline"><span class="statusdot '+(state.loading?'busy':!state.updated?'off':'')+'"></span><span>'+(state.loading?'Aggiornamento delle fonti in corso…':state.updated?'Aggiornato '+ago(new Date(state.updated).getTime()):'In attesa del primo aggiornamento')+'</span><span>·</span><span>'+active+' fonti attive</span></div><div class="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input id="q" type="search" placeholder="Cerca notizie e campionati" aria-label="Cerca notizie" value="'+esc(state.query)+'" oninput="searchInput(this.value)"></div><div class="categories" aria-label="Categorie motorsport">'+CATS.map(c=>'<button class="cat '+(state.category===c?'active':'')+'" aria-pressed="'+(state.category===c)+'" onclick="selectCat(\''+c+'\')">'+esc(c)+'</button>').join('')+'</div><div class="section-head"><h2>Ultime notizie</h2><span class="counter">'+visible().length+' articoli</span></div>'+(state.error?'<div class="alert">'+esc(state.error)+'</div>':'')+articles()+'<p class="footer-note">Articoli e immagini appartengono agli editori originali. I contenuti si aprono nel browser esterno.</p>'}
+function favesView(){return '<div class="kicker">LA TUA RACCOLTA</div><h1 class="page-title subpage-title">Articoli salvati</h1><p class="lede">I tuoi preferiti, sempre a portata di mano.</p><div class="section-head" style="margin-top:15px"><h2>La mia raccolta</h2><span class="counter">'+state.saved.length+' salvati</span></div>'+articles()}
+function sourcesView(){return '<div class="kicker">FONTI PERSONALIZZATE</div><h1 class="page-title subpage-title">Gestisci le fonti</h1><p class="lede">Attiva i siti che preferisci o aggiungi nuovi feed.</p><div class="section-head" style="margin-top:14px"><h2>'+state.sources.length+' fonti disponibili</h2><button class="btn primary tiny" onclick="state.adding=!state.adding;state.sourceError=\'\';render()">'+(state.adding?'Chiudi':'＋ Aggiungi sito')+'</button></div>'+(state.adding?'<form class="panel" onsubmit="addSite(event)"><div class="form-row"><label for="sname">Nome del sito</label><input id="sname" required maxlength="60" placeholder="Es. Rally News"><label for="surl">Indirizzo sito o feed RSS/Atom</label><input id="surl" required type="url" placeholder="https://esempio.it/feed/"><label for="scat">Categoria</label><select id="scat">'+CATS.filter(x=>x!=='Tutte'&&x!=='Personali').concat(['Personali']).map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select></div><p class="helper">Puoi inserire l’URL di un feed RSS/Atom o del sito da cui rilevarlo. Se il sito non pubblica feed, le sue notizie non saranno disponibili.</p>'+(state.sourceError?'<div class="alert">'+esc(state.sourceError)+'</div>':'')+'<div class="form-actions"><button type="button" class="btn" onclick="state.adding=false;render()">Annulla</button><button id="add-btn" class="btn primary" type="submit">Salva fonte</button></div></form>':'')+'<div class="sources-list">'+state.sources.map((s,i)=>'<section class="source-card"><div class="source-main"><div class="source-name">'+esc(s.name)+'</div><div class="source-meta">'+esc(s.category)+' · '+(s.locked?'Predefinita':'Personale')+'</div><div class="source-url">'+esc(s.url)+'</div></div><div class="source-actions"><button class="switch '+(s.enabled?'active':'')+'" role="switch" aria-checked="'+!!s.enabled+'" aria-label="'+(s.enabled?'Disattiva':'Attiva')+' '+esc(s.name)+'" onclick="toggleSite('+i+')"></button>'+(s.locked?'':'<button class="delete-btn" aria-label="Elimina '+esc(s.name)+'" onclick="deleteSite('+i+')">×</button>')+'</div></section>').join('')+'</div><p class="footer-note">Le fonti vengono salvate su questo dispositivo. I feed sono richiesti ai rispettivi siti: alcuni potrebbero non consentire l’accesso.</p>'}
+function seg(field,options){return '<div class="segment" role="group" aria-label="'+field+'">'+options.map(([v,t])=>'<button aria-pressed="'+(state.settings[field]===v)+'" class="'+(state.settings[field]===v?'active':'')+'" onclick="changePref(\''+field+'\',\''+v+'\')">'+t+'</button>').join('')+'</div>'}
+function settingsView(){return '<div class="kicker">PERSONALIZZAZIONE A.M.B.</div><h1 class="page-title subpage-title">Impostazioni</h1><p class="lede">Tutto sotto controllo, senza complicazioni.</p><section class="setting-group"><h2>Aspetto e leggibilità</h2><div class="setting"><div class="setting-copy"><strong>Tema dell’app</strong><p>Chiaro, scuro o in base al sistema.</p></div>'+seg('theme',[['light','Chiaro'],['dark','Scuro'],['auto','Auto']])+'</div><div class="setting"><div class="setting-copy"><strong>Dimensione testo</strong><p>Adatta la lettura alle tue esigenze.</p></div><div class="segment"><button aria-label="Riduci testo" onclick="changePref(\'font\',Math.max(90,state.settings.font-10))">A−</button><span class="value-readout">'+state.settings.font+'%</span><button aria-label="Ingrandisci testo" onclick="changePref(\'font\',Math.min(120,state.settings.font+10))">A+</button></div></div><div class="setting"><div class="setting-copy"><strong>Spaziatura notizie</strong><p>Schede più compatte o più ariose.</p></div>'+seg('density',[['compact','Compatta'],['balanced','Normale']])+'</div><div class="setting"><div class="setting-copy"><strong>Immagini negli articoli</strong><p>Disattivale per usare meno dati.</p></div><button role="switch" aria-label="Mostra immagini" aria-checked="'+state.settings.images+'" class="switch '+(state.settings.images?'active':'')+'" onclick="changePref(\'images\',!state.settings.images)"></button></div></section><section class="setting-group"><h2>Notizie e aggiornamenti</h2><div class="setting"><div class="setting-copy"><strong>Aggiorna all’apertura</strong><p>Controlla automaticamente i feed disponibili.</p></div><button role="switch" aria-label="Aggiorna all’apertura" aria-checked="'+state.settings.auto+'" class="switch '+(state.settings.auto?'active':'')+'" onclick="changePref(\'auto\',!state.settings.auto)"></button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento</strong><p>'+(state.updated?new Date(state.updated).toLocaleString('it-IT'):'Non ancora eseguito')+'</p></div><button class="btn tiny" onclick="go(\'news\');loadFeeds(true)">↻ Aggiorna</button></div><div class="setting"><div class="setting-copy"><strong>Fonti delle notizie</strong><p>'+state.sources.filter(x=>x.enabled).length+' attive su '+state.sources.length+' disponibili.</p></div><button class="btn tiny" onclick="go(\'sources\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Cache articoli</strong><p>'+state.items.length+' notizie memorizzate sul dispositivo.</p></div><button class="btn tiny" onclick="clearCache()">Svuota</button></div></section><section class="setting-group"><h2>Calendario eventi</h2><div class="setting"><div class="setting-copy"><strong>Sincronizzazione automatica</strong><p>All’apertura e mentre usi l’app, se è trascorso l’intervallo scelto.</p></div><button role="switch" aria-label="Sincronizzazione calendario" aria-checked="'+!!state.settings.calAuto+'" class="switch '+(state.settings.calAuto?'active':'')+'" onclick="changePref(\'calAuto\',!state.settings.calAuto);if(state.settings.calAuto)maybeAutoCalendar()"></button></div><div class="setting"><div class="setting-copy"><strong>Frequenza aggiornamenti</strong><p>Evita richieste inutili ai siti.</p></div><select style="font-size:.72rem;max-width:120px;border:1px solid var(--line);border-radius:8px;padding:7px;background:var(--card);color:var(--ink)" aria-label="Frequenza aggiornamento calendari" onchange="changePref(\'calInterval\',Number(this.value))">'+[[1,'1 ora'],[3,'3 ore'],[6,'6 ore'],[24,'24 ore']].map(([v,l])=>'<option value="'+v+'" '+(Number(state.settings.calInterval)===v?'selected':'')+'>'+l+'</option>').join('')+'</select></div><div class="setting"><div class="setting-copy"><strong>Fonti gare ed eventi</strong><p>'+calendar.sources.filter(x=>x.enabled).length+' calendari attivi · orari Europe/Rome</p></div><button class="btn tiny" onclick="calendar.manage=true;go(\'calendar\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento calendario</strong><p>'+(calendar.updated?new Date(calendar.updated).toLocaleString('it-IT'):'Non ancora aggiornato')+'</p></div><button class="btn tiny" onclick="go(\'calendar\');loadCalendar(true)">↻ Aggiorna</button></div></section><section class="setting-group" aria-labelledby="about-amb"><h2 id="about-amb">Informazioni sull’app</h2><div class="panel about-box"><div class="about-mark">A.M.B.</div><div class="about-content"><strong class="about-title">Apex Motori Blaj</strong><p class="about-version">Versione 2.0 · app completa e widget nativo</p><p class="about-credit"><strong>Creato da Emanuel Mihai Blaj</strong></p><p class="helper">Tecnologie: Java, Android SDK, WebView, HTML5, CSS3, JavaScript, XML, RSS/Atom e iCalendar (.ics). Widget nativo: Android AppWidget, RemoteViews e RSS. Progetto sorgente: licenza MIT.</p><p class="helper">Compatibilità: Android 10 e versioni successive. Le notizie e i programmi appartengono ai rispettivi editori e organizzatori.</p></div></div></section><section class="setting-group"><h2>Widget Android</h2><div class="setting"><div class="setting-copy"><strong>Configura il widget</strong><p>Lista scorrevole da 20, 40 o 60 notizie, miniature, categorie, opacità e colore del testo.</p></div><button class="btn tiny" onclick="openWidgetSetup()">Configura ↗</button></div><p class="helper">Aggiungi A.M.B. dalla raccolta widget del launcher. Ogni widget può avere filtri diversi. L’aggiornamento in background dipende dal sistema Android.</p></section><section class="setting-group"><h2>Backup preferiti e fonti</h2><div class="panel"><div class="form-row"><label for="amb-backup">Dati da copiare o incollare in formato JSON</label><textarea id="amb-backup" style="width:100%;min-height:90px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--card);color:var(--ink);font-size:.7rem" placeholder="Qui comparirà il backup"></textarea></div><div class="form-actions"><button class="btn tiny" onclick="exportAMB()">Esporta</button><button class="btn tiny" onclick="importAMB()">Importa</button></div></div></section><div class="footer-note">Apex Motori Blaj · A.M.B. · v2.0<br>Android 10+ · Nessuna sezione video interna.<br>Aggregatore indipendente, non affiliato ai siti citati.</div>'}
+
+function refreshCurrent(){if(state.tab==='calendar')loadCalendar(true);else loadFeeds(true)}
+function calendarSave(){store('amb_calendar_sources_v1',calendar.sources)}
+function unfoldIcs(s){return String(s).replace(/\r\n[ \t]|\n[ \t]/g,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n')}
+function icsUnescape(s){return String(s||'').replace(/\\[nN]/g,'\n').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\').trim()}
+function icsZoneOffset(parts,tz){
+ const f=new Intl.DateTimeFormat('en-GB',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+ const p={};for(const x of f.formatToParts(new Date(parts)))if(x.type!=='literal')p[x.type]=+x.value;
+ return Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second)-parts;
+}
+function readIcsDate(val,params){
+ const m=String(val||'').match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?$/);
+ if(!m)return null;
+ const y=+m[1],mo=+m[2],day=+m[3],h=+(m[4]||0),mi=+(m[5]||0),ss=+(m[6]||0);
+ if(y<2020||mo<1||mo>12||day<1||day>31||h>23||mi>59||ss>59)return null;
+ const allDay=!m[4]||/VALUE=DATE(?:;|$)/i.test(params);
+ if(allDay)return {date:Date.UTC(y,mo-1,day,12),allDay:true};
+ let timestamp=Date.UTC(y,mo-1,day,h,mi,ss);
+ if(m[7])return {date:timestamp,allDay:false};
+ const tzMatch=params.match(/TZID=(?:"([^"]+)"|([^;:]+))/i),tz=tzMatch&&(tzMatch[1]||tzMatch[2]);
+ if(tz){try{for(let i=0;i<3;i++)timestamp=Date.UTC(y,mo-1,day,h,mi,ss)-icsZoneOffset(timestamp,tz)}catch{return {date:null,allDay:false}}}
+ return {date:timestamp,allDay:false};
+}
+function parseIcs(raw,src){
+ if(!/BEGIN:VCALENDAR/i.test(raw))throw Error('Non è un calendario iCalendar valido');
+ const lines=unfoldIcs(raw).split('\n');let obj=null;const out=[];
+ function finish(){
+  const start=obj?.DTSTART;if(!start)return;
+  const first=readIcsDate(start.val,start.params);if(!first||!Number.isFinite(first.date))return;
+  const end=obj.DTEND?readIcsDate(obj.DTEND.val,obj.DTEND.params):null;
+  const title=textOnly(icsUnescape(obj.SUMMARY?.val||'Evento motorsport'));
+  const loc=textOnly(icsUnescape(obj.LOCATION?.val||''));
+  const desc=textOnly(icsUnescape(obj.DESCRIPTION?.val||''));
+  const rawLink=obj.URL?.val||desc.match(/https?:\/\/[^\s\\]+/i)?.[0]||'';
+  const link=safeUrl(rawLink)||src.url;
+  if(!title)return;
+  out.push({id:src.id+':'+(obj.UID?.val||first.date+':'+title),name:title,date:first.date,allDay:first.allDay,end:end?.date||null,category:src.category,place:loc,desc:desc.slice(0,170),link:link,source:src.name});
+ }
+ for(const line of lines){
+  if(line==='BEGIN:VEVENT'){obj={};continue}
+  if(line==='END:VEVENT'){if(obj)finish();obj=null;continue}
+  if(!obj)continue;
+  const i=line.indexOf(':');if(i<1)continue;
+  const lhs=line.slice(0,i),key=lhs.split(';')[0].toUpperCase();
+  if(['SUMMARY','DTSTART','DTEND','UID','LOCATION','URL','DESCRIPTION','STATUS'].includes(key))obj[key]={params:lhs.slice(key.length),val:line.slice(i+1)};
+ }
+ return out;
+}
+async function readCalendarSource(src){return parseIcs(await fetchText(src.url,14000),src)}
+async function loadCalendar(force){
+ if(calendar.loading)return;
+ const enabled=calendar.sources.filter(x=>x.enabled);
+ if(!enabled.length){calendar.err='Nessuna fonte calendario attiva.';render();return}
+ if(!force&&calendar.updated&&Date.now()-new Date(calendar.updated).getTime()<Number(state.settings.calInterval||3)*3600000&&calendar.items.length){render();return}
+ calendar.loading=true;calendar.err='';render();updateRefreshIcon();
+ const fetched=await Promise.allSettled(enabled.map(readCalendarSource));let ok=0,items=[];
+ fetched.forEach((r,i)=>{if(r.status==='fulfilled'){ok++;items.push(...r.value)}else console.warn('Calendario non disponibile:',enabled[i].name,r.reason)});
+ if(ok){const seen=new Set();calendar.items=items.sort((a,b)=>a.date-b.date).filter(x=>{const k=x.category+':'+x.name.toLocaleLowerCase()+':'+x.date;if(seen.has(k))return false;seen.add(k);return true}).slice(0,2500);calendar.updated=new Date().toISOString();store('amb_calendar_cache_v1',calendar.items);store('amb_calendar_updated_v1',calendar.updated)}
+ if(!ok)calendar.err='Non è stato possibile scaricare i calendari. Controlla Internet o le fonti .ics. I dati precedenti restano disponibili.';
+ else if(ok<enabled.length)calendar.err='Aggiornate '+ok+' fonti su '+enabled.length+'. Alcuni calendari non sono raggiungibili.';
+ calendar.loading=false;render();updateRefreshIcon();
+}
+function formatDay(d){return new Date(d).toLocaleDateString('it-IT',{timeZone:'Europe/Rome',weekday:'short',day:'2-digit',month:'short'})}
+function calendarVisible(){
+ const now=Date.now(),upper=now+Number(calendar.range)*86400000;
+ return calendar.items.filter(e=>e.date>=now-86400000&&e.date<=upper&&(calendar.category==='Tutte'||e.category===calendar.category)&&(!calendar.query||[e.name,e.place,e.category].join(' ').toLocaleLowerCase().includes(calendar.query.toLocaleLowerCase())));
+}
+function formatCalHour(e){if(e.allDay)return '<span>Orario da confermare</span>';return '<span>'+new Date(e.date).toLocaleTimeString('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit',hour12:false})+'</span><small>ora italiana (Roma)</small>'}
+function calendarWatch(e){const g=WATCH_GUIDE[e.category];return g?'<div class="cal-watch">Dove seguire: <strong>'+esc(g.label)+'</strong> <small>· guida generale Italia</small></div>':''}
+function calEvents(){
+ const list=calendarVisible();if(!list.length)return '<div class="empty"><div class="empty-icon">▦</div><h3>Nessun evento nel periodo</h3><p>Prova a estendere il periodo o ad attivare altre fonti calendario.</p><button class="btn tiny" onclick="calendar.range=\'365\';render()">Mostra 12 mesi</button></div>';
+ let out='',group='';for(const e of list){const month=new Date(e.date).toLocaleDateString('it-IT',{timeZone:'Europe/Rome',month:'long',year:'numeric'});
+  if(month!==group){if(group)out+='</div>';out+='<h2 class="cal-month">'+esc(month.charAt(0).toUpperCase()+month.slice(1))+'</h2><div class="cal-list">';group=month}
+  const d=new Date(e.date),day=d.toLocaleDateString('it-IT',{timeZone:'Europe/Rome',day:'2-digit'}),wd=d.toLocaleDateString('it-IT',{timeZone:'Europe/Rome',weekday:'short'});
+  const w=WATCH_GUIDE[e.category],link=safeUrl(e.link),watch=w?safeUrl(w.url):'';
+  out+='<article class="cal-event"><div class="cal-date"><span>'+esc(wd)+'</span><strong>'+esc(day)+'</strong></div><div class="cal-data"><div class="cal-row"><span class="category-label">'+esc(e.category)+'</span><span class="source-label">'+esc(e.source)+'</span></div><h3 class="cal-title">'+esc(e.name)+'</h3><div class="cal-time">'+formatCalHour(e)+'</div>'+(e.place?'<div class="cal-watch">📍 '+esc(e.place)+'</div>':'')+calendarWatch(e)+'<div class="cal-links">'+(link?'<a class="cal-link" href="'+esc(link)+'">Programma ↗</a>':'')+(watch?'<a class="cal-link primary-link" href="'+esc(watch)+'">Dove vedere ↗</a>':'')+'</div></div></article>';
+ }return out+'</div>';
+}
+function calendarView(){
+ if(calendar.manage)return calendarSourcesView();
+ const count=calendarVisible().length;
+ return '<div class="kicker">EVENTI & GARE · A.M.B.</div><div class="calendar-head"><div><h1 class="page-title">Calendario motorsport</h1><p class="lede">Prossime gare, orari in Italia e collegamenti per seguirle.</p></div><div class="calendar-actions"><button class="btn tiny" onclick="calendar.manage=true;render()">⚙ Fonti</button></div></div>'+
+ '<div class="statusline"><span class="statusdot '+(calendar.loading?'busy':calendar.updated?'':'off')+'"></span><span>'+(calendar.loading?'Aggiornamento calendari…':calendar.updated?'Sincronizzato · '+ago(new Date(calendar.updated).getTime()).toLowerCase():'In attesa del primo aggiornamento')+'</span><span>·</span><span>'+calendar.sources.filter(x=>x.enabled).length+' calendari</span></div>'+
+ '<div class="categories cal-filters" aria-label="Filtra categoria gare">'+CATS.filter(x=>x!=='Personali').map(c=>'<button class="cat '+(calendar.category===c?'active':'')+'" onclick="calendar.category=\''+c+'\';render()">'+esc(c)+'</button>').join('')+'</div>'+
+ '<div class="cal-tools"><div class="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" placeholder="Cerca evento" aria-label="Cerca nel calendario" value="'+esc(calendar.query)+'" oninput="calendarSearch(this.value)" id="cal-search"></div><select aria-label="Periodo da mostrare" onchange="calendar.range=this.value;render()">'+[['30','30 giorni'],['90','3 mesi'],['180','6 mesi'],['365','12 mesi']].map(x=>'<option value="'+x[0]+'" '+(calendar.range===x[0]?'selected':'')+'>'+x[1]+'</option>').join('')+'</select></div>'+
+ '<div class="section-head"><h2>Prossimi appuntamenti</h2><span class="counter">'+count+' eventi</span></div>'+(calendar.err?'<div class="alert">'+esc(calendar.err)+'</div>':'')+
+ calEvents()+'<p class="cal-foot">I calendari vengono aggiornati automaticamente all’apertura e durante l’uso dell’app. Gli orari mancanti sono indicati come da confermare. Le emittenti sono guide generali per l’Italia: controlla la programmazione del singolo evento sui siti collegati. Fonti calendario: GreenFlag TV, basate sui programmi pubblicati dagli organizzatori.</p>';
+}
+function calendarSearch(q){calendar.query=q;const elem=document.getElementById('cal-search'),start=elem?.selectionStart??q.length;render();const next=document.getElementById('cal-search');next?.focus();try{next?.setSelectionRange(start,start)}catch{}}
+function calendarSourcesView(){return '<div class="kicker">CALENDARIO & SORGENTI</div><div class="calendar-head"><div><h1 class="page-title">Fonti del calendario</h1><p class="lede">Scegli le categorie e aggiungi calendari iCalendar (.ics) di altri siti.</p></div><button class="btn tiny" onclick="calendar.manage=false;render()">← Gare</button></div><div class="section-head"><h2>'+calendar.sources.length+' fonti</h2><button class="btn primary tiny" onclick="calendar.adding=!calendar.adding;calendar.sourceError=\'\';render()">'+(calendar.adding?'Chiudi':'＋ Aggiungi .ics')+'</button></div>'+
+ (calendar.adding?'<form class="panel" onsubmit="addCalendarSource(event)"><div class="form-row"><label for="cal-name">Nome calendario</label><input id="cal-name" required maxlength="60" placeholder="Es. Campionato locale"><label for="cal-url">URL diretto al calendario .ics</label><input id="cal-url" type="url" required placeholder="https://esempio.it/eventi.ics"><label for="cal-cat">Categoria</label><select id="cal-cat">'+CATS.filter(x=>x!=='Tutte'&&x!=='Personali').map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select></div><p class="helper">Il sito deve pubblicare un feed iCalendar accessibile in HTTPS. L’app non inventa orari né emittenti mancanti.</p>'+(calendar.sourceError?'<div class="alert">'+esc(calendar.sourceError)+'</div>':'')+'<div class="form-actions"><button type="button" class="btn" onclick="calendar.adding=false;render()">Annulla</button><button id="cal-add-btn" class="btn primary" type="submit">Aggiungi</button></div></form>':'')+
+ calendar.sources.map((s,i)=>'<div class="cal-source-card"><div class="cal-source-info"><strong>'+esc(s.name)+'</strong><small>'+esc(s.category)+' · '+(s.locked?'Predefinita':'Personalizzata')+'</small><small>'+esc(s.url)+'</small></div><div class="cal-source-actions"><button class="switch '+(s.enabled?'active':'')+'" aria-label="'+(s.enabled?'Disattiva':'Attiva')+' '+esc(s.name)+'" aria-checked="'+!!s.enabled+'" role="switch" onclick="toggleCalendarSource('+i+')"></button>'+(s.locked?'':'<button class="delete-btn" aria-label="Elimina fonte calendario" onclick="removeCalendarSource('+i+')">×</button>')+'</div></div>').join('')+'<p class="cal-foot">I calendari vengono salvati su questo telefono. Il calendario usa feed esterni: alcune fonti potrebbero temporaneamente non rispondere o cambiare indirizzo.</p>'}
+function toggleCalendarSource(i){if(!calendar.sources[i])return;calendar.sources[i].enabled=!calendar.sources[i].enabled;calendarSave();loadCalendar(true)}
+function removeCalendarSource(i){if(!calendar.sources[i]||calendar.sources[i].locked)return;if(confirm('Rimuovere questa fonte calendario?')){calendar.sources.splice(i,1);calendarSave();loadCalendar(true)}}
+async function addCalendarSource(e){e.preventDefault();const name=document.getElementById('cal-name')?.value.trim(),url=safeUrl(document.getElementById('cal-url')?.value),category=document.getElementById('cal-cat')?.value;
+ if(!name||!url)return;
+ const btn=document.getElementById('cal-add-btn');if(btn){btn.disabled=true;btn.textContent='Verifica…'}
+ try{if(calendar.sources.some(s=>s.url===url))throw Error('Questa fonte è già inserita.');const probe={id:'probe',category,url};const data=await readCalendarSource(probe);if(!data.length)throw Error('Calendario senza eventi riconosciuti.');calendar.sources.push({id:'cal-custom-'+Date.now(),name,category,url,enabled:true,locked:false});calendarSave();calendar.adding=false;loadCalendar(true)}catch(x){calendar.sourceError='Fonte non aggiunta: '+x.message;render();document.getElementById('cal-name').value=name;document.getElementById('cal-url').value=url;document.getElementById('cal-cat').value=category}
+}
+function maybeAutoCalendar(){if(!state.settings.calAuto)return;if(!calendar.updated||!calendar.items.length||Date.now()-new Date(calendar.updated).getTime()>=Number(state.settings.calInterval||3)*3600000)loadCalendar(false)}
+function render(){applyPrefs();main.innerHTML=state.tab==='news'?newsView():state.tab==='calendar'?calendarView():state.tab==='faves'?favesView():state.tab==='sources'?sourcesView():settingsView();document.querySelectorAll('.navtab').forEach(b=>{const yes=b.id==='tab-'+state.tab;b.classList.toggle('active',yes);b.setAttribute('aria-current',yes?'page':'false')});updateRefreshIcon()}
+function go(t){state.tab=t;state.query='';render();window.scrollTo(0,0);if(t==='calendar')maybeAutoCalendar()}
+function searchInput(v){state.query=v;const e=document.getElementById('q'),a=e?.selectionStart??v.length,b=e?.selectionEnd??v.length;render();const f=document.getElementById('q');f?.focus();try{f?.setSelectionRange(a,b)}catch{}}
+function selectCat(c){state.category=c;render()}
+function toggleSite(i){if(!state.sources[i])return;state.sources[i].enabled=!state.sources[i].enabled;persist();render();loadFeeds(true)}
+function deleteSite(i){const item=state.sources[i];if(!item||item.locked)return;if(confirm('Eliminare la fonte '+item.name+'?')){state.sources.splice(i,1);persist();render();loadFeeds(true)}}
+async function discoverFeed(address){const url=safeUrl(address);if(!url)throw Error('Inserisci un indirizzo web valido.');async function inspect(address){const data=await fetchText(address,9000);if(/<rss\b|<feed\b|<rdf:RDF\b/i.test(data.slice(0,3000))&&/<item\b|<entry\b/i.test(data))return address;if(/<html\b|<!doctype html/i.test(data.slice(0,2000))){const tags=data.match(/<link\b[^>]*>/gi)||[];for(const el of tags){if(/type\s*=\s*["']application\/(?:rss|atom)\+xml/i.test(el)){const m=el.match(/\bhref\s*=\s*["']([^"']+)/i);if(m)return new URL(m[1],address).href}}}throw Error('Nessun feed trovato')}
+try{return await inspect(url)}catch(e){if(/\/(?:rss|feed|atom)(?:\/|\.|$)|\.xml(?:\?|$)/i.test(new URL(url).pathname))return url}
+const base=new URL(url),host=base.origin,paths=['/feed/','/rss/','/rss.xml','/feed','/atom.xml'];for(const p of paths){try{return await inspect(host+p)}catch{}}
+throw Error('Il sito non espone un feed rilevabile. Inserisci l’URL RSS/Atom diretto.')}
+async function addSite(event){event.preventDefault();const name=document.getElementById('sname')?.value.trim(),address=document.getElementById('surl')?.value.trim(),category=document.getElementById('scat')?.value;if(!name||!safeUrl(address))return;const btn=document.getElementById('add-btn');if(btn){btn.disabled=true;btn.textContent='Verifica…'}state.sourceError='';try{const url=await discoverFeed(address);if(state.sources.some(s=>s.url===url))throw Error('Questa fonte è già presente.');state.sources.push({id:'custom-'+Date.now(),name,category,url,enabled:true,locked:false});persist();state.adding=false;render();loadFeeds(true)}catch(e){state.sourceError='Impossibile aggiungere la fonte: '+e.message;const form={name,address,category};render();document.getElementById('sname').value=form.name;document.getElementById('surl').value=form.address;document.getElementById('scat').value=form.category}}
+function clearCache(){if(!confirm('Svuotare la cache? I preferiti resteranno salvati.'))return;state.items=[];state.updated='';store('amb_news_cache_v1',[]);store('amb_refresh_time','');render()}
+render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.settings.auto||!state.items.length)loadFeeds(false);if(state.settings.calAuto)maybeAutoCalendar();setInterval(()=>{if(state.settings.calAuto)maybeAutoCalendar()},600000);
+</script>
+</body></html>
