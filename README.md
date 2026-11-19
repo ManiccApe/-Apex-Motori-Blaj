@@ -105,3 +105,7 @@ Test automatici del codice Java e dell'interfaccia web possono essere eseguiti l
 - Download HTTPS delle foto fino a 5 MB e miniature ridimensionate per il widget. Le immagini bloccate dagli editori possono comunque non comparire.
 - Nuove Impostazioni per le notizie: compatta/normale/ampia, articoli con foto a lato o sopra, foto piccole/medie/grandi e ritaglio o immagine intera.
 - Impostazioni mantenute tra gli avvii e nei backup.
+
+## Hotfix 2.5.2 — Lettore, cookie e scorrimento
+
+La 2.5.1 poteva nascondere banner cookie lasciando il sito con lo scorrimento bloccato. Nella 2.5.2 il lettore **non nasconde né preme** le scelte di consenso: è l'utente a decidere dal sito. Sono presenti Filtro ON/OFF, browser esterno ↗, reset esplicito dei cookie/dati delle testate visitate e accesso alla copia offline dal menu ⋮. Per installazione e limitazioni vedi `GUIDA_PATCH_2_5_2_IT_EN.md`.

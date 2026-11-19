@@ -312,7 +312,7 @@ body.spacious[data-article-layout="stacked"] .article-info{min-height:120px}
 </nav>
 <script>
 'use strict';
-const APP_VERSION='2.5.1';
+const APP_VERSION='2.5.2';
 const TMREXH_BRAND_ICON='https://www.google.com/s2/favicons?domain=tmrexh.it&sz=256';
 
 const CATS=['Tutte','F1','WRC','WEC','GT3','MotoGP','Auto','Personali'];
@@ -1349,7 +1349,7 @@ calendarView=function(){
  '<p class="cal-foot">Le ore sono convertite in Europe/Rome. Le disponibilità TV sono indicazioni generali, non conferme di trasmissione. Le manifestazioni locali richiedono fonti con dati verificabili.</p>';
 };
 const ambSettingsBefore251=settingsView;
-settingsView=function(){return ambSettingsBefore251().replaceAll('Versione 2.5 ·','Versione 2.5.1 ·').replaceAll('· v2.5','· v2.5.1').replace('Rosso A.M.B. rimane quella predefinita.','Il colore scelto sostituisce l’accento dell’intera interfaccia.')};
+settingsView=function(){return ambSettingsBefore251().replaceAll('Versione 2.5 ·','Versione 2.5.2 ·').replaceAll('· v2.5','· v2.5.2').replace('Rosso A.M.B. rimane quella predefinita.','Il colore scelto sostituisce l’accento dell’intera interfaccia.')};
 
 render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.settings.auto||!state.items.length)maybeAutoNews();if(state.settings.calAuto)maybeAutoCalendar();document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(state.settings.calAuto)maybeAutoCalendar();if(state.settings.auto)maybeAutoNews()}});
 </script>

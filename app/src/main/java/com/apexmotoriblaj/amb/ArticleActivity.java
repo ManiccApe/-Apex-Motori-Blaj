@@ -1,6 +1,7 @@
 package com.apexmotoriblaj.amb;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -16,6 +17,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebStorage;
 import android.os.Build;
 import android.view.WindowManager;
 import android.view.WindowInsets;
@@ -23,18 +26,20 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.PopupMenu;
 import org.json.JSONArray;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/** Internal ad-filtered reader with automatic offline preference and optional EN->IT translation. */
+/** Publisher-native WebView reader with user-controlled consent, ad filtering and offline fallback. */
 public final class ArticleActivity extends Activity {
     private WebView browser;
     private String originalUrl;
     private boolean local;
-    private String readerCache;
     private int requestToken=0;
     private Button readerButton;
+    private Button blockerButton;
+    private volatile boolean adBlockEnabled=true;
     private View amberOverlay;
     private boolean warmReading=false;
     private final ExecutorService background=Executors.newSingleThreadExecutor();
@@ -66,46 +71,91 @@ public final class ArticleActivity extends Activity {
             view.setPadding(left,top,right,bottom);
             return insets;
         });
-        LinearLayout nav=new LinearLayout(this);nav.setOrientation(LinearLayout.HORIZONTAL);
-        nav.setPadding(dp(3),dp(5),dp(3),dp(5));nav.setBackgroundColor(Color.rgb(17,17,17));
-        Button back=button("‹");back.setOnClickListener(v->finish());nav.addView(back,new LinearLayout.LayoutParams(dp(43),dp(47)));
-        TextView name=new TextView(this);name.setText("A.M.B.");name.setTextSize(14);name.setTextColor(Color.WHITE);name.setGravity(17);
-        nav.addView(name,new LinearLayout.LayoutParams(0,dp(47),1));
-        readerButton=button("Lettura");readerButton.setContentDescription("Attiva tonalità calda e luminosità ridotta senza nascondere le foto");
-        readerButton.setOnClickListener(v->showReader());nav.addView(readerButton,new LinearLayout.LayoutParams(dp(72),dp(47)));
-        Button original=button("Orig.");original.setContentDescription("Visualizza l'articolo originale");original.setOnClickListener(v->showOriginal());nav.addView(original,new LinearLayout.LayoutParams(dp(52),dp(47)));
-        Button translate=button("IT");translate.setContentDescription("Traduci in italiano");translate.setOnClickListener(v->showTranslation());nav.addView(translate,new LinearLayout.LayoutParams(dp(39),dp(47)));
-        Button external=button("↗");external.setContentDescription("Sito originale");external.setOnClickListener(v->{try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(originalUrl)));}catch(Exception e){Toast.makeText(this,"Browser non disponibile",Toast.LENGTH_SHORT).show();}});
-        nav.addView(external,new LinearLayout.LayoutParams(dp(43),dp(47)));root.addView(nav);
+        // Two-row toolbar: no clipped controls at 320 dp or with large font scaling.
+        LinearLayout nav=new LinearLayout(this);nav.setOrientation(LinearLayout.VERTICAL);
+        nav.setPadding(dp(3),dp(4),dp(3),dp(4));nav.setBackgroundColor(Color.rgb(17,17,17));
+        LinearLayout header=new LinearLayout(this);header.setOrientation(LinearLayout.HORIZONTAL);
+        Button back=button("‹");back.setContentDescription("Chiudi l'articolo");back.setOnClickListener(v->finish());
+        header.addView(back,new LinearLayout.LayoutParams(dp(44),dp(45)));
+        TextView name=new TextView(this);name.setText("A.M.B. · Articolo");name.setTextSize(14);
+        name.setTextColor(Color.WHITE);name.setGravity(17);
+        header.addView(name,new LinearLayout.LayoutParams(0,dp(45),1));
+        Button external=button("↗");external.setContentDescription("Apri questo articolo nel browser del telefono");
+        external.setOnClickListener(v->openExternal());
+        header.addView(external,new LinearLayout.LayoutParams(dp(45),dp(45)));
+        Button more=button("⋮");more.setContentDescription("Altre opzioni: offline, ricarica, dati dei siti");
+        more.setOnClickListener(v->showMoreMenu(more));
+        header.addView(more,new LinearLayout.LayoutParams(dp(44),dp(45)));
+        nav.addView(header);
+
+        LinearLayout actions=new LinearLayout(this);actions.setOrientation(LinearLayout.HORIZONTAL);
+        readerButton=button("Lettura");
+        readerButton.setContentDescription("Attiva tonalità calda e luminosità ridotta senza nascondere le foto");
+        readerButton.setOnClickListener(v->showReader());
+        actions.addView(readerButton,new LinearLayout.LayoutParams(0,dp(45),1.3f));
+        Button original=button("Originale");original.setContentDescription("Carica l'articolo online con il suo consenso cookie");
+        original.setOnClickListener(v->showOriginal());
+        actions.addView(original,new LinearLayout.LayoutParams(0,dp(45),1.4f));
+        Button translate=button("IT");translate.setContentDescription("Traduci in italiano");
+        translate.setOnClickListener(v->showTranslation());
+        actions.addView(translate,new LinearLayout.LayoutParams(0,dp(45),0.65f));
+        adBlockEnabled=getSharedPreferences("amb_reader",MODE_PRIVATE).getBoolean("adblock",true);
+        blockerButton=button("Filtro ON");blockerButton.setOnClickListener(v->toggleAdBlock());
+        actions.addView(blockerButton,new LinearLayout.LayoutParams(0,dp(45),1.35f));
+        nav.addView(actions);root.addView(nav);
+
         browser=new WebView(this);browser.setBackgroundColor(Color.BLACK);
-        browser.getSettings().setDomStorageEnabled(true);
-        CookieManager.getInstance().setAcceptCookie(true); // Keep publisher's essential refusal preference.
-        CookieManager.getInstance().setAcceptThirdPartyCookies(browser,false);
-        browser.getSettings().setMediaPlaybackRequiresUserGesture(true);
-        browser.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        browser.getSettings().setSupportZoom(true);
-        browser.getSettings().setBuiltInZoomControls(true);
-        browser.getSettings().setDisplayZoomControls(false);
+        // Preserve the real publisher page: its scrolling, CMP dialogs and user decision.
+        WebSettings settings=browser.getSettings();
+        settings.setDomStorageEnabled(true);
+        settings.setJavaScriptEnabled(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(false);
+        settings.setSupportMultipleWindows(false); // Keep target=_blank links inside the same reader.
+        settings.setMediaPlaybackRequiresUserGesture(true);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+        browser.setVerticalScrollBarEnabled(true);
+        browser.setHorizontalScrollBarEnabled(false);
+        browser.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        CookieManager cookies=CookieManager.getInstance();
+        cookies.setAcceptCookie(true);
+        // Some CMPs require cross-site cookie storage to remember the user's own choice.
+        // This does not click any consent buttons: the publisher asks the user directly.
+        cookies.setAcceptThirdPartyCookies(browser,true);
+        refreshBlockerButton();
         browser.setWebViewClient(new WebViewClient(){
             @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){
+                if(!adBlockEnabled || request.isForMainFrame())return null;
                 String url=request.getUrl().toString();
                 return AdBlock.blocked(url)?AdBlock.empty():null;
             }
-            @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest r){
-                String u=r.getUrl().toString();
-                if(u.startsWith("https://"))return false;
-                try{startActivity(new Intent(Intent.ACTION_VIEW,r.getUrl()));}catch(Exception ignored){}
-                return true;
+            @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){
+                return handleNavigation(request.getUrl());
+            }
+            @Override public boolean shouldOverrideUrlLoading(WebView view,String url){
+                return handleNavigation(Uri.parse(url));
             }
             @Override public void onPageFinished(WebView view,String url){
-                if(url.startsWith("https://"))applyPageFilters(view);
+                // DO NOT inject CSS/JS into third-party pages, hide CMP dialogs or click Reject.
+                // Concealing a CMP while it locks document scrolling causes a frozen article.
+                CookieManager.getInstance().flush();
+            }
+            @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError error){
+                if(request.isForMainFrame() && !local){
+                    String cached=OfflineStore.path(ArticleActivity.this,originalUrl);
+                    if(cached!=null){
+                        runOnUiThread(()->{
+                            if(browser==null)return;
+                            Toast.makeText(ArticleActivity.this,"Sito non raggiungibile: mostro la copia offline",Toast.LENGTH_SHORT).show();
+                            loadOffline(cached);
+                        });
+                    }
+                }
             }
         });
-        browser.setWebChromeClient(new WebChromeClient(){
-            @Override public void onProgressChanged(WebView view,int progress){
-                if(progress>=35&&progress<100&&view.getUrl()!=null&&view.getUrl().startsWith("https://"))applyPageFilters(view);
-            }
-        });
+        browser.setWebChromeClient(new WebChromeClient()); // Allow ordinary JavaScript prompts/dialogs.
         FrameLayout contentFrame=new FrameLayout(this);
         contentFrame.addView(browser,new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
         amberOverlay=new View(this);
@@ -118,21 +168,93 @@ public final class ArticleActivity extends Activity {
         setContentView(root);
         showOriginal();
     }
-    private void applyPageFilters(WebView w){
-        if(w!=null && w.getSettings().getJavaScriptEnabled())w.evaluateJavascript(AdBlock.cosmeticScript(),null);
+    private boolean handleNavigation(Uri url){
+        String scheme=url==null?null:url.getScheme();
+        if("https".equalsIgnoreCase(scheme)||"http".equalsIgnoreCase(scheme))return false;
+        if("intent".equalsIgnoreCase(scheme)){
+            // Do not run arbitrary intent:// payloads from an untrusted publisher page.
+            Toast.makeText(this,"Apri il collegamento nel browser del telefono",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        // mailto:, tel:, etc. remain opt-in via Android's normal chooser.
+        if("mailto".equalsIgnoreCase(scheme)||"tel".equalsIgnoreCase(scheme)){
+            try{startActivity(new Intent(Intent.ACTION_VIEW,url));}catch(Exception ignored){}
+        }
+        return true;
+    }
+    private void openExternal(){
+        String current=browser==null?null:browser.getUrl();
+        if(current==null||!current.startsWith("https://"))current=originalUrl;
+        try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(current)));}
+        catch(Exception e){Toast.makeText(this,"Browser non disponibile",Toast.LENGTH_SHORT).show();}
+    }
+    private void refreshBlockerButton(){
+        if(blockerButton==null)return;
+        blockerButton.setText(adBlockEnabled?"Filtro ON":"Filtro OFF");
+        blockerButton.setContentDescription(adBlockEnabled?
+            "Filtro annunci attivo; tocca per disattivarlo e ricaricare la pagina se il sito non funziona":
+            "Filtro annunci disattivato; tocca per riattivarlo");
+    }
+    private void toggleAdBlock(){
+        adBlockEnabled=!adBlockEnabled;
+        getSharedPreferences("amb_reader",MODE_PRIVATE).edit().putBoolean("adblock",adBlockEnabled).apply();
+        refreshBlockerButton();
+        Toast.makeText(this,adBlockEnabled?"Filtro annunci attivato":"Filtro disattivato: il sito potrà caricare anche gli annunci",Toast.LENGTH_SHORT).show();
+        // The intercepted requests cannot be restored without reloading the online page.
+        showOriginal();
+    }
+    private void showMoreMenu(View anchor){
+        PopupMenu popup=new PopupMenu(this,anchor);
+        popup.getMenu().add(0,1,0,"Ricarica il sito");
+        String cached=OfflineStore.path(this,originalUrl);
+        if(cached!=null)popup.getMenu().add(0,2,1,"Apri copia offline");
+        popup.getMenu().add(0,3,2,"Azzera cookie e dati dei siti…");
+        popup.setOnMenuItemClickListener(item->{
+            int id=item.getItemId();
+            if(id==1){showOriginal();return true;}
+            if(id==2){String offline=OfflineStore.path(this,originalUrl);if(offline!=null)loadOffline(offline);return true;}
+            if(id==3){confirmClearSiteData();return true;}
+            return false;
+        });
+        popup.show();
+    }
+    private void confirmClearSiteData(){
+        new AlertDialog.Builder(this)
+          .setTitle("Azzera i dati dei siti?")
+          .setMessage("Elimina cookie e dati web di TUTTE le testate visitate con A.M.B. Potresti dover effettuare nuovamente l'accesso e scegliere di nuovo i cookie. I Preferiti e gli articoli salvati non vengono cancellati.")
+          .setNegativeButton("Annulla",(dialog,which)->{})
+          .setPositiveButton("Azzera",(dialog,which)->{
+              CookieManager.getInstance().removeAllCookies(ok->{
+                  CookieManager.getInstance().flush();
+                  WebStorage.getInstance().deleteAllData();
+                  runOnUiThread(()->{
+                      if(browser!=null)browser.clearCache(true);
+                      showOriginal();
+                  });
+              });
+          }).show();
+    }
+    private void loadOffline(String path){
+        if(browser==null||path==null)return;
+        requestToken++;local=true;setWarm(false);
+        browser.getSettings().setAllowFileAccess(true);
+        browser.getSettings().setAllowFileAccessFromFileURLs(false);
+        browser.getSettings().setAllowUniversalAccessFromFileURLs(false);
+        browser.getSettings().setJavaScriptEnabled(false);
+        browser.loadUrl("file://"+path);
     }
     private int dp(int d){return Math.round(d*getResources().getDisplayMetrics().density);}
     private Button button(String label){Button b=new Button(this);b.setText(label);b.setAllCaps(false);b.setTextColor(Color.WHITE);b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.rgb(32,32,32)));b.setPadding(0,0,0,0);b.setTextSize(12);return b;}
     private void showOriginal(){
         if(browser==null)return;
-        requestToken++;setWarm(false);
-        String file=OfflineStore.path(this,originalUrl);
-        local=file!=null;
-        browser.getSettings().setAllowFileAccess(local);
+        requestToken++;local=false;setWarm(false);
+        browser.getSettings().setAllowFileAccess(false);
         browser.getSettings().setAllowFileAccessFromFileURLs(false);
         browser.getSettings().setAllowUniversalAccessFromFileURLs(false);
-        browser.getSettings().setJavaScriptEnabled(!local);
-        browser.loadUrl(local?"file://"+file:originalUrl);
+        browser.getSettings().setJavaScriptEnabled(true);
+        // Original always means live publisher site, so the CMP can request consent.
+        // Previously a saved offline copy could silently override the live article.
+        browser.loadUrl(originalUrl);
     }
     private void showTranslation(){
         if(browser==null)return;
@@ -185,5 +307,6 @@ public final class ArticleActivity extends Activity {
         });
     }
     @Override public void onBackPressed(){if(browser!=null&&browser.canGoBack())browser.goBack();else super.onBackPressed();}
+    @Override protected void onPause(){CookieManager.getInstance().flush();super.onPause();}
     @Override protected void onDestroy(){if(browser!=null){browser.destroy();browser=null;}background.shutdownNow();super.onDestroy();}
 }
