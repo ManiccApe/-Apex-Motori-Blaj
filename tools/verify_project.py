@@ -29,9 +29,13 @@ assert 'limitedResults(active,4,readFeed)' in web
 assert 'auto-topic-select' in web
 assert 'transparent' in (root/'app/src/main/java/com/apexmotoriblaj/amb/WidgetConfigActivity.java').read_text()
 assert 'minSdk 29' in (root/'app/build.gradle').read_text()
-assert "versionName '2.5'" in (root/'app/build.gradle').read_text()
+assert "versionName '2.5.1'" in (root/'app/build.gradle').read_text()
 for cls in ['OfflineStore','TranslateManager','AdBlock','NotificationScheduler']:
     assert (root/f'app/src/main/java/com/apexmotoriblaj/amb/{cls}.java').is_file(), cls
 assert 'auto-tmrexh' in web and 'ambCalFilters' in web and 'ambCardTap' in web
 assert len(__import__('re').findall(r'"candidate": true',web)) >= 20
+assert 'ambCalendarPick' in web and 'ambCalendarAddEvent' in web
+assert 'amb_logo.webp' in web and (root/'app/src/main/assets/amb_logo.webp').is_file()
+assert 'amb_tmrexh_archive_251' in web
+assert (root/'app/src/main/res/drawable/ic_racing_car_notification.xml').is_file()
 print('OK: JS syntax, >=8 Android classes, category filters and widget themes verified')

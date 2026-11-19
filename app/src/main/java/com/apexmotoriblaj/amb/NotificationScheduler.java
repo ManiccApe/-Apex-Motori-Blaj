@@ -76,7 +76,7 @@ public final class NotificationScheduler extends JobService {
         Intent intent=new Intent(this,MainActivity.class);
         PendingIntent pi=PendingIntent.getActivity(this,id,intent,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
         Notification.Builder b=Build.VERSION.SDK_INT>=26?new Notification.Builder(this,CHANNEL):new Notification.Builder(this);
-        b.setContentTitle(title).setContentText(desc).setSmallIcon(android.R.drawable.ic_dialog_info)
+        b.setContentTitle(title).setContentText(desc).setSmallIcon(R.drawable.ic_racing_car_notification)
             .setContentIntent(pi).setAutoCancel(true).setStyle(new Notification.BigTextStyle().bigText(desc));
         m.notify(id,b.build());
     }

@@ -253,12 +253,52 @@ body.spacious[data-article-layout="stacked"] .article-info{min-height:120px}
 .article-photo.tmrexh-brand img{position:absolute;inset:12%;width:76%;height:76%;object-fit:contain!important;image-rendering:auto;}
 .article-photo.tmrexh-brand .article-plain-mark{font-size:.84rem;}
 
+
+/* A.M.B. v2.5.1: all UI accents follow the selected palette, without residual red chips. */
+.brandmark{background:var(--card)!important;border:1px solid var(--line);overflow:hidden;padding:0!important}
+.brandmark img{width:100%;height:100%;object-fit:contain;display:block}
+:root .cat.active,
+:root[data-theme="amoled"] .cat.active,
+:root[data-theme="dark"] .cat.active{background:var(--accentSoft)!important;border-color:var(--accent)!important;color:var(--accentInk)!important}
+:root .navtab.active, :root[data-theme="amoled"] .navtab.active{background:var(--accentSoft)!important;color:var(--accentInk)!important}
+.amb-heart-burst{color:var(--accent)!important}
+.amb-setting-select:focus-visible,.amb-subcat:focus-visible{border-color:var(--accent)}
+/* Calendar grid: seven visible weekdays, separate, tappable events with motorsport colors. */
+.amb-month-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:13px 0 10px}
+.amb-month-title{font-size:1.1rem;margin:0;flex:1;text-align:center;font-weight:850;text-transform:capitalize}
+.amb-month-nav{min-width:37px;height:37px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;font-size:1.2rem}
+.amb-month-today{font-size:.72rem;background:var(--accentSoft);color:var(--accentInk);padding:8px 10px;border-radius:9px;border:1px solid var(--accent)}
+.amb-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;width:100%;min-width:0}
+.amb-weekday{font-size:.66rem;font-weight:850;color:var(--sub);text-align:center;padding:9px 0 5px}
+.amb-day{position:relative;min-width:0;height:clamp(54px,12vw,88px);padding:6px 2px 4px;display:flex;align-items:center;flex-direction:column;gap:4px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.amb-day.other-month{opacity:.42}
+.amb-day.today .amb-daynum{background:var(--accentSoft);color:var(--accentInk);border-radius:30px}
+.amb-day.selected{border:2px solid var(--accent);padding:5px 1px 3px;background:var(--faint)}
+.amb-daynum{font-size:.81rem;font-weight:850;min-width:22px;line-height:21px;padding:0 2px}
+.amb-event-dots{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:3px;max-height:22px;overflow:hidden}
+.amb-event-dot{display:block;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.amb-daycount{font-size:.58rem;color:var(--sub);font-weight:850;line-height:1}
+.amb-day-agenda{margin-top:15px;padding-top:12px;border-top:1px solid var(--line)}
+.amb-day-agenda h2{font-size:.94rem;font-weight:850;margin:0 0 9px}
+.amb-agenda-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:9px}
+.amb-agenda-event{border-left:4px solid var(--accent);background:var(--card);border-radius:11px;padding:12px;min-width:0;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.amb-agenda-event h3{font-size:.84rem;margin:5px 0 8px;line-height:1.35}
+.amb-agenda-meta{font-size:.74rem;color:var(--sub);line-height:1.45;margin:5px 0}
+.amb-agenda-name{font-size:.68rem;font-weight:850}
+.amb-agenda-none{font-size:.78rem;color:var(--sub);padding:15px;background:var(--card);border:1px solid var(--line);border-radius:11px}
+.amb-category-legend{display:flex;gap:6px 12px;flex-wrap:wrap;margin:12px 0;font-size:.67rem;color:var(--sub)}
+.amb-category-legend span{white-space:nowrap}
+.amb-category-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.amb-technical-archive{display:flex;justify-content:flex-end;margin:5px 0 10px}
+.amb-technical-archive a{color:var(--accentInk);font-size:.73rem;text-decoration:underline}
+@media(max-width:370px){.amb-calendar-grid{gap:2px}.amb-day{height:53px;border-radius:6px;padding:5px 1px}.amb-daynum{font-size:.71rem}.amb-event-dot{width:5px;height:5px}}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header class="top"><div class="top-inner">
- <div class="brand"><div class="brandmark" aria-hidden="true">A.M.B.</div><div><div class="brandname">Apex Motori Blaj</div><div class="branddesc">MOTORSPORT NEWS</div></div></div>
+ <div class="brand"><div class="brandmark" aria-hidden="true"><img src="amb_logo.webp" alt="" width="46" height="43"></div><div><div class="brandname">Apex Motori Blaj</div><div class="branddesc">MOTORSPORT NEWS</div></div></div>
  <button id="refresh" class="refreshBtn" aria-label="Aggiorna la sezione corrente" title="Aggiorna" onclick="refreshCurrent()"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9a7.3 7.3 0 0 1 12.9-2L20 12M4 12l1.5 5A7.3 7.3 0 0 0 18.5 15"/></svg></button>
 </div></header>
 <main id="main" class="screen" aria-live="polite"></main>
@@ -272,7 +312,7 @@ body.spacious[data-article-layout="stacked"] .article-info{min-height:120px}
 </nav>
 <script>
 'use strict';
-const APP_VERSION='2.5';
+const APP_VERSION='2.5.1';
 const TMREXH_BRAND_ICON='https://www.google.com/s2/favicons?domain=tmrexh.it&sz=256';
 
 const CATS=['Tutte','F1','WRC','WEC','GT3','MotoGP','Auto','Personali'];
@@ -1177,6 +1217,139 @@ function ambTranslateChrome(){
 // Only show the first-run dialog once, after the app has loaded and never before the user can decline.
 setTimeout(()=>{if(!readStore('amb_notif_explained25',false))ambShowPermission()},900);
 
+
+
+/* ===== 2.5.1: stable technical archive, true month view and palette consistency ===== */
+const AMB_CATEGORY_COLORS={'F1':'#e8615a','WRC':'#d9963d','WEC':'#32a9a5','GT3':'#a98cec','MotoGP':'#669fe5','Locali':'#69b88f'};
+const AMB_TECH_KEY='amb_tmrexh_archive_251';
+let ambTechnicalArchive=readStore(AMB_TECH_KEY,[]);
+if(!Array.isArray(ambTechnicalArchive))ambTechnicalArchive=[];
+function ambTechnical(x){return x&&(/TmRexh/i.test(x.source||'')||String(x.id||'').startsWith('auto-tmrexh:'))}
+function ambSaveTechnicalArchive(rows){
+ const all=[...(Array.isArray(rows)?rows:[]),...ambTechnicalArchive].filter(x=>ambTechnical(x)&&safeUrl(x.link));
+ const seen=new Set();ambTechnicalArchive=all.sort((a,b)=>(b.date||0)-(a.date||0)).filter(x=>{if(seen.has(x.link))return false;seen.add(x.link);return true}).slice(0,500);
+ store(AMB_TECH_KEY,ambTechnicalArchive);
+}
+ambSaveTechnicalArchive(state.items);
+let ambTechFetching=false;
+async function ambFetchTechnical(){
+ if(ambTechFetching)return;
+ const source=state.sources.find(x=>x.id==='auto-tmrexh');if(!source||!source.enabled)return;
+ ambTechFetching=true;
+ try{const rows=await readFeed(source);ambSaveTechnicalArchive(rows);if(state.tab==='news'&&ambSubcat==='Articoli tecnici')render()}
+ catch(e){console.warn('Archivio tecnico: feed non disponibile, mostra la cache locale',e)}
+ finally{ambTechFetching=false}
+}
+const ambVisibleBefore251=visible;
+visible=function(){
+ if(state.tab==='news'&&state.category==='Auto'&&ambSubcat==='Articoli tecnici'){
+  ambSaveTechnicalArchive(state.items);
+  const q=(state.query||'').toLocaleLowerCase();
+  return ambTechnicalArchive.filter(x=>!q||[x.title,x.desc,x.source].join(' ').toLocaleLowerCase().includes(q));
+ }
+ return ambVisibleBefore251();
+};
+const ambToggleSaveBefore251=toggleSave;
+toggleSave=function(link){
+ const a=ambTechnicalArchive.find(x=>x.link===link);
+ if(a&&!state.items.some(x=>x.link===link))state.items.unshift(a);
+ return ambToggleSaveBefore251(link);
+};
+const ambSelectSubcatBefore251=ambSelectSubcat;
+ambSelectSubcat=function(name){ambSelectSubcatBefore251(name);if(name==='Articoli tecnici')ambFetchTechnical()};
+const ambNewsViewBefore251=newsView;
+newsView=function(){
+ const html=ambNewsViewBefore251();
+ if(state.category==='Auto'&&ambSubcat==='Articoli tecnici'){
+  const help='<div class="amb-technical-archive"><a href="https://www.tmrexh.it/category/articoli-tecnici/" rel="noopener noreferrer">Archivio completo TmRexh ↗</a></div>';
+  return html.replace('<div class="section-head"><h2>Ultime notizie',help+'<div class="section-head"><h2>Ultime notizie');
+ }
+ return html;
+};
+const ambLoadFeedsBefore251=loadFeeds;
+loadFeeds=async function(force){await ambLoadFeedsBefore251(force);ambSaveTechnicalArchive(state.items)};
+// Calendar is always displayed as a month grid. Events within a selected day are listed below.
+const ambCalendarStart=new Date();
+let ambCalendarYear=ambCalendarStart.getFullYear();
+let ambCalendarMonth=ambCalendarStart.getMonth();
+let ambCalendarSelected=new Date(ambCalendarYear,ambCalendarMonth,ambCalendarStart.getDate());
+function ambRomeDate(ts){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(ts))}
+function ambISODate(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+function ambCalendarFilteredItems(){
+ const q=(calendar.query||'').trim().toLocaleLowerCase();
+ return calendar.items.filter(e=>{
+  if(calendar.category!=='Tutte'&&e.category!==calendar.category)return false;
+  if(q&&![e.name,e.place,e.category,e.source].join(' ').toLocaleLowerCase().includes(q))return false;
+  if(ambCalFilters.region!=='all'){
+   const geo=ambCalLocation(e);
+   if(!geo||geo.region!==ambCalFilters.region)return false;
+   if(ambCalFilters.province!=='all'&&geo.province!==ambCalFilters.province)return false;
+  }
+  return Number.isFinite(Number(e.date));
+ });
+}
+function ambCalendarShift(delta){const d=new Date(ambCalendarYear,ambCalendarMonth+delta,1);ambCalendarYear=d.getFullYear();ambCalendarMonth=d.getMonth();ambCalendarSelected=new Date(ambCalendarYear,ambCalendarMonth,1);render()}
+function ambCalendarToday(){const d=new Date();ambCalendarYear=d.getFullYear();ambCalendarMonth=d.getMonth();ambCalendarSelected=new Date(ambCalendarYear,ambCalendarMonth,d.getDate());render()}
+function ambCalendarPick(y,m,d){
+ ambCalendarSelected=new Date(y,m,d);
+ ambCalendarYear=ambCalendarSelected.getFullYear();ambCalendarMonth=ambCalendarSelected.getMonth();render();
+ // Agenda is directly below the grid on small displays, without a pop-up covering the calendar.
+}
+function ambCalendarAddEvent(index){
+ const e=calendar.items[index];if(!e)return;
+ const obj={name:e.name,date:Number(e.date),end:Number(e.end)||Number(e.date)+3600000,place:e.place||'',desc:e.desc||'',allDay:!!e.allDay};
+ if(window.AMBAndroid?.addCalendarEvent){window.AMBAndroid.addCalendarEvent(JSON.stringify(obj));return}
+ const fmt=t=>new Date(t).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+ const url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(e.name)+'&dates='+encodeURIComponent(fmt(obj.date)+'/'+fmt(obj.end))+'&details='+encodeURIComponent(obj.desc)+'&location='+encodeURIComponent(obj.place);
+ window.open(url,'_blank','noopener');
+}
+function ambRenderDayEvent(e){
+ const name=esc(e.name),place=e.place?'<div class="amb-agenda-meta">📍 '+esc(e.place)+'</div>':'';
+ const time=e.allDay?'Orario da confermare':new Date(e.date).toLocaleTimeString('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit'});
+ const color=AMB_CATEGORY_COLORS[e.category]||'var(--accent)';
+ const link=safeUrl(e.link),guide=WATCH_GUIDE[e.category];
+ return '<article class="amb-agenda-event" style="border-left-color:'+color+'"><span class="amb-agenda-name" style="color:'+color+'">'+esc(e.category)+'</span><h3>'+name+'</h3><div class="amb-agenda-meta">🕒 '+esc(time)+(e.allDay?'':' (Italia)')+'</div>'+place+
+ (guide?'<div class="amb-agenda-meta">Dove seguire: '+esc(guide.label)+' · indicazione generale</div>':'')+
+ '<div class="cal-links">'+(link?'<a class="cal-link" href="'+esc(link)+'">Programma ↗</a>':'')+(guide&&safeUrl(guide.url)?'<a class="cal-link primary-link" href="'+esc(safeUrl(guide.url))+'">Dove vedere ↗</a>':'')+'<button class="cal-link" onclick="ambCalendarAddEvent('+calendar.items.indexOf(e)+')">＋ Calendario</button></div></article>';
+}
+const ambCalendarViewBefore251=calendarView;
+calendarView=function(){
+ if(calendar.manage)return ambCalendarViewBefore251();
+ const lang=state.settings.language==='en';
+ const monthsTitle=new Intl.DateTimeFormat(lang?'en-GB':'it-IT',{month:'long',year:'numeric'}).format(new Date(ambCalendarYear,ambCalendarMonth,1));
+ const dayLabels=lang?['Mon','Tue','Wed','Thu','Fri','Sat','Sun']:['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+ const first=new Date(ambCalendarYear,ambCalendarMonth,1);
+ const offset=(first.getDay()+6)%7;
+ const selected=ambISODate(ambCalendarSelected);
+ const items=ambCalendarFilteredItems();
+ const byDate=new Map();
+ for(const e of items){const k=ambRomeDate(e.date);if(!byDate.has(k))byDate.set(k,[]);byDate.get(k).push(e)}
+ const today=ambRomeDate(Date.now());
+ const grid=Array.from({length:42},(_,i)=>{
+  const d=new Date(ambCalendarYear,ambCalendarMonth,1-offset+i);
+  const iso=ambISODate(d),ev=byDate.get(iso)||[],inactive=d.getMonth()!==ambCalendarMonth;
+  const dots=ev.slice(0,5).map(e=>'<i class="amb-event-dot" style="background:'+(AMB_CATEGORY_COLORS[e.category]||'var(--accent)')+'" aria-hidden="true"></i>').join('');
+  return '<button type="button" class="amb-day '+(inactive?'other-month ':'')+(iso===today?'today ':'')+(iso===selected?'selected':'')+'" aria-label="'+esc(d.toLocaleDateString(lang?'en-GB':'it-IT',{day:'numeric',month:'long'}))+', '+ev.length+' eventi" aria-pressed="'+(iso===selected)+'" onclick="ambCalendarPick('+d.getFullYear()+','+d.getMonth()+','+d.getDate()+')"><span class="amb-daynum">'+d.getDate()+'</span><span class="amb-event-dots">'+dots+'</span>'+(ev.length>5?'<span class="amb-daycount">+'+(ev.length-5)+'</span>':'')+'</button>';
+ }).join('');
+ const agenda=(byDate.get(selected)||[]).sort((a,b)=>a.date-b.date);
+ const dateTitle=ambCalendarSelected.toLocaleDateString(lang?'en-GB':'it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const regions=Object.keys(AMB_REGIONS).sort((a,b)=>a.localeCompare(b,'it'));
+ const provinces=AMB_REGIONS[ambCalFilters.region]||[];
+ const reg='<select aria-label="Regione eventi" onchange="ambCalFilters.region=this.value;ambCalFilters.province=\'all\';render()"><option value="all">Tutte le regioni</option>'+regions.map(r=>'<option value="'+esc(r)+'" '+(ambCalFilters.region===r?'selected':'')+'>'+esc(r)+'</option>').join('')+'</select>';
+ const prov='<select aria-label="Provincia eventi" onchange="ambCalFilters.province=this.value;render()" '+(ambCalFilters.region==='all'?'disabled':'')+'><option value="all">Tutte le province</option>'+provinces.map(p=>'<option value="'+esc(p)+'" '+(ambCalFilters.province===p?'selected':'')+'>'+esc(p)+'</option>').join('')+'</select>';
+ const cats='<div class="categories cal-filters" aria-label="Categorie gare">'+RACE_CATS.map(c=>'<button class="cat '+(calendar.category===c?'active':'')+'" onclick="calendar.category=\''+c+'\';render()">'+esc(c)+'</button>').join('')+'</div>';
+ const legend='<div class="amb-category-legend">'+Object.entries(AMB_CATEGORY_COLORS).map(([c,color])=>'<span><i style="background:'+color+'"></i>'+esc(c)+'</span>').join('')+'</div>';
+ return '<div class="kicker">EVENTI & GARE · A.M.B.</div><div class="calendar-head"><div><h1 class="page-title">Calendario motorsport</h1><p class="lede">'+(lang?'Tap any day to see events, start times and streaming options.':'Tocca un giorno per vedere gare, orari e dove seguirle.')+'</p></div><div class="calendar-actions"><button class="btn tiny" onclick="calendar.manage=true;render()">⚙ Fonti</button></div></div>'+
+ '<div class="statusline"><span class="statusdot '+(calendar.loading?'busy':calendar.updated?'':'off')+'"></span><span>'+(calendar.loading?'Aggiornamento in corso':calendar.updated?'Sincronizzato · '+ago(new Date(calendar.updated).getTime()):'Dati non ancora sincronizzati')+'</span><span> · '+calendar.sources.filter(x=>x.enabled).length+' calendari</span></div>'+
+ cats+'<div class="amb-region-controls">'+reg+prov+'</div><div class="cal-tools"><div class="search"><input id="cal-search" type="search" placeholder="Cerca evento" aria-label="Cerca evento" value="'+esc(calendar.query)+'" oninput="calendarSearch(this.value)"></div></div>'+
+ '<div class="amb-month-toolbar"><button class="amb-month-nav" onclick="ambCalendarShift(-1)" aria-label="Mese precedente">‹</button><h2 class="amb-month-title">'+esc(monthsTitle)+'</h2><button class="amb-month-nav" onclick="ambCalendarShift(1)" aria-label="Mese successivo">›</button><button class="amb-month-today" onclick="ambCalendarToday()">Oggi</button></div>'+
+ '<div class="amb-calendar-grid">'+dayLabels.map(l=>'<span class="amb-weekday">'+l+'</span>').join('')+grid+'</div>'+legend+
+ '<section class="amb-day-agenda"><h2>'+esc(dateTitle)+' · '+agenda.length+' '+(agenda.length===1?'evento':'eventi')+'</h2>'+(agenda.length?'<div class="amb-agenda-list">'+agenda.map(ambRenderDayEvent).join('')+'</div>':'<div class="amb-agenda-none">Nessuna gara presente per questa giornata. Puoi scegliere un altro giorno o aggiungere fonti .ics.</div>')+'</section>'+
+ (calendar.err?'<div class="alert">'+esc(calendar.err)+'</div>':'')+
+ '<p class="cal-foot">Le ore sono convertite in Europe/Rome. Le disponibilità TV sono indicazioni generali, non conferme di trasmissione. Le manifestazioni locali richiedono fonti con dati verificabili.</p>';
+};
+const ambSettingsBefore251=settingsView;
+settingsView=function(){return ambSettingsBefore251().replaceAll('Versione 2.5 ·','Versione 2.5.1 ·').replaceAll('· v2.5','· v2.5.1').replace('Rosso A.M.B. rimane quella predefinita.','Il colore scelto sostituisce l’accento dell’intera interfaccia.')};
 
 render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.settings.auto||!state.items.length)maybeAutoNews();if(state.settings.calAuto)maybeAutoCalendar();document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(state.settings.calAuto)maybeAutoCalendar();if(state.settings.auto)maybeAutoNews()}});
 </script>

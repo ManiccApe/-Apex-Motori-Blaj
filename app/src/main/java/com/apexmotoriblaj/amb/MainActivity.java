@@ -2,6 +2,8 @@ package com.apexmotoriblaj.amb;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.provider.CalendarContract;
+import android.widget.Toast;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -166,6 +168,26 @@ public final class MainActivity extends Activity {
         @JavascriptInterface public void setCalendarData(String json){
             if(json==null||json.length()>300_000)return;
             getSharedPreferences("amb_shared",MODE_PRIVATE).edit().putString("calendar_events",json).apply();
+        }
+        /** Opens the device's calendar editor; no calendar write permission or silent insertion. */
+        @JavascriptInterface public void addCalendarEvent(String json) {
+            if(json==null||json.length()>4000)return;
+            try{
+                JSONObject e=new JSONObject(json);
+                String title=e.optString("name","Evento motorsport");
+                long start=e.optLong("date",0);
+                if(start<946684800000L||title.length()>250)return;
+                long end=e.optLong("end",start+3600000L);
+                if(end<=start)end=start+3600000L;
+                Intent intent=new Intent(Intent.ACTION_INSERT).setData(CalendarContract.Events.CONTENT_URI)
+                    .putExtra(CalendarContract.Events.TITLE,title)
+                    .putExtra(CalendarContract.Events.EVENT_LOCATION,e.optString("place",""))
+                    .putExtra(CalendarContract.Events.DESCRIPTION,e.optString("desc",""))
+                    .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,start)
+                    .putExtra(CalendarContract.EXTRA_EVENT_END_TIME,end)
+                    .putExtra(CalendarContract.Events.ALL_DAY,e.optBoolean("allDay",false));
+                runOnUiThread(()->{try{startActivity(intent);}catch(Exception ex){Toast.makeText(MainActivity.this,"Nessun calendario disponibile",Toast.LENGTH_SHORT).show();}});
+            }catch(Exception ignored){}
         }
         @JavascriptInterface public void updateWidget() { WidgetNewsSync.refreshAsync(getApplicationContext(), true); }
 

@@ -1,3 +1,15 @@
+# A.M.B. – Apex Motori Blaj 2.5.1 (Beta)
+
+**Created & Developed by ManicApe.**
+
+Per nuove funzionalità e limiti leggi [RELEASE_2_5_1_IT_EN.md](RELEASE_2_5_1_IT_EN.md). Per compilare l’APK e caricare il progetto su GitHub usa [GUIDA_PATCH_2_5_1_IT_EN.md](GUIDA_PATCH_2_5_1_IT_EN.md).
+
+Sorgenti completi per Android 10+ (API 29), inclusi tablet e widget. Licenza del progetto: vedi `LICENSE`; le librerie di terze parti conservano le proprie licenze.
+
+Il pacchetto contiene sorgenti, non un APK già compilato. L’APK di prova si ottiene tramite il workflow GitHub Actions. Non è garantita la scomparsa di tutte le finestre privacy sui siti esterni.
+
+---
+
 # A.M.B. – Apex Motori Blaj 2.5
 
 **Created & Developed by ManicApe**. This is the Android 10+ / tablet **source project**, not a precompiled APK.

@@ -14,6 +14,11 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.CookieManager;
+import android.webkit.WebChromeClient;
+import android.os.Build;
+import android.view.WindowManager;
+import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,7 +45,27 @@ public final class ArticleActivity extends Activity {
         if(originalUrl==null||!originalUrl.startsWith("https://")){finish();return;}
         getWindow().setStatusBarColor(Color.BLACK);
         getWindow().setNavigationBarColor(Color.BLACK);
+        // Draw the toolbar below the status bar on Android 10+, never underneath it.
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        // Handle both Android 10-14 and Android 15+ enforced edge-to-edge layouts.
+        if(Build.VERSION.SDK_INT>=30) getWindow().setDecorFitsSystemWindows(false);
+        else getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         LinearLayout root=new LinearLayout(this);root.setOrientation(LinearLayout.VERTICAL);root.setBackgroundColor(Color.BLACK);
+        root.setFitsSystemWindows(false);
+        root.setOnApplyWindowInsetsListener((view,insets)->{
+            int top,bottom,left,right;
+            if(Build.VERSION.SDK_INT>=30){
+                android.graphics.Insets bars=insets.getInsets(WindowInsets.Type.systemBars()|WindowInsets.Type.displayCutout());
+                top=bars.top;bottom=bars.bottom;left=bars.left;right=bars.right;
+            }else{
+                top=insets.getSystemWindowInsetTop();bottom=insets.getSystemWindowInsetBottom();
+                left=insets.getSystemWindowInsetLeft();right=insets.getSystemWindowInsetRight();
+            }
+            view.setPadding(left,top,right,bottom);
+            return insets;
+        });
         LinearLayout nav=new LinearLayout(this);nav.setOrientation(LinearLayout.HORIZONTAL);
         nav.setPadding(dp(3),dp(5),dp(3),dp(5));nav.setBackgroundColor(Color.rgb(17,17,17));
         Button back=button("‹");back.setOnClickListener(v->finish());nav.addView(back,new LinearLayout.LayoutParams(dp(43),dp(47)));
@@ -54,6 +79,8 @@ public final class ArticleActivity extends Activity {
         nav.addView(external,new LinearLayout.LayoutParams(dp(43),dp(47)));root.addView(nav);
         browser=new WebView(this);browser.setBackgroundColor(Color.BLACK);
         browser.getSettings().setDomStorageEnabled(true);
+        CookieManager.getInstance().setAcceptCookie(true); // Keep publisher's essential refusal preference.
+        CookieManager.getInstance().setAcceptThirdPartyCookies(browser,false);
         browser.getSettings().setMediaPlaybackRequiresUserGesture(true);
         browser.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         browser.getSettings().setSupportZoom(true);
@@ -71,7 +98,12 @@ public final class ArticleActivity extends Activity {
                 return true;
             }
             @Override public void onPageFinished(WebView view,String url){
-                if(url.startsWith("https://"))view.evaluateJavascript(AdBlock.cosmeticScript(),null);
+                if(url.startsWith("https://"))applyPageFilters(view);
+            }
+        });
+        browser.setWebChromeClient(new WebChromeClient(){
+            @Override public void onProgressChanged(WebView view,int progress){
+                if(progress>=35&&progress<100&&view.getUrl()!=null&&view.getUrl().startsWith("https://"))applyPageFilters(view);
             }
         });
         FrameLayout contentFrame=new FrameLayout(this);
@@ -85,6 +117,9 @@ public final class ArticleActivity extends Activity {
         root.addView(contentFrame,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,1));
         setContentView(root);
         showOriginal();
+    }
+    private void applyPageFilters(WebView w){
+        if(w!=null && w.getSettings().getJavaScriptEnabled())w.evaluateJavascript(AdBlock.cosmeticScript(),null);
     }
     private int dp(int d){return Math.round(d*getResources().getDisplayMetrics().density);}
     private Button button(String label){Button b=new Button(this);b.setText(label);b.setAllCaps(false);b.setTextColor(Color.WHITE);b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.rgb(32,32,32)));b.setPadding(0,0,0,0);b.setTextSize(12);return b;}
