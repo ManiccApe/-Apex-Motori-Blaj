@@ -5,6 +5,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import org.json.JSONArray;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -24,6 +30,7 @@ import org.json.JSONObject;
 /** A.M.B. Android shell. No third-party dependency or backend required. */
 public final class MainActivity extends Activity {
     private WebView web;
+    private String currentAppearance="";
     private final ExecutorService io = Executors.newFixedThreadPool(4);
 
     @Override public void onCreate(Bundle state) {
@@ -57,11 +64,15 @@ public final class MainActivity extends Activity {
         });
         setContentView(web);
         web.loadUrl("file:///android_asset/index.html");
-        WidgetNewsSync.refreshAsync(getApplicationContext(), false);
+        int[] widgets=AppWidgetManager.getInstance(this).getAppWidgetIds(new ComponentName(this,NewsWidget.class));
+        if(widgets.length>0)WidgetNewsSync.refreshAsync(getApplicationContext(), false);
     }
 
     /** Apply WebView theme to Android system bars, including AMOLED true black. */
     private void setSystemAppearance(String theme) {
+        if(theme.equals(currentAppearance))return;
+        currentAppearance=theme;
+        getSharedPreferences("amb_shared",MODE_PRIVATE).edit().putString("appearance",theme).apply();
         boolean amoled="amoled".equals(theme);
         boolean dark=amoled || "dark".equals(theme);
         int color=amoled ? Color.BLACK : dark ? Color.rgb(25,35,46) : Color.rgb(246,248,250);
@@ -87,10 +98,13 @@ public final class MainActivity extends Activity {
         }
         @JavascriptInterface public void setWidgetData(String data) {
             if (data == null || data.length() > 450_000) return;
-            getSharedPreferences("amb_shared", MODE_PRIVATE).edit().putString("widget_news", data).apply();
+            android.content.SharedPreferences prefs=getSharedPreferences("amb_shared", MODE_PRIVATE);
+            if(data.equals(prefs.getString("widget_news","")))return;
+            long now=System.currentTimeMillis();
+            boolean prefetch=now-prefs.getLong("image_prefetch_at",0)>90000;
+            prefs.edit().putString("widget_news",data).putLong("image_prefetch_at",prefetch?now:prefs.getLong("image_prefetch_at",0)).apply();
             NewsWidget.notifyData(getApplicationContext());
-            // After the WebView sends fresh headlines, fetch thumbnails as well.
-            WidgetNewsSync.prefetchWidgetImagesAsync(getApplicationContext());
+            if(prefetch)WidgetNewsSync.prefetchWidgetImagesAsync(getApplicationContext());
         }
         @JavascriptInterface public void setWidgetSources(String json) {
             if (json == null || json.length() > 35_000) return;
@@ -103,7 +117,58 @@ public final class MainActivity extends Activity {
         @JavascriptInterface public void openWidgetSettings() {
             runOnUiThread(() -> startActivity(new Intent(MainActivity.this, WidgetConfigActivity.class)));
         }
+        @JavascriptInterface public void openArticle(String url) {
+            if(url==null||!url.startsWith("https://"))return;
+            runOnUiThread(()->startActivity(new Intent(MainActivity.this,ArticleActivity.class).putExtra("link",url)));
+        }
+        @JavascriptInterface public void translateText(String requestId,String value) {
+            if(requestId==null||requestId.length()>80||value==null||value.length()>5500)return;
+            TranslateManager.translate(value,(translated,error)-> {
+                String response="window.AMBTranslationResult("+JSONObject.quote(requestId)+","+
+                    (translated==null?"null":JSONObject.quote(translated))+","+
+                    (error==null?"null":JSONObject.quote(error))+")";
+                runOnUiThread(()->{if(web!=null)web.evaluateJavascript(response,null);});
+            });
+        }
+        @JavascriptInterface public void saveOffline(String json) {
+            if(json==null||json.length()>18000)return;
+            io.execute(()->{
+                String link="",error=null;boolean ok=false;
+                try{
+                    JSONObject item=new JSONObject(json);link=item.getString("link");
+                    if(!OfflineStore.exists(getApplicationContext(),link))OfflineStore.save(getApplicationContext(),item);
+                    ok=OfflineStore.exists(getApplicationContext(),link);
+                    if(ok&&"en".equals(item.optString("lang"))){
+                        final String savedLink=link;
+                        String text=OfflineStore.plainText(getApplicationContext(),savedLink);
+                        if(text!=null && OfflineStore.translatedPath(getApplicationContext(),savedLink)==null){
+                            TranslateManager.translateLong(text,(translation,reason)->{
+                                if(reason==null&&translation!=null)try{OfflineStore.saveTranslated(getApplicationContext(),savedLink,translation);}catch(Exception ignored){}
+                            });
+                        }
+                    }
+                }catch(Exception e){error=e.getMessage()==null?"Salvataggio impossibile":e.getMessage();}
+                final String target=link,reason=error;final boolean saved=ok;
+                String code="window.AMBOfflineResult("+JSONObject.quote(target)+","+saved+","+(reason==null?"null":JSONObject.quote(reason))+")";
+                runOnUiThread(()->{if(web!=null)web.evaluateJavascript(code,null);});
+            });
+        }
+        @JavascriptInterface public void deleteOffline(String link){
+            if(link!=null&&link.startsWith("https://"))io.execute(()->OfflineStore.delete(getApplicationContext(),link));
+        }
+        @JavascriptInterface public void requestNotifications(){
+            runOnUiThread(()->{
+                NotificationScheduler.enable(getApplicationContext());
+                if(Build.VERSION.SDK_INT>=33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED)
+                    requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},84);
+            });
+        }
+        @JavascriptInterface public void setCalendarData(String json){
+            if(json==null||json.length()>300_000)return;
+            getSharedPreferences("amb_shared",MODE_PRIVATE).edit().putString("calendar_events",json).apply();
+        }
         @JavascriptInterface public void updateWidget() { WidgetNewsSync.refreshAsync(getApplicationContext(), true); }
+
     }
 
     @Override public void onDestroy() {

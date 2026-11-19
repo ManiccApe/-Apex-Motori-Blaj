@@ -47,7 +47,7 @@ public final class WidgetListService extends RemoteViewsService {
                     }
                     if(!java.util.Arrays.asList(WidgetPrefs.CATEGORIES).contains(cat))continue;
                     if(!enabled.isEmpty() && !enabled.contains(cat))continue;
-                    if(o.optString("link","").startsWith("https://") && o.optString("image","").startsWith("https://")) data.add(o);
+                    if(o.optString("link","").startsWith("https://") && (o.optString("image","").startsWith("https://") || o.optString("source","").contains("TmRexh"))) data.add(o);
                 }
             }catch(Exception ignored){}
         }
@@ -74,7 +74,9 @@ public final class WidgetListService extends RemoteViewsService {
             rv.setTextColor(R.id.widget_category,dark?Color.rgb(244,166,153):Color.rgb(157,55,46));
             Bitmap image=null;
             if(WidgetPrefs.images(c,id)) {
-                String path=WidgetNewsSync.thumbnailFile(c,o.optString("image",""));
+                String url=o.optString("image","");
+                if(url.isEmpty()&&o.optString("source","").contains("TmRexh"))url=WidgetNewsSync.TMREXH_BRAND_ICON;
+                String path=WidgetNewsSync.thumbnailFile(c,url);
                 if(path!=null)image=BitmapFactory.decodeFile(path);
             }
             if(image!=null) {rv.setImageViewBitmap(R.id.widget_image,image);rv.setViewVisibility(R.id.widget_image,View.VISIBLE);}

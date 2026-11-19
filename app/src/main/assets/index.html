@@ -207,6 +207,52 @@ body.spacious[data-article-layout="stacked"] .article-info{min-height:120px}
  .setting .segment button{padding:7px 7px}
  body[data-article-layout="row"][data-photo-size="large"] .article-photo{width:40%;flex-basis:40%}
 }
+/* v2.5 - compact extension, identical A.M.B. base design */
+:root[data-palette="blue"]{--accent:#558bea;--accentInk:#8cbdff;--accentSoft:#1e2c49}
+:root[data-palette="emerald"]{--accent:#3ab58e;--accentInk:#76e3bd;--accentSoft:#11392c}
+:root[data-palette="violet"]{--accent:#ac7ce6;--accentInk:#ceb0ff;--accentSoft:#33223f}
+:root[data-palette="amber"]{--accent:#dc9850;--accentInk:#ffd59b;--accentSoft:#3c291b}
+:root[data-theme="light"][data-palette="blue"]{--accent:#376cc4;--accentInk:#285aa9;--accentSoft:#e7f0fc}
+:root[data-theme="light"][data-palette="emerald"]{--accent:#277d61;--accentInk:#176e50;--accentSoft:#e4f5ea}
+:root[data-theme="light"][data-palette="violet"]{--accent:#7950a9;--accentInk:#704399;--accentSoft:#f3ebfa}
+:root[data-theme="light"][data-palette="amber"]{--accent:#aa6328;--accentInk:#8a4a17;--accentSoft:#fbefe2}
+.amb-subcats{display:flex;gap:6px;overflow-x:auto;max-width:100%;white-space:nowrap;padding:0 0 11px;scrollbar-width:none}
+.amb-subcats::-webkit-scrollbar{display:none}
+.amb-subcat{flex:0 0 auto;padding:6px 10px;border-radius:9px;font-weight:750;font-size:.69rem;min-height:32px;background:var(--faint);border:1px solid var(--line);color:var(--sub)}
+.amb-subcat.active{border-color:var(--accent);color:var(--accentInk);background:var(--accentSoft)}
+.amb-lang-filter{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:12px 0;color:var(--sub);font-size:.72rem;font-weight:700}
+.amb-region-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 9px}
+.amb-region-controls select,.amb-setting-select{background:var(--card);border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:8px;font-size:.73rem;min-width:0;max-width:100%}
+.amb-region-controls select:disabled{opacity:.5}
+.amb-directory{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.article{position:relative;cursor:pointer;touch-action:manipulation}
+.article-title{cursor:pointer}
+.article-summary{color:var(--sub);font-size:.7rem;line-height:1.32;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.article.no-photo .article-photo{width:64px!important;flex:0 0 64px!important;min-height:110px;opacity:.9}
+.article.no-photo .article-plain-mark{font-size:.71rem;font-weight:900;letter-spacing:.2px;color:var(--accentInk);background:var(--accentSoft);border-radius:8px;padding:9px 5px}
+.article-plain-mark{color:#b9c8d2;font-size:1.1rem;font-weight:900;letter-spacing:.3px}
+.article.no-photo .article-info{min-width:0}
+.article.no-photo .article-summary{-webkit-line-clamp:3}
+.amb-heart-burst{position:absolute;z-index:5;inset:0;display:grid;place-items:center;pointer-events:none;color:#ed5757;font-size:5rem;text-shadow:0 2px 20px #000a;animation:amb-heart .62s ease both}
+@keyframes amb-heart{0%{opacity:0;transform:scale(.4)}30%{opacity:1;transform:scale(1.16)}60%{opacity:1;transform:scale(.98)}100%{opacity:0;transform:scale(1.22)}}
+@media(prefers-reduced-motion:reduce){.amb-heart-burst{animation:none!important;opacity:1}}
+.load-more-wrap{display:flex;justify-content:center;margin:18px 0}
+#amb-toast{position:fixed;z-index:30;bottom:calc(80px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 34px);background:#27333c;color:#fff;border-radius:12px;padding:11px 15px;opacity:0;pointer-events:none;transition:opacity .15s;font-size:.76rem;text-align:center}
+#amb-toast.visible{opacity:1}
+.amb-permission{position:fixed;z-index:100;inset:0;background:rgba(0,0,0,.66);display:grid;place-items:center;padding:20px}
+.amb-permission-card{background:var(--card);color:var(--ink);border:1px solid var(--line);padding:22px;max-width:410px;width:100%;border-radius:19px;box-shadow:0 15px 42px #0005}
+.amb-permission-icon{font-size:2.2rem;margin-bottom:12px}
+.amb-permission-card h2{font-size:1.26rem;line-height:1.2;margin:0 0 11px}
+.amb-permission-card p{font-size:.82rem;color:var(--sub);line-height:1.55}
+.amb-permission-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-top:15px}
+@media(max-width:390px){.amb-region-controls{grid-template-columns:1fr}.amb-lang-filter{align-items:flex-start}.article-summary{font-size:.66rem}}
+
+
+/* TmRexh: official website favicon only when there is no editorial photograph. */
+.article-photo.tmrexh-brand{background:#101013!important;}
+.article-photo.tmrexh-brand img{position:absolute;inset:12%;width:76%;height:76%;object-fit:contain!important;image-rendering:auto;}
+.article-photo.tmrexh-brand .article-plain-mark{font-size:.84rem;}
+
 </style>
 </head>
 <body>
@@ -226,7 +272,9 @@ body.spacious[data-article-layout="stacked"] .article-info{min-height:120px}
 </nav>
 <script>
 'use strict';
-const APP_VERSION='2.4';
+const APP_VERSION='2.5';
+const TMREXH_BRAND_ICON='https://www.google.com/s2/favicons?domain=tmrexh.it&sz=256';
+
 const CATS=['Tutte','F1','WRC','WEC','GT3','MotoGP','Auto','Personali'];
 const RACE_CATS=CATS.filter(x=>x!=='Auto'&&x!=='Personali');
 const AUTO_TOPICS=['Tutti','Utilitarie','Novità','Motori','Tecnologia','Competizione'];
@@ -238,6 +286,31 @@ const AUTO_REGEX={
  'Competizione':/(racing|race|rally|competizion|motorsport|supercar|gt3|gt4|track|circuit|pista|porsche cup|performance|sportiva|sportscar|racer|drift|tuning)/i
 };
 const DEFAULTS=[
+ {"id": "auto-tmrexh", "name": "TmRexh · Articoli tecnici", "category": "Auto", "url": "https://www.tmrexh.it/category/articoli-tecnici/feed/", "language": "it", "allowNoImage": true, "enabled": true, "locked": true},
+ {"id": "it-formulapassion", "name": "FormulaPassion · Motorsport", "category": "F1", "url": "https://www.formulapassion.it/feed", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-motorionline", "name": "Motorionline · Auto", "category": "Auto", "url": "https://www.motorionline.com/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-clubalfa", "name": "ClubAlfa · Motori", "category": "Auto", "url": "https://www.clubalfa.it/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-autoappassionati", "name": "Autoappassionati · Prove", "category": "Auto", "url": "https://www.autoappassionati.it/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-autotecnica", "name": "Autotecnica · Motori", "category": "Auto", "url": "https://www.autotecnica.org/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-motorage", "name": "Motorage · Automobili", "category": "Auto", "url": "https://www.motorage.it/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-hdmotori", "name": "HDmotori · Auto e tecnologia", "category": "Auto", "url": "https://www.hdmotori.it/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-f1grandprix", "name": "F1GrandPrix · Formula 1", "category": "F1", "url": "https://www.f1grandprix.motorionline.com/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-fuoritraiettoria", "name": "Fuori Traiettoria · Motorsport", "category": "WRC", "url": "https://www.fuoritraiettoria.com/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-rallyssimo", "name": "Rallyssimo · Rally", "category": "WRC", "url": "https://www.rallyssimo.it/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-fleetmagazine", "name": "Fleet Magazine · Auto", "category": "Auto", "url": "https://www.fleetmagazine.com/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "it-greenstart", "name": "GreenStart · Mobilità", "category": "Auto", "url": "https://www.greenstart.it/feed/", "language": "it", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-planetf1", "name": "PlanetF1 · Formula 1", "category": "F1", "url": "https://www.planetf1.com/feed/", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-racer", "name": "RACER · Motor racing", "category": "Personali", "url": "https://racer.com/feed/", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-bmwblog", "name": "BMWBLOG · Cars", "category": "Auto", "url": "https://www.bmwblog.com/feed/", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-hagerty", "name": "Hagerty Media · Cars", "category": "Auto", "url": "https://www.hagerty.com/media/feed/", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-motortrend", "name": "MotorTrend · Cars", "category": "Auto", "url": "https://www.motortrend.com/feed/", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-rallysportmag", "name": "RallySport Magazine", "category": "WRC", "url": "https://rallysportmag.com/feed/", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-dirtfish", "name": "DirtFish · World Rally", "category": "WRC", "url": "https://dirtfish.com/feed/", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-formula1planet", "name": "Formula1News · F1", "category": "F1", "url": "https://www.formula1news.co.uk/feed/", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-carwow", "name": "Carwow · Reviews", "category": "Auto", "url": "https://www.carwow.co.uk/blog/rss", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-topgear", "name": "Top Gear · Cars", "category": "Auto", "url": "https://www.topgear.com/car-news/rss.xml", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-crashf1", "name": "Crash.net · F1", "category": "F1", "url": "https://www.crash.net/rss/f1", "language": "en", "enabled": false, "locked": true, "candidate": true},
+ {"id": "en-autosportelectric", "name": "Electrive · e-mobility", "category": "Auto", "url": "https://www.electrive.com/feed/", "language": "en", "enabled": false, "locked": true, "candidate": true},
  {
   "id": "f1",
   "name": "Motorsport Italia · Formula 1",
@@ -496,13 +569,15 @@ const WATCH_GUIDE={
 const main=document.getElementById('main');
 function readStore(k,def){try{let v=JSON.parse(localStorage.getItem(k));return v===null?def:v}catch{return def}}
 function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){console.warn('Memoria non disponibile',e)}}
-const state={sources:readStore('amb_sources_v1',DEFAULTS),saved:readStore('amb_saved_v1',[]),items:readStore('amb_news_cache_v1',[]),updated:readStore('amb_refresh_time',''),settings:readStore('amb_settings_v2',{theme:'light',density:'balanced',font:100,images:true,auto:true,articleLayout:'row',photoSize:'medium',photoFit:'cover'}),tab:'news',category:'Tutte',query:'',loading:false,adding:false,error:'',sourceError:'',sourceHealth:readStore('amb_source_photo_health_v1',{}),autoTopic:'Tutti',sourceCategory:'Tutte'};
+const state={sources:readStore('amb_sources_v1',DEFAULTS),saved:readStore('amb_saved_v1',[]),items:readStore('amb_news_cache_v1',[]),updated:readStore('amb_refresh_time',''),settings:readStore('amb_settings_v2',{theme:'amoled',density:'balanced',font:100,images:true,auto:true,articleLayout:'row',photoSize:'medium',photoFit:'cover'}),tab:'news',category:'Tutte',query:'',loading:false,adding:false,error:'',sourceError:'',sourceHealth:readStore('amb_source_photo_health_v1',{}),autoTopic:'Tutti',sourceCategory:'Tutte'};
 if(!Array.isArray(state.sources))state.sources=DEFAULTS;if(!Array.isArray(state.saved))state.saved=[];if(!Array.isArray(state.items))state.items=[];if(!state.sourceHealth || typeof state.sourceHealth!=='object' || Array.isArray(state.sourceHealth))state.sourceHealth={};
-state.settings=Object.assign({theme:'light',density:'balanced',font:100,images:true,auto:true,articleLayout:'row',photoSize:'medium',photoFit:'cover'},state.settings||{});
+state.settings=Object.assign({theme:'amoled',density:'balanced',font:100,images:true,auto:true,articleLayout:'row',photoSize:'medium',photoFit:'cover'},state.settings||{});
 const calendar={sources:readStore('amb_calendar_sources_v1',CAL_DEFAULTS),items:readStore('amb_calendar_cache_v1',[]),updated:readStore('amb_calendar_updated_v1',''),category:'Tutte',range:'180',query:'',loading:false,err:'',manage:false,adding:false,sourceError:''};
 if(!Array.isArray(calendar.sources))calendar.sources=CAL_DEFAULTS;
 if(!Array.isArray(calendar.items))calendar.items=[];
 state.settings=Object.assign({calAuto:true,calInterval:3},state.settings);
+state.settings=Object.assign({language:'it',autoTranslate:true,palette:'red',showSummaries:true,notifications:false,newsInterval:45},state.settings);
+state.displayLimit=48;
 const REMOVED_CATEGORIES=new Set(['GT','GT2','GT4','Storiche','Goodwood']);
 const GT3_REGEX=/(?:\bGT[\s-]?3\b|\bGTWC\b|GT World Challenge|GT World\s*[|:]|GT World Cup|\bGTWCE\b|Intercontinental GT Challenge|\bIGTC\b|\bSRO\b|\bGTD(?:\s|\b)|24\s*(?:h|ore|hours)\s*(?:di\s*)?Spa|Spa 24 Hours|ADAC GT Masters|GT Masters|\bGT3R\b|GT3\.R|\bBlancpain GT\b|GT Cup Macau)/i;
 function isGT3Story(x){
@@ -527,7 +602,7 @@ function migrateSources(){
  const existingIds=new Set(state.sources.map(x=>x.id));
  const existingUrls=new Set(state.sources.map(x=>x.url));
  for(const source of DEFAULTS){if(!existingIds.has(source.id)&&!existingUrls.has(source.url)){state.sources.push({...source});existingIds.add(source.id);existingUrls.add(source.url)}}
- state.items=state.items.filter(x=>!REMOVED_CATEGORIES.has(x.category)||x.category==='GT').map(x=>{if(x.category==='GT'){return {...x,category:'GT3'}}return x}).filter(x=>safeImageUrl(x.image) && (x.category!=='GT3'||x.custom||isGT3Story(x)));
+ state.items=state.items.filter(x=>!REMOVED_CATEGORIES.has(x.category)||x.category==='GT').map(x=>{if(x.category==='GT'){return {...x,category:'GT3'}}return x}).filter(x=>(safeImageUrl(x.image)||/TmRexh/i.test(x.source||'')) && (x.category!=='GT3'||x.custom||isGT3Story(x)));
  // Saved articles remain accessible even when their old category is retired.
  state.saved=state.saved.map(x=>({...x,category:migrateCategory(x.category,!!x.custom)||'Personali'}));
  calendar.sources=calendar.sources.filter(x=>x && !['cal-storiche','cal-goodwood'].includes(x.id) && !['GT2','GT4','Storiche','Goodwood'].includes(x.category)).map(x=>{
@@ -599,7 +674,7 @@ function mediaImage(el,feedUrl){
   const doc=new DOMParser().parseFromString(raw,'text/html');
   for(const img of Array.from(doc.querySelectorAll('img,source'))){
    const srcset=img.getAttribute('data-srcset')||img.getAttribute('srcset')||'';
-   const best=srcset.split(',').map(t=>t.trim().split(/\s+/)[0]).find(Boolean);
+   const best=srcset.split(',').map(t=>t.trim().split(/\s+/)[0]).filter(Boolean).pop();
    const url=safeImageUrl(img.getAttribute('data-src')||img.getAttribute('data-original')||best||img.getAttribute('src'),feedUrl);
    if(url)return url;
   }
@@ -616,8 +691,8 @@ function parseFeed(xmlString,source){
   let link=nodeText(n,'link');
   if(atom){const links=Array.from(n.getElementsByTagName('link'));link=(links.find(e=>e.getAttribute('rel')==='alternate')||links[0])?.getAttribute('href')||link}
   const date=nodeText(n,'pubDate')||nodeText(n,'dc:date')||nodeText(n,'published')||nodeText(n,'updated');
-  return {id:source.id+':'+(nodeText(n,'guid')||nodeText(n,'id')||link||i),link:safeUrl(link),title:textOnly(nodeText(n,'title'))||'Articolo senza titolo',desc:textOnly(nodeText(n,'description')||nodeText(n,'summary')||'').slice(0,240),date:Number(new Date(date))||0,source:source.name,category:source.category,custom:!source.locked,image:mediaImage(n,source.url)};
- }).filter(x=>x.link && !!safeImageUrl(x.image) && (source.id!=='gt3'||isGT3Story(x)));
+  const editorialPhoto=mediaImage(n,source.url);return {lang:source.language||(source.id?.startsWith('en-')?'en':'it'),id:source.id+':'+(nodeText(n,'guid')||nodeText(n,'id')||link||i),link:safeUrl(link),title:textOnly(nodeText(n,'title'))||'Articolo senza titolo',desc:textOnly(nodeText(n,'description')||nodeText(n,'summary')||'').slice(0,240),date:Number(new Date(date))||0,source:source.name,category:source.category,custom:!source.locked,image:editorialPhoto||(source.id==='auto-tmrexh'?TMREXH_BRAND_ICON:''),logoFallback:!editorialPhoto&&source.id==='auto-tmrexh'};
+ }).filter(x=>x.link && (source.id==='auto-tmrexh'||!!safeImageUrl(x.image)) && (source.id!=='gt3'||isGT3Story(x)));
 }
 const nativePending=new Map();let nativeSequence=0;
 window.AMBBridgeResult=function(id,value,error){const pending=nativePending.get(id);if(!pending)return;nativePending.delete(id);clearTimeout(pending.timer);if(error)pending.reject(Error(error));else pending.resolve(value)};
@@ -630,7 +705,7 @@ async function fetchText(url,timeout=16000){
  try{const r=await fetch(url,{cache:'no-store',redirect:'follow',signal:ctrl.signal});if(!r.ok)throw Error('HTTP '+r.status);const b=await r.text();if(b.length>4000000)throw Error('Risposta troppo grande');return b}finally{clearTimeout(timer)}
 }
 function syncWidgetSources(){try{window.AMBAndroid?.setWidgetSources(JSON.stringify(state.sources.filter(s=>s.enabled && s.url.startsWith('https://'))))}catch{}}
-function syncWidgetNews(){try{const payload=state.items.filter(x=>safeImageUrl(x.image)&&CATS.includes(x.category)&&x.category!=='Tutte').slice(0,350).map(x=>({title:x.title,category:x.category,source:x.source,image:x.image,link:x.link,date:x.date}));window.AMBAndroid?.setWidgetData(JSON.stringify(payload))}catch{}}
+function syncWidgetNews(){try{const payload=state.items.filter(x=>(safeImageUrl(x.image)||/TmRexh/i.test(x.source||''))&&CATS.includes(x.category)&&x.category!=='Tutte').slice(0,350).map(x=>({title:x.title,category:x.category,source:x.source,image:x.image,link:x.link,date:x.date}));window.AMBAndroid?.setWidgetData(JSON.stringify(payload))}catch{}}
 function openWidgetSetup(){if(window.AMBAndroid?.openWidgetSettings)window.AMBAndroid.openWidgetSettings();else alert('Apri A.M.B. su Android, quindi aggiungi il widget dalla schermata Home.')}
 function exportAMB(){const json=JSON.stringify({app:'Apex Motori Blaj',version:2,sources:state.sources,saved:state.saved,settings:state.settings,calendars:calendar.sources},null,2);const area=document.getElementById('amb-backup');if(area){area.value=json;area.focus();area.select()}}
 function importAMB(){const area=document.getElementById('amb-backup');try{const info=JSON.parse(area?.value||'');if(info.app!=='Apex Motori Blaj')throw Error('Backup non riconosciuto');if(Array.isArray(info.sources))state.sources=info.sources.filter(s=>safeUrl(s.url)&&typeof s.name==='string').slice(0,60);if(Array.isArray(info.saved))state.saved=info.saved.slice(0,350);if(info.settings && typeof info.settings==='object')state.settings=Object.assign({},state.settings,info.settings);if(Array.isArray(info.calendars))calendar.sources=info.calendars.filter(s=>safeUrl(s.url)).slice(0,50);persist();store('amb_settings_v2',state.settings);calendarSave();syncWidgetSources();render();alert('Preferiti e impostazioni importati.')}catch(e){alert('Importazione non riuscita: '+e.message)}}
@@ -655,7 +730,7 @@ async function loadFeeds(force){
   const source=active[i];
   if(outcome.status==='fulfilled'){
    success++;
-   const photographic=outcome.value.filter(x=>safeImageUrl(x.image));
+   const photographic=outcome.value.filter(x=>safeImageUrl(x.image)||source.id==='auto-tmrexh');
    merged.push(...photographic);
    state.sourceHealth[source.url]={status:photographic.length?'good':'missing',count:photographic.length,at:Date.now()};
   }else{
@@ -665,6 +740,8 @@ async function loadFeeds(force){
  });
  store('amb_source_photo_health_v1',state.sourceHealth);
  if(merged.length){
+  // Keep recent cached stories from temporarily unavailable publishers.
+  merged.push(...state.items.filter(x=>x.date && Date.now()-x.date<4*86400000));
   const seen=new Set();
   state.items=merged.sort((a,b)=>b.date-a.date).filter(x=>{if(seen.has(x.link))return false;seen.add(x.link);return true}).slice(0,600);
   store('amb_news_cache_v1',state.items);syncWidgetNews();
@@ -676,17 +753,31 @@ async function loadFeeds(force){
  state.loading=false;render();updateRefreshIcon();
 }
 function ago(date){if(!date)return 'Data non disponibile';const m=Math.max(0,Math.floor((Date.now()-date)/60000));if(m<60)return m<2?'Adesso':m+' min fa';if(m<1440)return Math.floor(m/60)+' h fa';if(m<10080)return Math.floor(m/1440)+' g fa';return new Date(date).toLocaleDateString('it-IT',{day:'2-digit',month:'short'})}
-function visible(){const input=state.tab==='faves'?state.saved:state.items;return input.filter(x=>(state.tab==='faves'||!!safeImageUrl(x.image))&&(state.tab==='faves'||state.category==='Tutte'||(state.category==='Personali'?x.custom||x.category==='Personali':x.category===state.category))&&(state.tab==='faves'||state.category!=='Auto'||state.autoTopic==='Tutti'||AUTO_REGEX[state.autoTopic]?.test([x.title,x.desc].join(' ')))&&(!state.query||[x.title,x.desc,x.source].join(' ').toLocaleLowerCase().includes(state.query.toLocaleLowerCase())))}
+function visible(){const input=state.tab==='faves'?state.saved:state.items;return input.filter(x=>(state.tab==='faves'||!!safeImageUrl(x.image)||/TmRexh/i.test(x.source||''))&&(state.tab==='faves'||state.category==='Tutte'||(state.category==='Personali'?x.custom||x.category==='Personali':x.category===state.category))&&(state.tab==='faves'||state.category!=='Auto'||state.autoTopic==='Tutti'||AUTO_REGEX[state.autoTopic]?.test([x.title,x.desc].join(' ')))&&(!state.query||[x.title,x.desc,x.source].join(' ').toLocaleLowerCase().includes(state.query.toLocaleLowerCase())))}
 function isSaved(link){return state.saved.some(x=>x.link===link)}
 function toggleSave(link){const a=state.items.concat(state.saved).find(x=>x.link===link);if(!a)return;if(isSaved(link))state.saved=state.saved.filter(x=>x.link!==link);else state.saved.unshift(a);persist();render()}
 function openNews(link){const linkSafe=safeUrl(link);if(linkSafe)location.href=linkSafe}
 function mark(cat){return {F1:'F1',WRC:'R',WEC:'W',GT3:'GT3',MotoGP:'GP',Auto:'AUTO',Personali:'+'}[cat]||'AM'}
-function articles(){const list=visible();if(!list.length)return '<div class="empty"><div class="empty-icon">'+(state.tab==='faves'?'♡':'⌕')+'</div><h3>'+(state.tab==='faves'?'Nessun articolo salvato':'Nessuna notizia da mostrare')+'</h3><p>'+(state.tab==='faves'?'Tocca il cuore in una notizia per ritrovarla qui.':'Controlla i filtri, aggiungi una fonte o aggiorna le notizie.')+'</p>'+(state.tab==='faves'?'':'<button class="btn primary" onclick="go(\'sources\')">Gestisci fonti</button>')+'</div>';return '<div class="articles">'+list.map(x=>{const fav=isSaved(x.link),img=safeUrl(x.image);const key=encodeURIComponent(x.link);return '<article class="article"><div class="article-photo" aria-hidden="true"><span class="photo-fallback">'+esc(mark(x.category))+'</span>'+(img?'<img src="'+esc(img)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest(\'.article\')?.remove()" alt="">':'')+'</div><div class="article-info"><div class="article-tags"><span class="category-label">'+esc(x.category)+'</span><span class="source-label">'+esc(x.source)+'</span></div><button class="article-title" onclick="openNews(decodeURIComponent(\''+key+'\'))">'+esc(x.title)+'</button><div class="article-foot"><span>'+ago(x.date)+'</span><button class="save-btn '+(fav?'on':'')+'" aria-label="'+(fav?'Rimuovi dai salvati':'Salva articolo')+'" onclick="toggleSave(decodeURIComponent(\''+key+'\'))">'+(fav?'♥':'♡')+'</button></div></div></article>'}).join('')+'</div>'}
+function articles(){
+ const list=visible();
+ if(!list.length)return '<div class="empty"><div class="empty-icon">⌕</div><h3>Nessuna notizia</h3><p>Modifica i filtri o aggiorna le fonti.</p></div>';
+ return '<div class="articles">'+list.slice(0,Math.min(160,state.displayLimit||48)).map(x=>{
+  const fav=isSaved(x.link),tm=/TmRexh/i.test(x.source||''),isLogo=tm&&(!safeImageUrl(x.image)||x.image===TMREXH_BRAND_ICON),img=safeImageUrl(x.image)||(tm?TMREXH_BRAND_ICON:''),key=encodeURIComponent(x.link);
+  const title=displayTitle(x),summary=displaySummary(x);
+  const photo=img?'<img src="'+esc(img)+'" loading="lazy" decoding="async" alt="" onerror="ambPhotoFailure(this)">':'<div class="article-plain-mark">'+esc(tm?'TEC':mark(x.category))+'</div>';
+  return '<article class="article '+(!img?'no-photo':'')+'" onclick="ambCardTap(event,decodeURIComponent(\''+key+'\'))" aria-label="'+esc(title)+'">'+
+   '<div class="article-photo '+(isLogo?'tmrexh-brand':'')+'" aria-hidden="true">'+photo+'</div><div class="article-info">'+
+   '<div class="article-tags"><span class="category-label">'+esc(tm?'Motori':x.category)+'</span><span class="source-label">'+esc(x.source)+'</span></div>'+
+   '<div class="article-title">'+esc(title)+'</div>'+
+   ((summary&&state.settings.showSummaries!==false)?'<div class="article-summary">'+esc(summary.slice(0,145))+'</div>':'')+
+   '<div class="article-foot"><span>'+ago(x.date)+(x.isOffline?' · ⬇ Offline':'')+'</span><button class="save-btn '+(fav?'on':'')+'" aria-label="'+(fav?'Rimuovi dai preferiti':'Salva nei preferiti e offline')+'" onclick="event.stopPropagation();toggleSave(decodeURIComponent(\''+key+'\'))">'+(fav?'♥':'♡')+'</button></div></div></article>';
+ }).join('')+'</div>'+ (list.length>(state.displayLimit||48)?'<div class="load-more-wrap"><button class="btn" onclick="state.displayLimit=(state.displayLimit||48)+48;render()">Mostra altre notizie</button></div>':'');
+}
 function newsView(){const active=state.sources.filter(x=>x.enabled).length;return '<div class="home-head"><div><div class="kicker">'+(state.category==='Auto'?'IL MONDO DELL’AUTO':'LA TUA RASSEGNA MOTORSPORT')+'</div><h1 class="page-title">'+(state.category==='Auto'?'Auto, motori e novità':'Le ultime dal paddock')+'</h1><p class="lede">'+(state.category==='Auto'?'Utilitarie, nuovi modelli, prove, motori e auto da competizione.':'F1, rally, endurance, GT3, MotoGP e auto.')+'</p></div></div><div class="statusline"><span class="statusdot '+(state.loading?'busy':!state.updated?'off':'')+'"></span><span>'+(state.loading?'Aggiornamento delle fonti in corso…':state.updated?'Aggiornato '+ago(new Date(state.updated).getTime()):'In attesa del primo aggiornamento')+'</span><span>·</span><span>'+active+' fonti attive</span></div><div class="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg><input id="q" type="search" placeholder="Cerca notizie e campionati" aria-label="Cerca notizie" value="'+esc(state.query)+'" oninput="searchInput(this.value)"></div><div class="categories" aria-label="Categorie motorsport">'+CATS.map(c=>'<button class="cat '+(state.category===c?'active':'')+'" aria-pressed="'+(state.category===c)+'" onclick="selectCat(\''+c+'\')">'+esc(c)+'</button>').join('')+'</div>'+(state.category==='Auto'?'<div class="auto-topic"><label for="auto-topic-select">Argomento</label><select id="auto-topic-select" onchange="state.autoTopic=this.value;render()">'+AUTO_TOPICS.map(t=>'<option value="'+t+'" '+(state.autoTopic===t?'selected':'')+'>'+t+'</option>').join('')+'</select></div>':'')+'<div class="section-head"><h2>Ultime notizie</h2><span class="counter">'+visible().length+' articoli</span></div>'+articles()+'<p class="footer-note">Articoli e immagini appartengono agli editori originali. I contenuti si aprono nel browser esterno.</p>'}
 function favesView(){return '<div class="kicker">LA TUA RACCOLTA</div><h1 class="page-title subpage-title">Articoli salvati</h1><p class="lede">I tuoi preferiti, sempre a portata di mano.</p><div class="section-head" style="margin-top:15px"><h2>La mia raccolta</h2><span class="counter">'+state.saved.length+' salvati</span></div>'+articles()}
-function sourcesView(){return '<div class="kicker">FONTI PERSONALIZZATE</div><h1 class="page-title subpage-title">Gestisci le fonti</h1><p class="lede">Sono utilizzati soltanto gli articoli che includono una foto. Puoi aggiungere feed RSS con immagini.</p><div class="section-head" style="margin-top:14px"><h2>'+state.sources.length+' fonti disponibili</h2><button class="btn primary tiny" onclick="state.adding=!state.adding;state.sourceError=\'\';render()">'+(state.adding?'Chiudi':'＋ Aggiungi sito')+'</button></div>'+(state.adding?'<form class="panel" onsubmit="addSite(event)"><div class="form-row"><label for="sname">Nome del sito</label><input id="sname" required maxlength="60" placeholder="Es. Rally News"><label for="surl">Indirizzo sito o feed RSS/Atom</label><input id="surl" required type="url" placeholder="https://esempio.it/feed/"><label for="scat">Categoria</label><select id="scat">'+CATS.filter(x=>x!=='Tutte'&&x!=='Personali').concat(['Personali']).map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select></div><p class="helper">Puoi inserire l’URL di un feed RSS/Atom o del sito da cui rilevarlo. Il feed deve includere foto negli articoli: le fonti senza immagini non vengono usate per le notizie.</p>'+(state.sourceError?'<div class="alert">'+esc(state.sourceError)+'</div>':'')+'<div class="form-actions"><button type="button" class="btn" onclick="state.adding=false;render()">Annulla</button><button id="add-btn" class="btn primary" type="submit">Salva fonte</button></div></form>':'')+'<div class="categories sources-filter" aria-label="Filtra fonti per categoria">'+CATS.map(c=>'<button class="cat '+(state.sourceCategory===c?'active':'')+'" onclick="state.sourceCategory=\''+c+'\';render()">'+esc(c)+'</button>').join('')+'</div><div class="sources-list">'+state.sources.map((s,i)=>({...s,idx:i})).filter(s=>state.sourceCategory==='Tutte'||s.category===state.sourceCategory).map(s=>'<section class="source-card"><div class="source-main"><div class="source-name">'+esc(s.name)+'</div><div class="source-meta">'+esc(s.category)+' · '+(s.locked?'Predefinita':'Personale')+'</div><div class="source-url">'+esc(s.url)+'</div>'+(state.sourceHealth[s.url]&&s.enabled?'<span class="source-status '+(state.sourceHealth[s.url].status==='good'?'good':'missing')+'">'+(state.sourceHealth[s.url].status==='good'?'Foto disponibili: '+state.sourceHealth[s.url].count+' articoli':state.sourceHealth[s.url].status==='missing'?'Feed ignorato: nessun articolo con foto':'Fonte temporaneamente non raggiungibile')+'</span>':'')+'</div><div class="source-actions"><button class="switch '+(s.enabled?'active':'')+'" role="switch" aria-checked="'+!!s.enabled+'" aria-label="'+(s.enabled?'Disattiva':'Attiva')+' '+esc(s.name)+'" onclick="toggleSite('+s.idx+')"></button>'+(s.locked?'':'<button class="delete-btn" aria-label="Elimina '+esc(s.name)+'" onclick="deleteSite('+s.idx+')">×</button>')+'</div></section>').join('')+'</div><p class="footer-note">Le fonti sono salvate sul dispositivo. Le notizie senza foto non vengono pubblicate; lo stato di ogni fonte è indicato qui, senza avvisi invasivi nella Home.</p>'}
+function sourcesView(){return '<div class="kicker">FONTI PERSONALIZZATE</div><h1 class="page-title subpage-title">Gestisci le fonti</h1><p class="lede">Sono utilizzati gli articoli con foto; per TmRexh Articoli tecnici è consentita anche la lettura senza immagini.</p><div class="section-head" style="margin-top:14px"><h2>'+state.sources.length+' fonti disponibili</h2><button class="btn primary tiny" onclick="state.adding=!state.adding;state.sourceError=\'\';render()">'+(state.adding?'Chiudi':'＋ Aggiungi sito')+'</button></div>'+(state.adding?'<form class="panel" onsubmit="addSite(event)"><div class="form-row"><label for="sname">Nome del sito</label><input id="sname" required maxlength="60" placeholder="Es. Rally News"><label for="surl">Indirizzo sito o feed RSS/Atom</label><input id="surl" required type="url" placeholder="https://esempio.it/feed/"><label for="scat">Categoria</label><select id="scat">'+CATS.filter(x=>x!=='Tutte'&&x!=='Personali').concat(['Personali']).map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select></div><p class="helper">Puoi inserire l’URL di un feed RSS/Atom o del sito da cui rilevarlo. Il feed deve includere foto negli articoli: le fonti senza immagini non vengono usate per le notizie.</p>'+(state.sourceError?'<div class="alert">'+esc(state.sourceError)+'</div>':'')+'<div class="form-actions"><button type="button" class="btn" onclick="state.adding=false;render()">Annulla</button><button id="add-btn" class="btn primary" type="submit">Salva fonte</button></div></form>':'')+'<div class="categories sources-filter" aria-label="Filtra fonti per categoria">'+CATS.map(c=>'<button class="cat '+(state.sourceCategory===c?'active':'')+'" onclick="state.sourceCategory=\''+c+'\';render()">'+esc(c)+'</button>').join('')+'</div><div class="sources-list">'+state.sources.map((s,i)=>({...s,idx:i})).filter(s=>state.sourceCategory==='Tutte'||s.category===state.sourceCategory).map(s=>'<section class="source-card"><div class="source-main"><div class="source-name">'+esc(s.name)+'</div><div class="source-meta">'+esc(s.category)+' · '+(s.locked?'Predefinita':'Personale')+'</div><div class="source-url">'+esc(s.url)+'</div>'+(state.sourceHealth[s.url]&&s.enabled?'<span class="source-status '+(state.sourceHealth[s.url].status==='good'?'good':'missing')+'">'+(state.sourceHealth[s.url].status==='good'?'Foto disponibili: '+state.sourceHealth[s.url].count+' articoli':state.sourceHealth[s.url].status==='missing'?'Feed ignorato: nessun articolo con foto':'Fonte temporaneamente non raggiungibile')+'</span>':'')+'</div><div class="source-actions"><button class="switch '+(s.enabled?'active':'')+'" role="switch" aria-checked="'+!!s.enabled+'" aria-label="'+(s.enabled?'Disattiva':'Attiva')+' '+esc(s.name)+'" onclick="toggleSite('+s.idx+')"></button>'+(s.locked?'':'<button class="delete-btn" aria-label="Elimina '+esc(s.name)+'" onclick="deleteSite('+s.idx+')">×</button>')+'</div></section>').join('')+'</div><p class="footer-note">Le fonti sono salvate sul dispositivo. Le notizie senza foto non vengono pubblicate; lo stato di ogni fonte è indicato qui, senza avvisi invasivi nella Home.</p>'}
 function seg(field,options){return '<div class="segment '+(field==='theme'?'theme-picker':'')+'" role="group" aria-label="'+field+'">'+options.map(([v,t])=>'<button aria-pressed="'+(state.settings[field]===v)+'" class="'+(state.settings[field]===v?'active':'')+'" onclick="changePref(\''+field+'\',\''+v+'\')">'+t+'</button>').join('')+'</div>'}
-function settingsView(){return '<div class="kicker">PERSONALIZZAZIONE A.M.B.</div><h1 class="page-title subpage-title">Impostazioni</h1><p class="lede">Tutto sotto controllo, senza complicazioni.</p><section class="setting-group"><h2>Aspetto e leggibilità</h2><div class="setting theme-setting"><div class="setting-copy"><strong>Tema dell’app</strong><p>Chiaro, scuro, AMOLED nero puro o automatico.</p></div>'+seg('theme',[['light','Chiaro'],['dark','Scuro'],['amoled','AMOLED'],['auto','Auto']])+'</div><div class="setting"><div class="setting-copy"><strong>Dimensione testo</strong><p>Adatta la lettura alle tue esigenze.</p></div><div class="segment"><button aria-label="Riduci testo" onclick="changePref(\'font\',Math.max(90,state.settings.font-10))">A−</button><span class="value-readout">'+state.settings.font+'%</span><button aria-label="Ingrandisci testo" onclick="changePref(\'font\',Math.min(120,state.settings.font+10))">A+</button></div></div><div class="setting"><div class="setting-copy"><strong>Spaziatura notizie</strong><p>Schede più compatte o più ariose.</p></div>'+seg('density',[['compact','Compatta'],['balanced','Normale'],['spacious','Ampia']])+'</div><div class="setting"><div class="setting-copy"><strong>Disposizione degli articoli</strong><p>Foto di fianco al testo oppure sopra, a tutta larghezza.</p></div>'+seg('articleLayout',[['row','Affiancati'],['stacked','Foto sopra']])+'</div><div class="setting"><div class="setting-copy"><strong>Dimensione immagini</strong><p>Ridimensiona le miniature in base allo schermo.</p></div>'+seg('photoSize',[['small','Piccole'],['medium','Medie'],['large','Grandi']])+'</div><div class="setting"><div class="setting-copy"><strong>Adattamento foto</strong><p>Riempi la scheda (ritaglio) oppure mostra la foto intera (bordi possibili).</p></div>'+seg('photoFit',[['cover','Riempi'],['contain','Intera']])+'</div><div class="setting"><div class="setting-copy"><strong>Immagini negli articoli</strong><p>Mostra le foto fornite dagli editori (le notizie senza foto sono escluse).</p></div><button role="switch" aria-label="Mostra immagini" aria-checked="'+state.settings.images+'" class="switch '+(state.settings.images?'active':'')+'" onclick="changePref(\'images\',!state.settings.images)"></button></div></section><section class="setting-group"><h2>Notizie e aggiornamenti</h2><div class="setting"><div class="setting-copy"><strong>Aggiorna all’apertura</strong><p>Controlla automaticamente i feed disponibili.</p></div><button role="switch" aria-label="Aggiorna all’apertura" aria-checked="'+state.settings.auto+'" class="switch '+(state.settings.auto?'active':'')+'" onclick="changePref(\'auto\',!state.settings.auto)"></button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento</strong><p>'+(state.updated?new Date(state.updated).toLocaleString('it-IT'):'Non ancora eseguito')+'</p></div><button class="btn tiny" onclick="go(\'news\');loadFeeds(true)">↻ Aggiorna</button></div><div class="setting"><div class="setting-copy"><strong>Fonti delle notizie</strong><p>'+state.sources.filter(x=>x.enabled).length+' attive su '+state.sources.length+' disponibili.</p></div><button class="btn tiny" onclick="go(\'sources\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Cache articoli</strong><p>'+state.items.length+' notizie memorizzate sul dispositivo.</p></div><button class="btn tiny" onclick="clearCache()">Svuota</button></div></section><section class="setting-group"><h2>Calendario eventi</h2><div class="setting"><div class="setting-copy"><strong>Sincronizzazione automatica</strong><p>All’apertura e mentre usi l’app, se è trascorso l’intervallo scelto.</p></div><button role="switch" aria-label="Sincronizzazione calendario" aria-checked="'+!!state.settings.calAuto+'" class="switch '+(state.settings.calAuto?'active':'')+'" onclick="changePref(\'calAuto\',!state.settings.calAuto);if(state.settings.calAuto)maybeAutoCalendar()"></button></div><div class="setting"><div class="setting-copy"><strong>Frequenza aggiornamenti</strong><p>Evita richieste inutili ai siti.</p></div><select style="font-size:.72rem;max-width:120px;border:1px solid var(--line);border-radius:8px;padding:7px;background:var(--card);color:var(--ink)" aria-label="Frequenza aggiornamento calendari" onchange="changePref(\'calInterval\',Number(this.value))">'+[[1,'1 ora'],[3,'3 ore'],[6,'6 ore'],[24,'24 ore']].map(([v,l])=>'<option value="'+v+'" '+(Number(state.settings.calInterval)===v?'selected':'')+'>'+l+'</option>').join('')+'</select></div><div class="setting"><div class="setting-copy"><strong>Fonti gare ed eventi</strong><p>'+calendar.sources.filter(x=>x.enabled).length+' calendari attivi · orari Europe/Rome</p></div><button class="btn tiny" onclick="calendar.manage=true;go(\'calendar\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento calendario</strong><p>'+(calendar.updated?new Date(calendar.updated).toLocaleString('it-IT'):'Non ancora aggiornato')+'</p></div><button class="btn tiny" onclick="go(\'calendar\');loadCalendar(true)">↻ Aggiorna</button></div></section><section class="setting-group" aria-labelledby="about-amb"><h2 id="about-amb">Informazioni sull’app</h2><div class="panel about-box"><div class="about-mark">A.M.B.</div><div class="about-content"><strong class="about-title">Apex Motori Blaj</strong><p class="about-version">Versione 2.4 · foto widget e schede adattabili</p><p class="about-credit"><strong>Creato da Emanuel Mihai Blaj</strong></p><p class="helper">Tecnologie: Java, Android SDK, WebView, HTML5, CSS3, JavaScript, XML, RSS/Atom e iCalendar (.ics). Widget nativo: Android AppWidget, RemoteViews e RSS. Progetto sorgente: licenza MIT.</p><p class="helper">Compatibilità: Android 10 e versioni successive. Le notizie e i programmi appartengono ai rispettivi editori e organizzatori.</p></div></div></section><section class="setting-group"><h2>Widget Android</h2><div class="setting"><div class="setting-copy"><strong>Configura il widget</strong><p>Lista scorrevole da 20, 40 o 60 notizie, miniature, categorie e temi Chiaro, Scuro, AMOLED o Trasparente.</p></div><button class="btn tiny" onclick="openWidgetSetup()">Configura ↗</button></div><p class="helper">Aggiungi A.M.B. dalla raccolta widget del launcher. Ogni widget può avere filtri diversi. L’aggiornamento in background dipende dal sistema Android.</p></section><section class="setting-group"><h2>Backup preferiti e fonti</h2><div class="panel"><div class="form-row"><label for="amb-backup">Dati da copiare o incollare in formato JSON</label><textarea id="amb-backup" style="width:100%;min-height:90px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--card);color:var(--ink);font-size:.7rem" placeholder="Qui comparirà il backup"></textarea></div><div class="form-actions"><button class="btn tiny" onclick="exportAMB()">Esporta</button><button class="btn tiny" onclick="importAMB()">Importa</button></div></div></section><div class="footer-note">Apex Motori Blaj · A.M.B. · v2.4<br>Android 10+ · Nessuna sezione video interna.<br>Aggregatore indipendente, non affiliato ai siti citati.</div>'}
+function settingsView(){return '<div class="kicker">PERSONALIZZAZIONE A.M.B.</div><h1 class="page-title subpage-title">Impostazioni</h1><p class="lede">Tutto sotto controllo, senza complicazioni.</p><section class="setting-group"><h2>Aspetto e leggibilità</h2><div class="setting theme-setting"><div class="setting-copy"><strong>Tema dell’app</strong><p>Chiaro, scuro, AMOLED nero puro o automatico.</p></div>'+seg('theme',[['light','Chiaro'],['dark','Scuro'],['amoled','AMOLED'],['auto','Auto']])+'</div><div class="setting"><div class="setting-copy"><strong>Dimensione testo</strong><p>Adatta la lettura alle tue esigenze.</p></div><div class="segment"><button aria-label="Riduci testo" onclick="changePref(\'font\',Math.max(90,state.settings.font-10))">A−</button><span class="value-readout">'+state.settings.font+'%</span><button aria-label="Ingrandisci testo" onclick="changePref(\'font\',Math.min(120,state.settings.font+10))">A+</button></div></div><div class="setting"><div class="setting-copy"><strong>Spaziatura notizie</strong><p>Schede più compatte o più ariose.</p></div>'+seg('density',[['compact','Compatta'],['balanced','Normale'],['spacious','Ampia']])+'</div><div class="setting"><div class="setting-copy"><strong>Disposizione degli articoli</strong><p>Foto di fianco al testo oppure sopra, a tutta larghezza.</p></div>'+seg('articleLayout',[['row','Affiancati'],['stacked','Foto sopra']])+'</div><div class="setting"><div class="setting-copy"><strong>Dimensione immagini</strong><p>Ridimensiona le miniature in base allo schermo.</p></div>'+seg('photoSize',[['small','Piccole'],['medium','Medie'],['large','Grandi']])+'</div><div class="setting"><div class="setting-copy"><strong>Adattamento foto</strong><p>Riempi la scheda (ritaglio) oppure mostra la foto intera (bordi possibili).</p></div>'+seg('photoFit',[['cover','Riempi'],['contain','Intera']])+'</div><div class="setting"><div class="setting-copy"><strong>Immagini negli articoli</strong><p>Mostra le foto fornite dagli editori (eccezione: TmRexh senza foto).</p></div><button role="switch" aria-label="Mostra immagini" aria-checked="'+state.settings.images+'" class="switch '+(state.settings.images?'active':'')+'" onclick="changePref(\'images\',!state.settings.images)"></button></div></section><section class="setting-group"><h2>Notizie e aggiornamenti</h2><div class="setting"><div class="setting-copy"><strong>Aggiorna all’apertura</strong><p>Controlla automaticamente i feed disponibili.</p></div><button role="switch" aria-label="Aggiorna all’apertura" aria-checked="'+state.settings.auto+'" class="switch '+(state.settings.auto?'active':'')+'" onclick="changePref(\'auto\',!state.settings.auto)"></button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento</strong><p>'+(state.updated?new Date(state.updated).toLocaleString('it-IT'):'Non ancora eseguito')+'</p></div><button class="btn tiny" onclick="go(\'news\');loadFeeds(true)">↻ Aggiorna</button></div><div class="setting"><div class="setting-copy"><strong>Fonti delle notizie</strong><p>'+state.sources.filter(x=>x.enabled).length+' attive su '+state.sources.length+' disponibili.</p></div><button class="btn tiny" onclick="go(\'sources\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Cache articoli</strong><p>'+state.items.length+' notizie memorizzate sul dispositivo.</p></div><button class="btn tiny" onclick="clearCache()">Svuota</button></div></section><section class="setting-group"><h2>Calendario eventi</h2><div class="setting"><div class="setting-copy"><strong>Sincronizzazione automatica</strong><p>All’apertura e mentre usi l’app, se è trascorso l’intervallo scelto.</p></div><button role="switch" aria-label="Sincronizzazione calendario" aria-checked="'+!!state.settings.calAuto+'" class="switch '+(state.settings.calAuto?'active':'')+'" onclick="changePref(\'calAuto\',!state.settings.calAuto);if(state.settings.calAuto)maybeAutoCalendar()"></button></div><div class="setting"><div class="setting-copy"><strong>Frequenza aggiornamenti</strong><p>Evita richieste inutili ai siti.</p></div><select style="font-size:.72rem;max-width:120px;border:1px solid var(--line);border-radius:8px;padding:7px;background:var(--card);color:var(--ink)" aria-label="Frequenza aggiornamento calendari" onchange="changePref(\'calInterval\',Number(this.value))">'+[[1,'1 ora'],[3,'3 ore'],[6,'6 ore'],[24,'24 ore']].map(([v,l])=>'<option value="'+v+'" '+(Number(state.settings.calInterval)===v?'selected':'')+'>'+l+'</option>').join('')+'</select></div><div class="setting"><div class="setting-copy"><strong>Fonti gare ed eventi</strong><p>'+calendar.sources.filter(x=>x.enabled).length+' calendari attivi · orari Europe/Rome</p></div><button class="btn tiny" onclick="calendar.manage=true;go(\'calendar\')">Gestisci</button></div><div class="setting"><div class="setting-copy"><strong>Ultimo aggiornamento calendario</strong><p>'+(calendar.updated?new Date(calendar.updated).toLocaleString('it-IT'):'Non ancora aggiornato')+'</p></div><button class="btn tiny" onclick="go(\'calendar\');loadCalendar(true)">↻ Aggiorna</button></div></section><section class="setting-group" aria-labelledby="about-amb"><h2 id="about-amb">Informazioni sull’app</h2><div class="panel about-box"><div class="about-mark">A.M.B.</div><div class="about-content"><strong class="about-title">Apex Motori Blaj</strong><p class="about-version">Versione 2.5 · foto widget e schede adattabili</p><p class="about-credit"><strong>Created &amp; Developed by ManicApe</strong></p><p class="helper">Tecnologie: Java, Android SDK, WebView, HTML5, CSS3, JavaScript, XML, RSS/Atom e iCalendar (.ics). Widget nativo: Android AppWidget, RemoteViews e RSS. Progetto sorgente: licenza MIT.</p><p class="helper">Compatibilità: Android 10 e versioni successive. Le notizie e i programmi appartengono ai rispettivi editori e organizzatori.</p></div></div></section><section class="setting-group"><h2>Widget Android</h2><div class="setting"><div class="setting-copy"><strong>Configura il widget</strong><p>Lista scorrevole da 20, 40 o 60 notizie, miniature, categorie e temi Chiaro, Scuro, AMOLED o Trasparente.</p></div><button class="btn tiny" onclick="openWidgetSetup()">Configura ↗</button></div><p class="helper">Aggiungi A.M.B. dalla raccolta widget del launcher. Ogni widget può avere filtri diversi. L’aggiornamento in background dipende dal sistema Android.</p></section><section class="setting-group"><h2>Backup preferiti e fonti</h2><div class="panel"><div class="form-row"><label for="amb-backup">Dati da copiare o incollare in formato JSON</label><textarea id="amb-backup" style="width:100%;min-height:90px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--card);color:var(--ink);font-size:.7rem" placeholder="Qui comparirà il backup"></textarea></div><div class="form-actions"><button class="btn tiny" onclick="exportAMB()">Esporta</button><button class="btn tiny" onclick="importAMB()">Importa</button></div></div></section><div class="footer-note">Apex Motori Blaj · A.M.B. · v2.5<br>Android 10+ · Nessuna sezione video interna.<br>Aggregatore indipendente, non affiliato ai siti citati.</div>'}
 
 function refreshCurrent(){if(state.tab==='calendar')loadCalendar(true);else loadFeeds(true)}
 function calendarSave(){store('amb_calendar_sources_v1',calendar.sources)}
@@ -799,6 +890,294 @@ const base=new URL(url),host=base.origin,paths=['/feed/','/rss/','/rss.xml','/fe
 throw Error('Il sito non espone un feed rilevabile. Inserisci l’URL RSS/Atom diretto.')}
 async function addSite(event){event.preventDefault();const name=document.getElementById('sname')?.value.trim(),address=document.getElementById('surl')?.value.trim(),category=document.getElementById('scat')?.value;if(!name||!safeUrl(address))return;const btn=document.getElementById('add-btn');if(btn){btn.disabled=true;btn.textContent='Verifica…'}state.sourceError='';try{const url=await discoverFeed(address);if(state.sources.some(s=>s.url===url))throw Error('Questa fonte è già presente.');const testArticles=await readFeed({id:'new-photo-probe',name,category,url,locked:false});if(!testArticles.length)throw Error('Il feed non contiene articoli con foto riconoscibili.');state.sources.push({id:'custom-'+Date.now(),name,category,url,enabled:true,locked:false});persist();state.adding=false;render();loadFeeds(true)}catch(e){state.sourceError='Impossibile aggiungere la fonte: '+e.message;const form={name,address,category};render();document.getElementById('sname').value=form.name;document.getElementById('surl').value=form.address;document.getElementById('scat').value=form.category}}
 function clearCache(){if(!confirm('Svuotare la cache? I preferiti resteranno salvati.'))return;state.items=[];state.updated='';store('amb_news_cache_v1',[]);store('amb_refresh_time','');render()}
-render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.settings.auto||!state.items.length)loadFeeds(false);if(state.settings.calAuto)maybeAutoCalendar();setInterval(()=>{if(state.settings.calAuto)maybeAutoCalendar()},600000);
+/* A.M.B. 2.5 / ManicApe: opt-in modules. No remote trackers. */
+const AMB_SUBCATS={
+ 'F1':['Tutti','Gare','Qualifiche','Tecnica'],
+ 'WRC':['Tutti','Gare','Risultati','Tecnica'],
+ 'WEC':['Tutti','Gare','Risultati','Tecnica'],
+ 'GT3':['Tutti','Gare','Risultati','Tecnica'],
+ 'MotoGP':['Tutti','Gare','Piloti','Tecnica'],
+ 'Auto':['Tutti','Utilitarie','Novità','Motori','Tecnologia','Competizione','Articoli tecnici']
+};
+const AMB_TOPIC_PATTERN={
+ 'Gare':/(gara|race|rally|stage|speciale|grand prix|gp\b|round|prova|circuit|pista)/i,
+ 'Risultati':/(risultat|result|classific|standings|podio|podium|winner|vittori|win\b|champion)/i,
+ 'Qualifiche':/(qualific|pole|practice|free practice|prove libere|sprint)/i,
+ 'Tecnica':/(tecnic|technical|engine|motor|power|aerodinam|turbo|ecu|pneumatic|tyre|software|hybrid|sospension|assetto|rimapp|centralin)/i,
+ 'Piloti':/(pilot|driver|rider|pilota|marquez|bagnaia|rossi|rookie)/i,
+ 'Articoli tecnici':/./
+};
+let ambSubcat='Tutti';
+let ambSourceLang='all';
+const ambTranslations=readStore('amb_translate_cache25',{});
+const ambTranslationPending=new Map();
+let ambTranslationSeq=0, ambTranslating=false;
+function ambSourceIsEnglish(x){
+ if(x.lang)return x.lang==='en';
+ const src=state.sources.find(s=>s.name===x.source);
+ return src?.language==='en'||/^en-|EN ·|EN\b|RaceFans|Sportscar365|CarBuzz|Road & Track|The Race|Carscoops|Electrek|Autocar|Hagerty|PlanetF1|RACER|Jalopnik|DirtFish|Top Gear|Motor1 EN|Car and Driver|The Drive/i.test((src?.id||'')+' '+x.source);
+}
+function displayTitle(x){return state.settings.language!=='en'&&state.settings.autoTranslate&&ambSourceIsEnglish(x)?(ambTranslations[x.link]?.title||x.title):x.title}
+function displaySummary(x){return state.settings.language!=='en'&&state.settings.autoTranslate&&ambSourceIsEnglish(x)?(ambTranslations[x.link]?.desc||x.desc):x.desc}
+function ambTranslationResult(id,val,error){
+ const p=ambTranslationPending.get(id);if(!p)return;ambTranslationPending.delete(id);
+ if(error)p.reject(Error(error));else p.resolve(val);
+}
+window.AMBTranslationResult=ambTranslationResult;
+function translateNative(text){
+ if(!window.AMBAndroid?.translateText||!String(text||'').trim())return Promise.reject(Error('Traduzione non disponibile su questo dispositivo'));
+ return new Promise((resolve,reject)=>{
+  const id='t'+(++ambTranslationSeq);
+  ambTranslationPending.set(id,{resolve,reject});
+  try{window.AMBAndroid.translateText(id,String(text).slice(0,4500))}catch(e){ambTranslationPending.delete(id);reject(e)}
+ });
+}
+async function ambTranslateVisible(){
+ if(ambTranslating||state.settings.language==='en'||!state.settings.autoTranslate||!window.AMBAndroid?.translateText||document.hidden)return;
+ ambTranslating=true;
+ try{
+  const candidates=visible().filter(x=>ambSourceIsEnglish(x)&&(!ambTranslations[x.link]?.title||!ambTranslations[x.link]?.desc)).slice(0,30);
+  for(const x of candidates){
+    if(document.hidden||state.settings.language==='en'||!state.settings.autoTranslate)break;
+    const old=ambTranslations[x.link]||{};
+    try{
+      const title=old.title||await translateNative(x.title);
+      const desc=old.desc||(x.desc?await translateNative(x.desc):'');
+      ambTranslations[x.link]={title,desc};
+      // Keep only recent translations to avoid unbounded local storage.
+      const keys=Object.keys(ambTranslations);for(let i=0;i<keys.length-350;i++)delete ambTranslations[keys[i]];
+      store('amb_translate_cache25',ambTranslations);
+      if(state.tab==='news'||state.tab==='faves')render();
+    }catch(e){console.info('Traduzione non disponibile:',String(e));break}
+  }
+  syncWidgetNews();
+ }finally{ambTranslating=false}
+}
+const ambRawSyncWidgetNews=syncWidgetNews;
+syncWidgetNews=function(){
+ try{const payload=state.items.filter(x=>(safeImageUrl(x.image)||/TmRexh/i.test(x.source||''))&&CATS.includes(x.category)&&x.category!=='Tutte').slice(0,350).map(x=>({title:displayTitle(x),category:x.category,source:x.source,image:safeImageUrl(x.image)||( /TmRexh/i.test(x.source||'')?TMREXH_BRAND_ICON:''),link:x.link,date:x.date}));window.AMBAndroid?.setWidgetData(JSON.stringify(payload))}catch(e){console.warn(e)}
+};
+const ambRawVisible=visible;
+visible=function(){
+ let rows=ambRawVisible();
+ if(state.tab==='faves'||ambSubcat==='Tutti'||!state.category||state.category==='Tutte')return rows;
+ if(ambSubcat==='Articoli tecnici')return rows.filter(x=>/TmRexh/i.test(x.source||''));
+ const test=AUTO_REGEX[ambSubcat]||AMB_TOPIC_PATTERN[ambSubcat];
+ return test?rows.filter(x=>test.test(x.title+' '+(x.desc||''))):rows;
+};
+const ambRawSelectCat=selectCat;
+selectCat=function(c){ambSubcat='Tutti';state.autoTopic='Tutti';ambRawSelectCat(c);if(c==='Auto')setTimeout(()=>{if(state.tab==='news')ambTranslateVisible()},40)};
+const ambRawNewsView=newsView;
+newsView=function(){
+ let html=ambRawNewsView();
+ // Second row only when category-specific filters are useful.
+ const subs=AMB_SUBCATS[state.category];
+ const subHtml=subs?'<div class="amb-subcats" aria-label="Sottocategorie">'+subs.map(t=>'<button class="amb-subcat '+(ambSubcat===t?'active':'')+'" onclick="ambSelectSubcat(\''+t.replace(/'/g,"\\'")+'\')">'+esc(t)+'</button>').join('')+'</div>':'';
+ html=html.replace('<div class="section-head"><h2>Ultime notizie',subHtml+'<div class="section-head"><h2>Ultime notizie');
+ return html;
+};
+function ambSelectSubcat(x){ambSubcat=x;state.autoTopic='Tutti';render()}
+const ambRawSourcesView=sourcesView;
+sourcesView=function(){
+ let html=ambRawSourcesView();
+ const controls='<div class="amb-lang-filter"><span>Lingua delle fonti</span><div class="segment">'+[['all','Tutte'],['it','Italiano'],['en','English']].map(([v,t])=>'<button class="'+(ambSourceLang===v?'active':'')+'" onclick="ambSourceLang=\''+v+'\';render()">'+t+'</button>').join('')+'</div></div>';
+ html=html.replace('<div class="sources-list">',controls+'<div class="sources-list">');
+ return html;
+};
+function ambPhotoFailure(image){
+ const holder=image.closest('.article-photo');if(!holder)return;
+ const article=holder.closest('.article');
+ // Other publishers must supply working photos. Only TmRexh has a text-only exemption.
+ if(!article?.querySelector('.source-label')?.textContent.includes('TmRexh')){article?.remove();return}
+ holder.innerHTML='<div class="article-plain-mark">TmRexh</div>';
+}
+let ambTapTimer=null,ambTapLink='';
+function ambCardTap(event,link){
+ if(event.target?.closest?.('.save-btn,.btn,a,select,input'))return;
+ if(ambTapTimer&&ambTapLink===link){clearTimeout(ambTapTimer);ambTapTimer=null;ambTapLink='';ambSaveByDoubleTap(link,event.currentTarget);return}
+ if(ambTapTimer){clearTimeout(ambTapTimer);ambTapTimer=null}
+ ambTapLink=link;ambTapTimer=setTimeout(()=>{ambTapTimer=null;openNews(link)},265);
+}
+function ambSaveByDoubleTap(link,target){
+ const article=target?.closest?.('.article')||target;
+ if(article){const h=document.createElement('div');h.className='amb-heart-burst';h.textContent='♥';article.appendChild(h);setTimeout(()=>h.remove(),620)}
+ if(!isSaved(link))toggleSave(link);
+}
+const ambOldToggle=toggleSave;
+toggleSave=function(link){
+ const wasSaved=isSaved(link),item=state.items.concat(state.saved).find(x=>x.link===link);
+ ambOldToggle(link);
+ if(!item)return;
+ if(wasSaved){try{window.AMBAndroid?.deleteOffline(link)}catch(e){};return}
+ // Saving starts a native download. A favorite remains present if the site blocks extraction.
+ if(window.AMBAndroid?.saveOffline){
+  try{window.AMBAndroid.saveOffline(JSON.stringify({link:item.link,title:item.title,desc:item.desc||'',image:safeImageUrl(item.image)||( /TmRexh/i.test(item.source||'')?TMREXH_BRAND_ICON:''),source:item.source||'',date:item.date||0,lang:ambSourceIsEnglish(item)?'en':'it'}))}
+  catch(e){ambToast('Salvataggio offline non disponibile')}
+ }else {item.offlinePending=true;persist()}
+};
+window.AMBOfflineResult=function(link,ready,error){
+ const rows=state.saved.concat(state.items);for(const x of rows)if(x.link===link){x.isOffline=!!ready;x.offlinePending=false;x.offlineError=error||''}
+ store('amb_saved_v1',state.saved);store('amb_news_cache_v1',state.items);
+ if(error)ambToast('Offline: '+error);else ambToast('Articolo salvato per la lettura offline');
+ if(state.tab==='faves'||state.tab==='news')render();
+};
+function ambToast(t){let n=document.getElementById('amb-toast');if(!n){n=document.createElement('div');n.id='amb-toast';document.body.appendChild(n)}n.textContent=t;n.classList.add('visible');setTimeout(()=>{if(n.textContent===t)n.classList.remove('visible')},3500)}
+openNews=function(link){const url=safeUrl(link);if(!url)return;if(window.AMBAndroid?.openArticle)window.AMBAndroid.openArticle(url);else window.location.href=url};
+const ambOldLoadFeeds=loadFeeds;
+loadFeeds=async function(force){await ambOldLoadFeeds(force);if(!document.hidden&&state.settings.autoTranslate)ambTranslateVisible()};
+function maybeAutoNews(){
+ if(state.loading)return;
+ const interval=Number(state.settings.newsInterval||45)*60000;
+ if(state.items.length&&state.updated&&Date.now()-new Date(state.updated).getTime()<interval)return;
+ return loadFeeds(false);
+}
+
+/* Calendar regional filter. Only exact documented location tokens are matched. */
+const AMB_REGIONS={
+ 'Abruzzo':['L’Aquila','L Aquila','Chieti','Pescara','Teramo'],
+ 'Basilicata':['Matera','Potenza'],
+ 'Calabria':['Catanzaro','Cosenza','Crotone','Reggio Calabria','Vibo Valentia'],
+ 'Campania':['Avellino','Benevento','Caserta','Napoli','Salerno'],
+ 'Emilia-Romagna':['Bologna','Ferrara','Forlì','Cesena','Modena','Parma','Piacenza','Ravenna','Reggio Emilia','Rimini'],
+ 'Friuli-Venezia Giulia':['Gorizia','Pordenone','Trieste','Udine'],
+ 'Lazio':['Frosinone','Latina','Rieti','Roma','Viterbo'],
+ 'Liguria':['Genova','Imperia','La Spezia','Savona'],
+ 'Lombardia':['Bergamo','Brescia','Como','Cremona','Lecco','Lodi','Mantova','Milano','Monza','Pavia','Sondrio','Varese'],
+ 'Marche':['Ancona','Ascoli Piceno','Fermo','Macerata','Pesaro','Urbino'],
+ 'Molise':['Campobasso','Isernia'],
+ 'Piemonte':['Alessandria','Asti','Biella','Cuneo','Novara','Torino','Verbano','Vercelli'],
+ 'Puglia':['Bari','Barletta','Andria','Trani','Brindisi','Foggia','Lecce','Taranto'],
+ 'Sardegna':['Cagliari','Nuoro','Oristano','Sassari','Sud Sardegna'],
+ 'Sicilia':['Agrigento','Caltanissetta','Catania','Enna','Messina','Palermo','Ragusa','Siracusa','Trapani'],
+ 'Toscana':['Arezzo','Firenze','Grosseto','Livorno','Lucca','Massa','Carrara','Pisa','Pistoia','Prato','Siena'],
+ 'Trentino-Alto Adige':['Bolzano','Trento'],
+ 'Umbria':['Perugia','Terni'],
+ "Valle d'Aosta":['Aosta'],
+ 'Veneto':['Belluno','Padova','Rovigo','Treviso','Venezia','Verona','Vicenza']
+};
+const AMB_REGION_ALIASES={'Piedmont':'Piemonte','Lombardy':'Lombardia','Tuscany':'Toscana','Sicily':'Sicilia','Sardinia':'Sardegna','Veneto':'Veneto','Liguria':'Liguria','Lazio':'Lazio','Campania':'Campania','Calabria':'Calabria','Abruzzo':'Abruzzo'};
+const ambCalFilters={region:'all',province:'all'};
+function ambMatchesPlace(input,token){
+ if(!input||!token)return false;
+ const normalized=x=>String(x).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/['’]/g,'').toLowerCase();
+ const place=normalized(input),key=normalized(token);
+ return new RegExp('(^|[^a-z])'+key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'([^a-z]|$)','i').test(place);
+}
+function ambCalLocation(e){
+ const loc=e.place||'';
+ if(!loc)return null;
+ for(const [alias,region] of Object.entries(AMB_REGION_ALIASES))if(ambMatchesPlace(loc,alias))return {region,province:null};
+ for(const [region,provinces] of Object.entries(AMB_REGIONS)){
+  for(const prov of provinces)if(ambMatchesPlace(loc,prov))return {region,province:prov};
+  if(ambMatchesPlace(loc,region))return {region,province:null};
+ }
+ return null;
+}
+const ambOldCalendarVisible=calendarVisible;
+calendarVisible=function(){return ambOldCalendarVisible().filter(e=>{
+ if(ambCalFilters.region==='all')return true;
+ const loc=ambCalLocation(e);
+ if(!loc||loc.region!==ambCalFilters.region)return false;
+ return ambCalFilters.province==='all'||loc.province===ambCalFilters.province;
+})};
+const ambOldCalendarView=calendarView;
+calendarView=function(){
+ if(calendar.manage)return ambOldCalendarView();
+ let html=ambOldCalendarView();
+ const regions=Object.keys(AMB_REGIONS).sort((a,b)=>a.localeCompare(b,'it'));
+ const provinces=AMB_REGIONS[ambCalFilters.region]||[];
+ const reg='<select aria-label="Regione eventi" onchange="ambCalFilters.region=this.value;ambCalFilters.province=\'all\';render()"><option value="all">Tutte le regioni</option>'+regions.map(r=>'<option value="'+esc(r)+'" '+(ambCalFilters.region===r?'selected':'')+'>'+esc(r)+'</option>').join('')+'</select>';
+ const prov='<select aria-label="Provincia eventi" onchange="ambCalFilters.province=this.value;render()" '+(ambCalFilters.region==='all'?'disabled':'')+'><option value="all">Tutte le province</option>'+provinces.map(p=>'<option value="'+esc(p)+'" '+(ambCalFilters.province===p?'selected':'')+'>'+esc(p)+'</option>').join('')+'</select>';
+ html=html.replace('<div class="cal-tools">','<div class="amb-region-controls">'+reg+prov+'</div><div class="cal-tools">');
+ return html;
+};
+const ambBaseLoadCalendar=loadCalendar;
+loadCalendar=async function(force){
+ await ambBaseLoadCalendar(force);
+ try{window.AMBAndroid?.setCalendarData(JSON.stringify(calendar.items.slice(0,500).map(e=>({id:e.id,name:e.name,date:e.date,place:e.place,category:e.category}))))}catch(e){}
+};
+const ambOriginalCalendarSourcesView=calendarSourcesView;
+calendarSourcesView=function(){
+ let html=ambOriginalCalendarSourcesView();
+ const directory='<section class="panel"><div class="panel-heading"><h2>Calendari e manifestazioni locali</h2></div><p class="helper">Consulta i programmi originali e aggiungi un feed .ics quando pubblicato. Questi siti non vengono convertiti automaticamente in eventi senza dati strutturati verificabili.</p><div class="amb-directory">'+[
+ ['ACI Sport','https://www.acisport.it/'],['Rallylink','https://www.rallylink.it/'],['FIA','https://www.fia.com/'],['FIM','https://www.fim-moto.com/'],['FIA WEC','https://www.fiawec.com/'],['GT World Challenge','https://www.gt-world-challenge-europe.com/']
+ ].map(([n,u])=>'<a class="cal-link" href="'+u+'">'+n+'</a>').join('')+'</div></section>';
+ return html.replace('<div class="section-head">',directory+'<div class="section-head">');
+};
+// Local event is a valid calendar category for user-added .ics feeds.
+if(!RACE_CATS.includes('Locali'))RACE_CATS.push('Locali');
+
+/* The existing visual identity remains the default. */
+const ambRawApplyPrefs=applyPrefs;
+applyPrefs=function(){ambRawApplyPrefs();document.documentElement.dataset.palette=state.settings.palette||'red'};
+function ambPaletteControl(){
+ const p=[['red','Rosso A.M.B.'],['blue','Blu'],['emerald','Verde'],['violet','Viola'],['amber','Ambra']];
+ return '<div class="setting"><div class="setting-copy"><strong>Palette di colori</strong><p>Rosso A.M.B. rimane quella predefinita.</p></div><select class="amb-setting-select" onchange="changePref(\'palette\',this.value)">'+p.map(([v,t])=>'<option value="'+v+'" '+(state.settings.palette===v?'selected':'')+'>'+t+'</option>').join('')+'</select></div>';
+}
+const ambRawSettingsView=settingsView;
+settingsView=function(){
+ let html=ambRawSettingsView();
+ html=html.replace('<section class="setting-group"><h2>Notizie e aggiornamenti',ambPaletteControl()+'<section class="setting-group"><h2>Notizie e aggiornamenti');
+ const lang='<section class="setting-group"><h2>Lingua e traduzioni</h2><div class="setting"><div class="setting-copy"><strong>Lingua interfaccia / UI language</strong><p>Italiano e inglese.</p></div>'+seg('language',[['it','Italiano'],['en','English']])+'</div><div class="setting"><div class="setting-copy"><strong>Traduci automaticamente EN → IT</strong><p>Titoli e anteprime; modello offline dopo il primo download.</p></div><button role="switch" aria-checked="'+!!state.settings.autoTranslate+'" class="switch '+(state.settings.autoTranslate?'active':'')+'" onclick="changePref(\'autoTranslate\',!state.settings.autoTranslate);ambTranslateVisible()"></button></div></section>';
+ html=html.replace('<section class="setting-group"><h2>Calendario eventi',lang+'<section class="setting-group"><h2>Calendario eventi');
+ const notification='<section class="setting-group"><h2>Notifiche e privacy</h2><div class="setting"><div class="setting-copy"><strong>Notifiche di notizie importanti</strong><p>Solo dopo il tuo consenso; gli aggiornamenti sono raggruppati e rispettano Android.</p></div><button class="btn tiny" onclick="ambShowPermission()">Configura</button></div><div class="setting"><div class="setting-copy"><strong>Intervallo news</strong><p>Cache intelligente per consumare meno batteria.</p></div><select class="amb-setting-select" onchange="changePref(\'newsInterval\',Number(this.value))">'+[[30,'30 min'],[45,'45 min'],[90,'90 min'],[180,'3 ore']].map(([v,t])=>'<option value="'+v+'" '+(Number(state.settings.newsInterval||45)===v?'selected':'')+'>'+t+'</option>').join('')+'</select></div></section>';
+ html=html.replace('<section class="setting-group" aria-labelledby="about-amb">',notification+'<section class="setting-group" aria-labelledby="about-amb">');
+ html=html.replace('Created &amp; Developed by ManicApe','Created &amp; Developed by ManicApe').replaceAll('Versione 2.4','Versione 2.5').replaceAll('· v2.4','· v2.5');
+ html=html.replace('Progetto sorgente: licenza MIT.','Sorgenti A.M.B.: licenza MIT; librerie di terzi con licenze proprie.');
+ html=html.replace('<p class="helper">Compatibilità: Android 10','<p class="helper">AdBlock: regole native di ManicApe; browser: Android System WebView / Chromium contributors; estrazione articoli: jsoup (Jonathan Hedley); traduzione: Google ML Kit. Le relative licenze sono nel progetto e nella guida.</p><p class="helper">Compatibilità: Android 10');
+ html=html.replace('<div class="footer-note">Apex Motori Blaj','<div class="footer-note">Senza pubblicità proprie · Lettore con AdBlock integrato · Apex Motori Blaj');
+ return html;
+};
+function ambShowPermission(){
+ document.getElementById('amb-permission')?.remove();
+ const en=state.settings.language==='en';
+ const node=document.createElement('div');node.id='amb-permission';node.className='amb-permission';
+ node.innerHTML='<div class="amb-permission-card"><div class="amb-permission-icon">🔔</div><h2>'+(en?'Stay up to date with A.M.B.':'Resta aggiornato su A.M.B.')+'</h2><p>'+(en?'Allow notifications to receive selected motorsport news and calendar updates. No advertisements. You can turn them off anytime. A.M.B. works even without notifications.':'Attivando le notifiche puoi ricevere notizie importanti, gare ed eventi automobilistici. Niente annunci pubblicitari. Puoi disattivarle in qualsiasi momento e l’app funziona anche senza autorizzazione.')+'</p><div class="amb-permission-actions"><button class="btn" onclick="ambDismissPermission()">'+(en?'Not now':'Non ora')+'</button><button class="btn primary" onclick="ambAcceptPermission()">'+(en?'Enable notifications':'Attiva notifiche')+'</button></div></div>';
+ document.body.appendChild(node);
+}
+function ambDismissPermission(){store('amb_notif_explained25',true);document.getElementById('amb-permission')?.remove()}
+function ambAcceptPermission(){
+ ambDismissPermission();state.settings.notifications=true;store('amb_settings_v2',state.settings);
+ try{window.AMBAndroid?.requestNotifications()}catch(e){ambToast('Apri le impostazioni Android per le notifiche')}
+}
+const ambOldRender=render;
+render=function(){
+ ambOldRender();
+ // UI translations affect labels only; the original RSS title is retained separately.
+ if(state.settings.language==='en')ambTranslateChrome();
+ if(state.tab==='sources'&&ambSourceLang!=='all'){
+  const list=Array.from(document.querySelectorAll('.sources-list .source-card'));
+  let corresponding=state.sources.filter(s=>state.sourceCategory==='Tutte'||s.category===state.sourceCategory);
+  list.forEach((node,i)=>{const name=corresponding[i];const lang=name?.language||(/(?:^en-|auto-(?:autoevolution|carscoops|caranddriver|roadandtrack|autocar|thedrive|electrek|cleantechnica|autopian|carbuzz|autoexpress|jalopnik|autoblog|arstechnica|motor1-en)|EN\b|RaceFans|Sportscar365|RACER|Top Gear)/i.test(name?.id||'')?'en':'it');node.style.display=lang===ambSourceLang?'':'none'})
+ }
+};
+const AMB_EN_UI={
+ 'Notizie':'News','Calendario':'Calendar','Salvati':'Saved','Fonti':'Sources','Opzioni':'Settings',
+ 'Le ultime dal paddock':'Latest motorsport news','Auto, motori e novità':'Cars, engines and new models',
+ 'Ultime notizie':'Latest news','Gestisci le fonti':'Manage sources','Impostazioni':'Settings',
+ 'Articoli salvati':'Saved articles','Calendario motorsport':'Motorsport calendar',
+ 'Prossimi appuntamenti':'Upcoming events','Tutte':'All','Personali':'Custom',
+ 'Spaziatura notizie':'News spacing','Dimensione immagini':'Image size',
+ 'Dimensione testo':'Text size','Aspetto e leggibilità':'Appearance and readability',
+ 'Tema dell’app':'App theme','Notizie e aggiornamenti':'News and updates',
+ 'Chiaro':'Light','Scuro':'Dark','Compatta':'Compact','Normale':'Normal',
+ 'Ampia':'Spacious','Piccole':'Small','Medie':'Medium','Grandi':'Large',
+ 'Seleziona':'Select','Sottocategorie':'Subcategories','Tutti':'All',
+ 'Non ora':'Not now','Articoli tecnici':'Technical articles',
+ 'Fonti personalizzate':'Custom sources','Lingua delle fonti':'Source language',
+ 'Dove seguire:':'Where to watch:','Regione eventi':'Event region'
+};
+function ambTranslateChrome(){
+ document.querySelectorAll('.navtab').forEach(el=>{const txt=el.lastChild;if(txt?.nodeType===Node.TEXT_NODE){let k=txt.textContent.trim();if(AMB_EN_UI[k])txt.textContent=AMB_EN_UI[k]}});
+ main.querySelectorAll('h1,h2,.cat,.amb-subcat,.kicker,option,.setting strong,.section-head h2').forEach(el=>{
+  if(el.children.length)return;
+  const translated=AMB_EN_UI[el.textContent.trim()];if(translated)el.textContent=translated;
+ });
+}
+// Only show the first-run dialog once, after the app has loaded and never before the user can decline.
+setTimeout(()=>{if(!readStore('amb_notif_explained25',false))ambShowPermission()},900);
+
+
+render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.settings.auto||!state.items.length)maybeAutoNews();if(state.settings.calAuto)maybeAutoCalendar();document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(state.settings.calAuto)maybeAutoCalendar();if(state.settings.auto)maybeAutoNews()}});
 </script>
 </body></html>

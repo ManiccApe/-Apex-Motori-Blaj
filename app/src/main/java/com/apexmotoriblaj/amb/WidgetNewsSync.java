@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 /** Direct RSS/Atom aggregation from user-configured sources for Android widgets. */
 public final class WidgetNewsSync {
+    static final String TMREXH_BRAND_ICON="https://www.google.com/s2/favicons?domain=tmrexh.it&sz=256";
     private static final ExecutorService WORK = Executors.newSingleThreadExecutor();
     private static final ExecutorService IMAGE_WORK = Executors.newSingleThreadExecutor();
     private static final AtomicBoolean BUSY = new AtomicBoolean(false);
@@ -52,7 +53,8 @@ public final class WidgetNewsSync {
         "{\"name\":\"Motorsport Italia GT3\",\"category\":\"GT3\",\"url\":\"https://it.motorsport.com/rss/endurance-gt/news/\",\"enabled\":true},"+
         "{\"name\":\"Motorsport Italia MotoGP\",\"category\":\"MotoGP\",\"url\":\"https://it.motorsport.com/rss/motogp/news/\",\"enabled\":true},"+
         "{\"name\":\"Motor1 Italia\",\"category\":\"Auto\",\"url\":\"https://it.motor1.com/rss/news/all/\",\"enabled\":true},"+
-        "{\"name\":\"Automoto.it\",\"category\":\"Auto\",\"url\":\"https://www.automoto.it/rss/news.xml\",\"enabled\":true}]";
+        "{\"name\":\"Automoto.it\",\"category\":\"Auto\",\"url\":\"https://www.automoto.it/rss/news.xml\",\"enabled\":true},"+
+        "{\"name\":\"TmRexh · Articoli tecnici\",\"category\":\"Auto\",\"url\":\"https://www.tmrexh.it/category/articoli-tecnici/feed/\",\"enabled\":true}]";
 
     private WidgetNewsSync(){}
     public static void refreshAsync(Context context,boolean force) {
@@ -72,7 +74,7 @@ public final class WidgetNewsSync {
         HttpURLConnection conn=(HttpURLConnection)url.openConnection();
         try {
             conn.setConnectTimeout(8000);conn.setReadTimeout(10000);
-            conn.setRequestProperty("User-Agent","ApexMotoriBlaj/2.3 (Android RSS Reader)");
+            conn.setRequestProperty("User-Agent","ApexMotoriBlaj/2.5 (Android RSS Reader)");
             conn.setRequestProperty("Accept","application/rss+xml, application/atom+xml, text/calendar, application/xml, text/xml, */*");
             conn.setInstanceFollowRedirects(true);
             if(conn.getResponseCode()<200 || conn.getResponseCode()>299)throw new Exception("HTTP "+conn.getResponseCode());
@@ -109,7 +111,7 @@ public final class WidgetNewsSync {
         return value.replace("&amp;","&");
     }
     private static String image(Element el) {
-        for(String name:new String[]{"media:thumbnail","media:content","enclosure","thumbnail","image"}){
+        for(String name:new String[]{"media:content","media:thumbnail","enclosure","thumbnail","image"}){
             NodeList list=el.getElementsByTagName(name);
             for(int i=0;i<list.getLength();i++) {
                 Element e=(Element)list.item(i);
@@ -169,14 +171,17 @@ public final class WidgetNewsSync {
             row.put("source",source.optString("name","Motorsport"));
             row.put("category",source.optString("category","Personali"));
             String photo=image(item);
-            if(photo.isEmpty())continue; // sources without article photos are ignored
+            boolean technical=source.optString("url","").contains("tmrexh.it/category/articoli-tecnici/feed/");
+            if(photo.isEmpty()&&!technical)continue; // exclusive TmRexh exception
+            if(photo.isEmpty()&&technical)photo=TMREXH_BRAND_ICON;
             row.put("image",photo);
             row.put("date",epoch(get(item,"pubDate","dc:date","published","updated")));
             result.add(row);
         }
         return result;
     }
-    private static void refresh(Context c) throws Exception {
+    static void refreshForJob(Context c) throws Exception {refresh(c);}
+    static void refresh(Context c) throws Exception {
         String sources=c.getSharedPreferences("amb_shared",Context.MODE_PRIVATE).getString("sources",DEFAULT);
         JSONArray entries;
         try{entries=new JSONArray(sources);}catch(Exception e){entries=new JSONArray(DEFAULT);}
@@ -186,7 +191,7 @@ public final class WidgetNewsSync {
         java.util.concurrent.ExecutorService feeds=Executors.newFixedThreadPool(4);
         List<java.util.concurrent.Future<List<JSONObject>>> pending=new ArrayList<>();
         try {
-            for(int i=0;i<entries.length() && i<48;i++) {
+            for(int i=0;i<entries.length() && i<75;i++) {
                 JSONObject source=entries.optJSONObject(i);
                 if(source==null || !source.optBoolean("enabled",true))continue;
                 String url=source.optString("url","");
@@ -322,9 +327,10 @@ public final class WidgetNewsSync {
                 options.inSampleSize*=2;
             Bitmap bitmap=BitmapFactory.decodeByteArray(data,0,data.length,options);
             if(bitmap==null)return;
-            Bitmap cropped=Bitmap.createScaledBitmap(bitmap,200,180,true);
+            // 360x320 supports high-density launchers while keeping image memory bounded.
+            Bitmap cropped=Bitmap.createScaledBitmap(bitmap,360,320,true);
             try(FileOutputStream f=new FileOutputStream(file)){
-                if(!cropped.compress(Bitmap.CompressFormat.JPEG,82,f))file.delete();
+                if(!cropped.compress(Bitmap.CompressFormat.JPEG,90,f))file.delete();
             }finally{
                 if(cropped!=bitmap)cropped.recycle();
                 bitmap.recycle();

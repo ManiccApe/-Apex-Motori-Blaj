@@ -1,3 +1,13 @@
+# A.M.B. – Apex Motori Blaj 2.5
+
+**Created & Developed by ManicApe**. This is the Android 10+ / tablet **source project**, not a precompiled APK.
+
+**Start here:** [`GUIDA_PATCH_2_5_IT_EN.md`](GUIDA_PATCH_2_5_IT_EN.md) for GitHub Actions and installation; [`RELEASE_2_5_IT_EN.md`](RELEASE_2_5_IT_EN.md) for Italian and English release text; [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for acknowledgements.
+
+The 2.5 reader's "Lettura" mode is a warm, dim visual filter and keeps text/images untouched. TmRexh technical articles without an editorial photo use a website icon fallback where available. Live feeds, actual APK installation and energy performance must still be tested.
+
+---
+
 # Apex Motori Blaj — A.M.B. 2.4
 
 **Creato da Emanuel Mihai Blaj** · codice open source con licenza MIT.
