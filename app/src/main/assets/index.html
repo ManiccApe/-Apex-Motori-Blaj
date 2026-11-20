@@ -1385,7 +1385,7 @@ calendarView=function(){
  '<p class="cal-foot">Le ore sono convertite in Europe/Rome. Le disponibilità TV sono indicazioni generali, non conferme di trasmissione. Le manifestazioni locali richiedono fonti con dati verificabili.</p>';
 };
 const ambSettingsBefore251=settingsView;
-settingsView=function(){return ambSettingsBefore251().replaceAll('Versione 2.5 ·','Versione 2.6.1 ·').replaceAll('· v2.5','· v2.6.1 RC3').replace('Rosso A.M.B. rimane quella predefinita.','Il colore scelto sostituisce l’accento dell’intera interfaccia.')};
+settingsView=function(){return ambSettingsBefore251().replaceAll('Versione 2.5 ·','Versione 2.6.1 ·').replaceAll('· v2.5','· v2.6.1 RC4').replace('Rosso A.M.B. rimane quella predefinita.','Il colore scelto sostituisce l’accento dell’intera interfaccia.')};
 
 render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.settings.auto||!state.items.length)maybeAutoNews();if(state.settings.calAuto)maybeAutoCalendar();document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(state.settings.calAuto)maybeAutoCalendar();if(state.settings.auto)maybeAutoNews()}});
 </script>
@@ -1418,6 +1418,7 @@ render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.set
   ['Red Bull Motorsports','https://www.youtube.com/@RedBullMotorsports','']
  ];
  const featured='https://www.youtube.com/@maniccape';
+ function isFeaturedUrl(url){try{const u=new URL(String(url||''));return u.protocol==='https:'&&['youtube.com','www.youtube.com','m.youtube.com'].includes(u.hostname)&&u.pathname.replace(/\/+$/,'').toLowerCase()==='/@maniccape'}catch(e){return false}}
  // A small, clearly labeled verified selection keeps the Video tab useful if RSS is blocked.
  // These are NOT advertised as new uploads or as a substitute for a live creator feed.
  const curated=[
@@ -1432,7 +1433,7 @@ render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.set
   const mapped=new Map();
   for(const row of [defaults[0],...fromStore,...defaults.slice(1)]){
    if(!Array.isArray(row)||!row[1])continue;
-   const url=String(row[1]);if(!/^https:\/\/(?:www\.)?youtube\.com\//.test(url)||mapped.has(url)||(hidden.has(url)&&url!==featured))continue;
+   const url=String(row[1]);if(!/^https:\/\/(?:www\.)?youtube\.com\//.test(url)||mapped.has(url)||(isFeaturedUrl(url)&&url!==featured)||(hidden.has(url)&&url!==featured))continue;
    mapped.set(url,[String(row[0]),url,String(row[2]||defaults.find(d=>d[1]===url)?.[2]||'')]);
   }
   return [...mapped.values()];
@@ -1440,6 +1441,18 @@ render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.set
  function validChannel(raw){try{const u=new URL(raw);return u.protocol==='https:'&&['www.youtube.com','youtube.com','m.youtube.com'].includes(u.hostname)&&/^\/(?:@[^/]+|channel\/UC[\w-]{20,}|user\/[^/]+|c\/[^/]+)\/?$/.test(u.pathname)}catch(e){return false}}
  function saveChannels(arr){localStorage.setItem(KEY,JSON.stringify(arr));}
  function videoId(s){return /^[\w-]{11}$/.test(s||'');}
+ // ManicApe appears in the Video tab ONLY if a feed verifies an upload within 48 hours.
+ // Dates that are missing, ambiguous (day only), or in the future never qualify.
+ const MANICAPE_MAX_AGE_MS=48*60*60*1000;
+ function isManicApeVideo(v){return !!v&&isFeaturedUrl(v.source);}
+ function isFreshManicApeVideo(v,now=Date.now()){
+  if(!isManicApeVideo(v))return false;
+  const published=String(v.published||'');
+  if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(published))return false;
+  const timestamp=Date.parse(published);
+  return Number.isFinite(timestamp)&&timestamp<=now&&(now-timestamp)<=MANICAPE_MAX_AGE_MS;
+ }
+ function eligibleVideo(v,now=Date.now()){return !isManicApeVideo(v)||isFreshManicApeVideo(v,now);}
  function nodeText(n){return n?(n.textContent||'').trim():'';}
  function xmlVideos(raw,label,url){
   const doc=new DOMParser().parseFromString(raw,'application/xml');
@@ -1495,7 +1508,7 @@ render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.set
  function status(msg){const el=document.getElementById('amb26-feed-status');if(el)el.textContent=msg;}
  function renderCards(){
   const feed=document.getElementById('amb26-feed');if(!feed)return;
-  const selected=rendered.filter(v=>(v.title+' '+v.channel+' '+v.description).toLocaleLowerCase('it').includes(filter));
+  const selected=rendered.filter(v=>eligibleVideo(v)&&(v.title+' '+v.channel+' '+v.description).toLocaleLowerCase('it').includes(filter));
   feed.innerHTML=selected.slice(0,120).map(v=>{
    const fallback='https://i.ytimg.com/vi/'+encodeURIComponent(v.id)+'/hqdefault.jpg';
    const img=/^https:\/\//.test(v.thumb||'')?v.thumb:fallback;
@@ -1506,18 +1519,31 @@ render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.set
     '<img class="amb26-cover" loading="lazy" src="'+escapeHtml(img)+'" onerror="this.onerror=null;this.src=\''+fallback+'\'" alt="Miniatura: '+escapeHtml(v.title)+'"><span class="amb-video-play-badge">▶</span></button>'+
     '<div class="amb-video-content"><p class="amb-video-creator">'+escapeHtml(v.channel)+'</p><h3>'+escapeHtml(v.title)+'</h3><p class="amb-video-desc">'+escapeHtml(desc).slice(0,310)+'</p>'+
     '<div class="amb-video-actions"><button type="button" class="amb26-btn" data-play="'+escapeHtml(v.id)+'">▶ Guarda con YouTube</button><a href="'+link+'" rel="noopener noreferrer" target="_blank">Apri su YouTube ↗</a></div></div></article>';
-  }).join('')||(rendered.length?'<div class="amb26-panel">Nessun video corrisponde alla ricerca.</div>':'<div class="amb26-panel">Nessun video ricevuto. Controlla la connessione e lo stato dei feed. Puoi comunque aprire i canali qui sotto.</div>');
+  }).join('')||(rendered.some(eligibleVideo)?'<div class="amb26-panel">Nessun video corrisponde alla ricerca.</div>':'<div class="amb26-panel">Nessun video ricevuto. Controlla la connessione e lo stato dei feed. Puoi comunque aprire i canali qui sotto.</div>');
   feed.querySelectorAll('[data-play]').forEach(el=>el.addEventListener('click',()=>{
     const id=el.dataset.play;if(!videoId(id))return;
     if(window.AMBAndroid?.openYoutubeVideo)window.AMBAndroid.openYoutubeVideo(id);
     else if(window.AMB261?.playVideo)window.AMB261.playVideo(id);
     else window.open('https://www.youtube.com/watch?v='+encodeURIComponent(id),'_blank','noopener');
   }));
+  renderChannelRows();
  }
- function storeCache(){try{localStorage.setItem(CACHE,JSON.stringify({at:Date.now(),videos:rendered.slice(0,180)}))}catch(e){}}
+ function renderChannelRows(){
+  const list=document.getElementById('amb26-list');if(!list)return;
+  const canShowManicApe=rendered.some(v=>isFreshManicApeVideo(v));
+  const visible=channelList().filter(c=>c[1]!==featured||canShowManicApe);
+  list.innerHTML=visible.map((c,i)=>'<div class="amb-video-channel-row"><div><strong>'+escapeHtml(c[0])+'</strong><br><a href="'+escapeHtml(c[1])+'" rel="noopener noreferrer" target="_blank">Apri canale ↗</a></div>'+(c[1]===featured?'<small>⭐ Fisso · ultimo upload &lt; 48 ore</small>':'<button class="amb26-btn" data-remove="'+i+'">Rimuovi</button>')+'</div>').join('');
+  list.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{
+   const chosen=visible[Number(b.dataset.remove)];if(!chosen||chosen[1]===featured)return;
+   const items=channelList(),hidden=new Set(read(HIDDEN,[]));hidden.add(chosen[1]);
+   localStorage.setItem(HIDDEN,JSON.stringify([...hidden]));
+   saveChannels(items.filter(x=>x[1]!==chosen[1]));openVideos();
+  });
+ }
+ function storeCache(){try{localStorage.setItem(CACHE,JSON.stringify({at:Date.now(),videos:rendered.filter(eligibleVideo).slice(0,180)}))}catch(e){}}
  function merge(newVideos){
   if(!newVideos.length)return;
-  const map=new Map();for(const v of [...rendered,...newVideos])if(videoId(v.id)){const prev=map.get(v.id);if(!prev||!prev.featured||v.featured)map.set(v.id,v);}
+  const map=new Map();for(const v of [...rendered,...newVideos])if(videoId(v.id)&&eligibleVideo(v)){const prev=map.get(v.id);if(!prev||!prev.featured||v.featured)map.set(v.id,v);}
   rendered=[...map.values()].sort((a,b)=>Number(b.featured)-Number(a.featured)||(String(b.published).localeCompare(String(a.published))));
   renderCards();storeCache();
  }
@@ -1559,7 +1585,7 @@ render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.set
   main.innerHTML='<div class="kicker">MOTORSPORT · VIDEO · CREATOR</div><h1 class="page-title">Video automotive</h1><p class="lede">Ultimi video dai creator italiani e internazionali, presentati come le notizie. Riproduzione con il player ufficiale YouTube, annunci inclusi.</p>'+
     '<section class="amb26-panel amb-video-tools"><div class="amb-video-toolbar"><input id="amb26-video-search" type="search" placeholder="Cerca video, creator o descrizione" aria-label="Cerca video"><button class="amb26-btn" id="amb26-loadfeed">↻ Aggiorna</button></div><p id="amb26-feed-status" role="status" aria-live="polite"></p></section>'+
     '<div id="amb26-feed" aria-label="Ultimi video"></div>'+
-    '<details class="amb26-panel amb-video-channel-panel"><summary>Gestisci i canali YouTube · '+channelList().length+' creator</summary><label for="amb26-link">Aggiungi un canale tramite link</label><div class="amb-video-toolbar"><input id="amb26-link" type="url" placeholder="https://www.youtube.com/@canale"><button class="amb26-btn" id="amb26-add">＋ Aggiungi</button></div><p id="amb26-error" role="status"></p><div id="amb26-list"></div></details>';
+    '<details class="amb26-panel amb-video-channel-panel"><summary>Gestisci i canali YouTube</summary><label for="amb26-link">Aggiungi un canale tramite link</label><div class="amb-video-toolbar"><input id="amb26-link" type="url" placeholder="https://www.youtube.com/@canale"><button class="amb26-btn" id="amb26-add">＋ Aggiungi</button></div><p id="amb26-error" role="status"></p><div id="amb26-list"></div></details>';
   document.getElementById('amb26-video-search').oninput=e=>{filter=e.target.value.toLocaleLowerCase('it');renderCards()};
   document.getElementById('amb26-loadfeed').onclick=()=>refresh();
   document.getElementById('amb26-add').onclick=()=>{
@@ -1568,20 +1594,16 @@ render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.set
    const items=channelList();if(items.some(v=>v[1]===u)){err.textContent='Canale già presente.';return;}
    const name=new URL(u).pathname.split('/').filter(Boolean).pop().replace(/^@/,'');items.push([name,u,'']);saveChannels(items);openVideos();
   };
-  document.getElementById('amb26-list').innerHTML=channelList().map((c,i)=>'<div class="amb-video-channel-row"><div><strong>'+escapeHtml(c[0])+'</strong><br><a href="'+escapeHtml(c[1])+'" rel="noopener noreferrer" target="_blank">Apri canale ↗</a></div>'+(c[1]===featured?'<small>⭐ Fisso</small>':'<button class="amb26-btn" data-remove="'+i+'">Rimuovi</button>')+'</div>').join('');
-  document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{
-   const items=channelList();const i=Number(b.dataset.remove);if(!items[i]||items[i][1]===featured)return;
-   const hidden=new Set(read(HIDDEN,[]));hidden.add(items[i][1]);localStorage.setItem(HIDDEN,JSON.stringify([...hidden]));
-   saveChannels(items.filter((_,j)=>j!==i));openVideos();
-  });
   const saved=read(CACHE,null);
-  rendered=saved&&Array.isArray(saved.videos)?saved.videos.filter(x=>videoId(x.id)):[];
+  rendered=saved&&Array.isArray(saved.videos)?saved.videos.filter(x=>videoId(x.id)&&eligibleVideo(x)):[];
   if(rendered.length){status('Video salvati in cache, aggiornamento in corso…');renderCards();}
   else {rendered=curated.slice();status('Selezione verificata · aggiornamento dei video recenti in corso…');renderCards();}
   // Load in background, incrementally; never wait for all channels to render cards.
   setTimeout(()=>{if(document.getElementById('amb26-loadfeed'))refresh();},50);
  }
- window.AMB26={openVideos,refreshVideos:refresh,videoId,xmlVideos,videosInHtml};
+ // Automatically expire an upload while the Video screen remains open.
+ setInterval(()=>{if(state.tab==='videos26')renderCards();},60000);
+ window.AMB26={openVideos,refreshVideos:refresh,videoId,xmlVideos,videosInHtml,isFreshManicApeVideo,isManicApeVideo,eligibleVideo};
 })();
 
 </script>
@@ -1611,7 +1633,7 @@ window.AMBAndroid.downloadAuthorizedVideo(url,mode==='ask'?'all':mode);msg.textC
 /* AMB26_CREATOR_CONTACT_SETTINGS */
 (function(){
  const before=settingsView;
- settingsView=function(){const html=before();const section='<section class="setting-group" id="amb26-contact"><h2>Contattami · ManicApe</h2><div class="amb26-contact-card"><strong>⭐ Canale ufficiale in primo piano</strong><p>ManicApe è in evidenza nella sezione Video. I suoi nuovi video vengono mostrati prima degli altri creator quando il feed è disponibile.</p><a href="https://www.youtube.com/@maniccape" target="_blank" rel="noopener noreferrer">Apri il canale YouTube ManicApe ↗</a><p class="helper">Per contattare il creator, consulta i recapiti pubblicati direttamente sul canale. Non è stato specificato un indirizzo email.</p></div></section>';return html.replace('<section class="setting-group" aria-labelledby="about-amb">',section+'<section class="setting-group" aria-labelledby="about-amb">')};
+ settingsView=function(){const html=before();const section='<section class="setting-group" id="amb26-contact"><h2>Contattami · ManicApe</h2><div class="amb26-contact-card"><strong>⭐ Canale ufficiale ManicApe</strong><p>ManicApe compare nella sezione Video soltanto se il feed conferma almeno un nuovo upload nelle ultime 48 ore. I video più vecchi o senza data verificabile non vengono mostrati.</p><a href="https://www.youtube.com/@maniccape" target="_blank" rel="noopener noreferrer">Apri il canale YouTube ManicApe ↗</a><p class="helper">Per contattare il creator, consulta i recapiti pubblicati direttamente sul canale. Non è stato specificato un indirizzo email.</p></div></section>';return html.replace('<section class="setting-group" aria-labelledby="about-amb">',section+'<section class="setting-group" aria-labelledby="about-amb">')};
 })();
 </script>
 <style>
