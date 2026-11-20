@@ -293,6 +293,17 @@ body.spacious[data-article-layout="stacked"] .article-info{min-height:120px}
 .amb-technical-archive a{color:var(--accentInk);font-size:.73rem;text-decoration:underline}
 @media(max-width:370px){.amb-calendar-grid{gap:2px}.amb-day{height:53px;border-radius:6px;padding:5px 1px}.amb-daynum{font-size:.71rem}.amb-event-dot{width:5px;height:5px}}
 
+
+/* AMB26_VIDEO_MODULE */
+.amb26-panel{padding:15px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin:12px 0}
+.amb26-panel input{width:100%;padding:12px;background:var(--bg);border:1px solid var(--line);border-radius:9px;color:var(--ink)}
+.amb26-btn{padding:10px 13px;border-radius:9px;background:var(--accent);color:#fff;margin:8px 5px 8px 0}
+.amb26-video{padding:12px 0;border-bottom:1px solid var(--line)}
+.amb26-video a{color:var(--accentInk);overflow-wrap:anywhere}
+.amb26-cover{height:130px;width:100%;object-fit:cover;border-radius:10px;background:var(--faint)}
+.amb26-modal{position:fixed;inset:0;background:var(--bg);z-index:100;overflow-y:auto;padding:22px;color:var(--ink)}
+.amb26-modal img{max-width:120px;max-height:120px;object-fit:contain}
+.amb26-select{display:block;width:100%;padding:12px;margin:8px 0;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:9px}
 </style>
 </head>
 <body>
@@ -304,6 +315,7 @@ body.spacious[data-article-layout="stacked"] .article-info{min-height:120px}
 <main id="main" class="screen" aria-live="polite"></main>
 </div>
 <nav class="bottom" aria-label="Navigazione principale">
+ <button id="tab-videos26" class="navtab" onclick="AMB26.openVideos()" aria-label="Video"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m10 8 6 4-6 4z"/></svg>Video</button>
  <button id="tab-news" class="navtab active" onclick="go('news')" aria-label="Notizie"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h5m-5 4h5m3-4h3m-3 4h3M7 17h11"/></svg>Notizie</button>
  <button id="tab-calendar" class="navtab" onclick="go('calendar')" aria-label="Calendario gare"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 14h3m-3 4h3m3-4h3"/></svg>Calendario</button>
  <button id="tab-faves" class="navtab" onclick="go('faves')" aria-label="Preferiti"><svg viewBox="0 0 24 24"><path d="m12 20-2-1.8C4.5 13.5 3 11.8 3 9a4.5 4.5 0 0 1 8-2.8L12 7.3l1-1.1A4.5 4.5 0 0 1 21 9c0 2.8-1.5 4.5-7 9.2z"/></svg>Salvati</button>
@@ -1151,7 +1163,7 @@ if(!RACE_CATS.includes('Locali'))RACE_CATS.push('Locali');
 const ambRawApplyPrefs=applyPrefs;
 applyPrefs=function(){ambRawApplyPrefs();document.documentElement.dataset.palette=state.settings.palette||'red'};
 function ambPaletteControl(){
- const p=[['red','Rosso A.M.B.'],['blue','Blu'],['emerald','Verde'],['violet','Viola'],['amber','Ambra']];
+ const p=[['red','Rosso A.M.B.'],['blue','Blu'],['emerald','Verde'],['violet','LMR'],['amber','Ambra']];
  return '<div class="setting"><div class="setting-copy"><strong>Palette di colori</strong><p>Rosso A.M.B. rimane quella predefinita.</p></div><select class="amb-setting-select" onchange="changePref(\'palette\',this.value)">'+p.map(([v,t])=>'<option value="'+v+'" '+(state.settings.palette===v?'selected':'')+'>'+t+'</option>').join('')+'</select></div>';
 }
 const ambRawSettingsView=settingsView;
@@ -1349,8 +1361,87 @@ calendarView=function(){
  '<p class="cal-foot">Le ore sono convertite in Europe/Rome. Le disponibilità TV sono indicazioni generali, non conferme di trasmissione. Le manifestazioni locali richiedono fonti con dati verificabili.</p>';
 };
 const ambSettingsBefore251=settingsView;
-settingsView=function(){return ambSettingsBefore251().replaceAll('Versione 2.5 ·','Versione 2.5.2 ·').replaceAll('· v2.5','· v2.5.2').replace('Rosso A.M.B. rimane quella predefinita.','Il colore scelto sostituisce l’accento dell’intera interfaccia.')};
+settingsView=function(){return ambSettingsBefore251().replaceAll('Versione 2.5 ·','Versione 2.6.0 ·').replaceAll('· v2.5','· v2.6.0').replace('Rosso A.M.B. rimane quella predefinita.','Il colore scelto sostituisce l’accento dell’intera interfaccia.')};
 
 render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.settings.auto||!state.items.length)maybeAutoNews();if(state.settings.calAuto)maybeAutoCalendar();document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(state.settings.calAuto)maybeAutoCalendar();if(state.settings.auto)maybeAutoNews()}});
+</script>
+<script>
+/* AMB26_VIDEO_MODULE */
+(function(){
+ const storage='amb26_youtube_channels';
+ const initial=[['ManicApe','https://www.youtube.com/@maniccape'],['FIA World Rally Championship','https://www.youtube.com/@wrc'],['AutoTopNL','https://www.youtube.com/@AutoTopnl']];
+ const safe=t=>String(t||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function channels(){let saved;try{saved=JSON.parse(localStorage.getItem(storage))}catch(e){};const arr=Array.isArray(saved)?saved:initial;const featured=['ManicApe','https://www.youtube.com/@maniccape'];return [featured,...arr.filter(x=>Array.isArray(x)&&x[1]!==featured[1])]}
+ function save(items){localStorage.setItem(storage,JSON.stringify(items))}
+ function valid(u){try{const x=new URL(u);return x.protocol==='https:' && ['youtube.com','www.youtube.com','m.youtube.com'].includes(x.hostname) && /^\/(?:@[^/]+|channel\/UC[\w-]+|c\/[^/]+|user\/[^/]+)\/?$/.test(x.pathname)}catch(e){return false}}
+ function render(){
+  const main=document.getElementById('main');if(!main)return;
+  document.querySelectorAll('.navtab').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-videos26')?.classList.add('active');
+  main.innerHTML='<h1 class="page-title">Video automotive</h1><p class="lede">Creator, motorsport e sim racing. I video si aprono sulla piattaforma originale.</p><div class="amb26-panel"><label for="amb26-link">Aggiungi canale YouTube tramite link</label><input id="amb26-link" type="url" placeholder="https://www.youtube.com/@canale"><button class="amb26-btn" id="amb26-add">Aggiungi</button><p id="amb26-error" role="status"></p></div><div id="amb26-list"></div>';
+  document.getElementById('amb26-add').onclick=()=>{const u=document.getElementById('amb26-link').value.trim();if(!valid(u)){document.getElementById('amb26-error').textContent='Inserisci un link valido al canale YouTube.';return}const items=channels();if(!items.some(x=>x[1]===u)){items.push([new URL(u).pathname.slice(1),u]);save(items)}render()};
+  document.getElementById('amb26-list').innerHTML=channels().map((c,i)=>'<div class="amb26-panel"><strong>'+(c[1]==='https://www.youtube.com/@maniccape'?'⭐ IN PRIMO PIANO · ':'')+safe(c[0])+'</strong><br><a href="'+safe(c[1])+'" target="_blank" rel="noopener noreferrer">Apri canale originale ↗</a><br><button class="amb26-btn" data-remove="'+i+'">Rimuovi</button></div>').join('');
+  document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{const a=channels();a.splice(Number(b.dataset.remove),1);save(a);render()});
+ }
+ window.AMB26={openVideos:render};
+ // Show release notes once, after the original app has initialized.
+ function welcome(){if(localStorage.getItem('amb26_welcome_done'))return;const box=document.createElement('div');box.className='amb26-modal';box.id='amb26-welcome';box.innerHTML='<img src="amb_logo_26.png" alt="A.M.B."><h1>A.M.B. 2.6 — Novità</h1><p>Nuovo logo, sezione Video separata, feed creator YouTube, download di MP4 autorizzati con preferenza Wi-Fi/dati mobili e palette viola LMR. Altre funzioni della roadmap restano in sviluppo.</p><button class="amb26-btn" id="amb26-dismiss">Continua</button>';document.body.appendChild(box);document.getElementById('amb26-dismiss').onclick=()=>{localStorage.setItem('amb26_welcome_done','1');box.remove()}}
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(welcome,600));
+})();
+</script>
+<script>
+/* AMB26_RSS_VIDEO_DISCOVERY */
+(function(){
+const clean=s=>String(s||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+const parseXML=t=>new DOMParser().parseFromString(t,'application/xml');
+const original=window.AMB26.openVideos;
+window.AMB26.openVideos=function(){original();const main=document.getElementById('main');if(!main)return;
+ const controls=document.createElement('section');controls.className='amb26-panel';controls.innerHTML='<h2>Ultimi video dei creator</h2><p class="lede">I feed pubblici vengono caricati dai canali YouTube selezionati. Riproduzione tramite il servizio originale.</p><button class="amb26-btn" id="amb26-loadfeed">Carica video recenti</button><input id="amb26-video-search" placeholder="Cerca tra i video caricati" aria-label="Cerca video"><div id="amb26-feed-status" role="status"></div><div id="amb26-feed"></div>';main.appendChild(controls);
+ const stored=JSON.parse(localStorage.getItem('amb26_youtube_channels')||'null')||[['FIA World Rally Championship','https://www.youtube.com/@wrc'],['AutoTopNL','https://www.youtube.com/@AutoTopnl']];
+ const featured=['ManicApe','https://www.youtube.com/@maniccape'];
+ const items=[featured,...stored.filter(x=>x[1]!==featured[1])];
+ let videos=[];
+ const draw=()=>{const q=document.getElementById('amb26-video-search').value.toLowerCase();document.getElementById('amb26-feed').innerHTML=videos.filter(x=>x.title.toLowerCase().includes(q)).slice(0,100).map(x=>'<article class="amb26-video">'+(x.featured?'<div class="amb26-featured-label">⭐ MANICAPE · IN PRIMO PIANO</div>':'')+'<img class="amb26-cover" loading="lazy" src="https://i.ytimg.com/vi/'+encodeURIComponent(x.id)+'/hqdefault.jpg" alt="Anteprima video"><strong>'+clean(x.title)+'</strong><br><small>'+clean(x.channel)+'</small><br><a href="https://www.youtube.com/watch?v='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener noreferrer">Riproduci su YouTube ↗</a></article>').join('')||'<p>Nessun video disponibile.</p>'};
+ document.getElementById('amb26-video-search').oninput=draw;
+ document.getElementById('amb26-loadfeed').onclick=async()=>{const status=document.getElementById('amb26-feed-status');status.textContent='Caricamento feed…';videos=[];let errors=0;
+  for(const [label,url] of items){try{const u=new URL(url);let id=u.pathname.match(/^\/channel\/(UC[\w-]+)/)?.[1];
+   if(!id){const page=await fetchText(url,16000);id=page.match(/\"channelId\"\s*:\s*\"(UC[\w-]+)\"/)?.[1]||page.match(/<meta[^>]+itemprop="channelId"[^>]+content="(UC[\w-]+)"/)?.[1];}
+   if(!id)throw Error('ID canale non disponibile');
+   const xml=parseXML(await fetchText('https://www.youtube.com/feeds/videos.xml?channel_id='+encodeURIComponent(id),16000));
+   for(const entry of xml.getElementsByTagName('entry')){const vid=entry.getElementsByTagName('videoId')[0]?.textContent||entry.getElementsByTagNameNS('*','videoId')[0]?.textContent;const title=entry.getElementsByTagName('title')[0]?.textContent;if(vid&&title)videos.push({id:vid,title,channel:label,featured:url==='https://www.youtube.com/@maniccape'});}
+  }catch(e){errors++;}}
+  videos=[...new Map(videos.map(v=>[v.id,v])).values()].sort((a,b)=>Number(b.featured)-Number(a.featured));status.textContent=videos.length+' video trovati'+(errors?' · '+errors+' canali non disponibili':'');draw();
+ };
+};
+})();
+</script>
+<script>
+/* AMB26_DOWNLOAD_OPTIONS */
+(function(){
+const key='amb26_download_network';
+const orig=window.AMB26.openVideos;
+window.AMB26.openVideos=function(){orig();const main=document.getElementById('main');if(!main)return;
+const section=document.createElement('section');section.className='amb26-panel';
+section.innerHTML='<h2>Download video autorizzati</h2><p class="lede">Solo file video diretti per cui disponi del diritto di download. Non supporta download di video YouTube.</p><label>Connessione consentita</label><select id="amb26-network" class="amb26-select"><option value="wifi">Solo Wi-Fi</option><option value="all">Wi-Fi e dati mobili</option><option value="ask">Chiedi ogni volta</option></select><label for="amb26-direct">URL diretto di un file MP4 autorizzato</label><input type="url" id="amb26-direct" placeholder="https://sito.example/video.mp4"><button class="amb26-btn" id="amb26-download">Scarica file</button><p id="amb26-download-msg" role="status"></p>';
+main.appendChild(section);const select=document.getElementById('amb26-network');select.value=localStorage.getItem(key)||'wifi';select.onchange=()=>localStorage.setItem(key,select.value);
+document.getElementById('amb26-download').onclick=()=>{const url=document.getElementById('amb26-direct').value.trim(),msg=document.getElementById('amb26-download-msg');
+try{const u=new URL(url);if(u.protocol!=='https:'||!(/\.mp4(?:$|\?)/i.test(u.pathname+u.search)))throw Error();if(!window.AMBAndroid?.downloadAuthorizedVideo){msg.textContent='Download disponibili solo nell’app Android.';return}
+const mode=select.value;if(mode==='ask'&&!confirm('Vuoi scaricare il file usando la rete disponibile, anche dati mobili?'))return;
+window.AMBAndroid.downloadAuthorizedVideo(url,mode==='ask'?'all':mode);msg.textContent='Richiesta inviata al gestore download Android. Controlla le notifiche per l’avanzamento.';
+}catch(e){msg.textContent='Inserisci un indirizzo HTTPS diretto a un file MP4 autorizzato.'}};
+};
+})();
+</script>
+<style>
+.amb26-featured-label{font-weight:800;color:var(--accentInk);padding:7px 0;letter-spacing:.04em}
+.amb26-contact-card{margin:16px 0;padding:16px;border:1px solid var(--accent);border-radius:14px;background:var(--card)}
+.amb26-contact-card a{color:var(--accentInk);font-weight:700;overflow-wrap:anywhere}
+</style>
+<script>
+/* AMB26_CREATOR_CONTACT_SETTINGS */
+(function(){
+ const before=settingsView;
+ settingsView=function(){const html=before();const section='<section class="setting-group" id="amb26-contact"><h2>Contattami · ManicApe</h2><div class="amb26-contact-card"><strong>⭐ Canale ufficiale in primo piano</strong><p>ManicApe è in evidenza nella sezione Video. I suoi nuovi video vengono mostrati prima degli altri creator quando il feed è disponibile.</p><a href="https://www.youtube.com/@maniccape" target="_blank" rel="noopener noreferrer">Apri il canale YouTube ManicApe ↗</a><p class="helper">Per contattare il creator, consulta i recapiti pubblicati direttamente sul canale. Non è stato specificato un indirizzo email.</p></div></section>';return html.replace('<section class="setting-group" aria-labelledby="about-amb">',section+'<section class="setting-group" aria-labelledby="about-amb">')};
+})();
 </script>
 </body></html>

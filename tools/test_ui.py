@@ -34,7 +34,7 @@ with sync_playwright() as p:
         assert 'Calendario motorsport' in page.locator('#main').inner_text()
         page.locator('#tab-settings').click()
         assert 'Created & Developed by ManicApe' in page.locator('#main').inner_text()
-        assert '2.5' in page.locator('#main').inner_text()
+        assert '2.6.0' in page.locator('#main').inner_text()
         assert page.get_by_text('AMOLED',exact=True).count() >= 1
         # Layout choices are functional and persist without horizontal overflow.
         page.evaluate("go('news')")

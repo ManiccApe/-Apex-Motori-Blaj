@@ -1,0 +1,16 @@
+# QA checklist – A.M.B. 2.6.0
+- [ ] GitHub Actions build verde
+- [ ] APK installabile su dispositivo reale
+- [ ] Stessa firma dell'APK 2.5.2, oppure piano di migrazione dati
+- [ ] Logo trasparente e launcher su AMOLED
+- [ ] Notizie, foto, preferiti, offline, traduzione
+- [ ] Tema AMOLED, palette LMR, impostazioni persistenti
+- [ ] Video: canali aggiunti via URL, ManicApe in primo piano, anteprime
+- [ ] Video: collegamenti originali e gestione errori di feed
+- [ ] Download diretto autorizzato: Wi-Fi / dati mobili / roaming
+- [ ] Nessun bypass delle restrizioni delle piattaforme
+- [ ] Notifiche, Brief 19:00 (NON CERTIFICATO)
+- [ ] Calendario e widget mensile (NON CERTIFICATO)
+- [ ] Eventi locali per tutte le regioni (NON CERTIFICATO)
+- [ ] Aggiornamento APK da GitHub (NON CERTIFICATO)
+- [ ] Accessibilità, tablet, rete assente, batteria, crash

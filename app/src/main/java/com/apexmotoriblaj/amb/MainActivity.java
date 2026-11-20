@@ -189,6 +189,23 @@ public final class MainActivity extends Activity {
                 runOnUiThread(()->{try{startActivity(intent);}catch(Exception ex){Toast.makeText(MainActivity.this,"Nessun calendario disponibile",Toast.LENGTH_SHORT).show();}});
             }catch(Exception ignored){}
         }
+        @JavascriptInterface public void downloadAuthorizedVideo(String link,String network){
+            if(link==null||link.length()>3000||!("wifi".equals(network)||"all".equals(network)))return;
+            try{
+                Uri uri=Uri.parse(link);
+                if(!"https".equalsIgnoreCase(uri.getScheme())||uri.getHost()==null)return;
+                String path=uri.getPath();if(path==null||!path.toLowerCase(java.util.Locale.ROOT).endsWith(".mp4"))return;
+                android.app.DownloadManager.Request request=new android.app.DownloadManager.Request(uri);
+                request.setTitle("A.M.B. · Video autorizzato");
+                request.setMimeType("video/mp4");
+                request.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                request.setAllowedOverMetered("all".equals(network));
+                request.setAllowedOverRoaming(false);
+                request.setDestinationInExternalFilesDir(MainActivity.this,android.os.Environment.DIRECTORY_MOVIES,"AMB_"+System.currentTimeMillis()+".mp4");
+                android.app.DownloadManager manager=(android.app.DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+                if(manager!=null)manager.enqueue(request);
+            }catch(Exception ignored){}
+        }
         @JavascriptInterface public void updateWidget() { WidgetNewsSync.refreshAsync(getApplicationContext(), true); }
 
     }

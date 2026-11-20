@@ -8,8 +8,8 @@ android {
         applicationId 'com.apexmotoriblaj.amb'
         minSdk 29
         targetSdk 35
-        versionCode 252
-        versionName '2.5.2'
+        versionCode 260
+        versionName '2.6.0'
     }
     buildTypes {
         release {
