@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -28,6 +29,16 @@ public final class CalendarWidget extends AppWidgetProvider {
     private static final String NEXT="com.apexmotoriblaj.amb.CALENDAR_NEXT";
     private static final String PREF="amb_calendar_widget";
     @Override public void onUpdate(Context c,AppWidgetManager m,int[] ids){for(int id:ids)update(c,m,id);}
+    @Override public void onRestored(Context c,int[] oldIds,int[] newIds){
+        android.content.SharedPreferences prefs=c.getSharedPreferences(PREF,Context.MODE_PRIVATE);
+        android.content.SharedPreferences.Editor editor=prefs.edit();
+        for(int i=0;i<Math.min(oldIds.length,newIds.length);i++){
+            editor.putInt("offset_"+newIds[i],prefs.getInt("offset_"+oldIds[i],0));
+            editor.remove("offset_"+oldIds[i]);
+        }
+        editor.apply();
+        onUpdate(c,AppWidgetManager.getInstance(c),newIds);
+    }
     @Override public void onAppWidgetOptionsChanged(Context c,AppWidgetManager m,int id,Bundle options){update(c,m,id);}
     @Override public void onDeleted(Context c,int[] ids){android.content.SharedPreferences.Editor e=c.getSharedPreferences(PREF,Context.MODE_PRIVATE).edit();for(int id:ids)e.remove("offset_"+id);e.apply();}
     @Override public void onReceive(Context c,Intent intent){
@@ -59,6 +70,19 @@ public final class CalendarWidget extends AppWidgetProvider {
         return PendingIntent.getActivity(c,id*50+slot,i,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
     }
     static void update(Context c,AppWidgetManager manager,int id){
+        try { render(c,manager,id); }
+        catch (RuntimeException | LinkageError error) {
+            Log.e("AMB-CalendarWidget","Calendar rendering failed; using safe layout",error);
+            try {
+                RemoteViews safe=new RemoteViews(c.getPackageName(),R.layout.widget_fallback_calendar);
+                Intent open=new Intent(c,MainActivity.class);
+                safe.setOnClickPendingIntent(R.id.widget_fallback_root,
+                    PendingIntent.getActivity(c,id,open,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE));
+                manager.updateAppWidget(id,safe);
+            } catch(RuntimeException ignored) { Log.e("AMB-CalendarWidget","Fallback failed",ignored); }
+        }
+    }
+    private static void render(Context c,AppWidgetManager manager,int id){
         Calendar today=Calendar.getInstance(),first=(Calendar)today.clone();
         first.set(Calendar.DAY_OF_MONTH,1);
         int offset=c.getSharedPreferences(PREF,Context.MODE_PRIVATE).getInt("offset_"+id,0);
@@ -99,7 +123,7 @@ public final class CalendarWidget extends AppWidgetProvider {
             boolean now=current.get(Calendar.YEAR)==today.get(Calendar.YEAR)&&current.get(Calendar.MONTH)==today.get(Calendar.MONTH)&&current.get(Calendar.DAY_OF_MONTH)==today.get(Calendar.DAY_OF_MONTH);
             rv.setTextViewText(num,Integer.toString(current.get(Calendar.DAY_OF_MONTH)));
             rv.setTextColor(num,now?0xFFFFFFFF:inMonth?(col==6?0xFFFF6A74:0xFFFFFFFF):0x66FFFFFF);
-            rv.setInt(root,"setBackgroundResource",now?R.drawable.widget_calendar_cell_today_261:R.drawable.widget_calendar_bg_261);
+            // Only supported TextView mutations; avoid RemoteViews background reflection on nested cells.
             List<JSONObject> dayEvents=inMonth?events.get(current.get(Calendar.DAY_OF_MONTH)):null;
             if(dayEvents!=null&&!dayEvents.isEmpty()){
                 JSONObject firstEvent=dayEvents.get(0);
@@ -110,15 +134,12 @@ public final class CalendarWidget extends AppWidgetProvider {
                 rv.setTextViewText(label,eventName+extra);
                 rv.setViewVisibility(label,View.VISIBLE);
                 String category=firstEvent.optString("category","");
-                int color="F1".equals(category)?0xFFDFA8FF:"WRC".equals(category)?0xFF88D8FF:"MotoGP".equals(category)?0xFFFFB16C:"WEC".equals(category)?0xFF94D6C3:"GT3".equals(category)?0xFFFFAA91:0xFF96CDFF;
-                rv.setTextColor(label,Color.WHITE);
-                int chip="F1".equals(category)?R.drawable.widget_calendar_chip_f1_261:
-                         "WRC".equals(category)?R.drawable.widget_calendar_chip_wrc_261:
-                         "MotoGP".equals(category)?R.drawable.widget_calendar_chip_motogp_261:
-                         "WEC".equals(category)?R.drawable.widget_calendar_chip_wec_261:
-                         "GT3".equals(category)?R.drawable.widget_calendar_chip_gt3_261:
-                         R.drawable.widget_calendar_chip_default_261;
-                rv.setInt(label,"setBackgroundResource",chip);
+                int eventColor="F1".equals(category)?0xFFDBAEFF:
+                    "WRC".equals(category)?0xFF90D5FF:
+                    "MotoGP".equals(category)?0xFFFFBD7B:
+                    "WEC".equals(category)?0xFF95DDC4:
+                    "GT3".equals(category)?0xFFFFA99E:0xFFB2D9FF;
+                rv.setTextColor(label,eventColor);
             }else{rv.setTextViewText(label,"");rv.setViewVisibility(label,View.GONE);}
             rv.setOnClickPendingIntent(root,openDay(c,id,slot,current));
             current.add(Calendar.DAY_OF_MONTH,1);

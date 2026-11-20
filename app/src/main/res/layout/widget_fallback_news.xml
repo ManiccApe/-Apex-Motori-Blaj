@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_fallback_root"
+ android:layout_width="match_parent" android:layout_height="match_parent" android:padding="12dp"
+ android:orientation="vertical" android:background="@drawable/widget_bg">
+ <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="A.M.B. · Notizie"
+ android:textStyle="bold" android:textColor="#FFFFFFFF" android:textSize="15sp" />
+ <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFE3E8EF"
+ android:text="Apri l'app per aggiornare le notizie" android:layout_marginTop="8dp" android:textSize="12sp" />
+</LinearLayout>

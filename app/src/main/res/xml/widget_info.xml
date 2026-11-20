@@ -5,6 +5,6 @@
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
     android:updatePeriodMillis="1800000"
-    android:initialLayout="@layout/widget_shell"
+    android:initialLayout="@layout/widget_loading_news"
     android:configure="com.apexmotoriblaj.amb.WidgetConfigActivity"
     android:description="@string/widget_description" />

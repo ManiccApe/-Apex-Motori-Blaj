@@ -1,198 +1,296 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/calendar261_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="6dp" android:background="@drawable/widget_calendar_bg_261">
-<LinearLayout android:layout_width="match_parent" android:layout_height="38dp" android:orientation="horizontal" android:gravity="center_vertical">
-<TextView android:id="@+id/calendar261_prev" android:layout_width="40dp" android:layout_height="match_parent" android:gravity="center" android:text="‹" android:textColor="#FFFFFFFF" android:textSize="27sp"/>
-<TextView android:id="@+id/calendar261_title" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center_vertical" android:text="A.M.B. · Novembre 2026" android:textColor="#FFFFFFFF" android:textSize="16sp" android:textStyle="bold" android:singleLine="true"/>
-<TextView android:id="@+id/calendar261_count" android:layout_width="wrap_content" android:layout_height="match_parent" android:gravity="center_vertical" android:textColor="#FFDDA6EB" android:textSize="11sp" android:paddingRight="6dp" android:maxWidth="92dp" android:singleLine="true"/>
-<TextView android:id="@+id/calendar261_next" android:layout_width="38dp" android:layout_height="match_parent" android:gravity="center" android:text="›" android:textColor="#FFFFFFFF" android:textSize="27sp"/>
-</LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="27dp" android:orientation="horizontal">
-<TextView android:id="@+id/cal261_dayname_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:textSize="11sp" android:textStyle="bold" android:textColor="#F0FFFFFF"/>
-<TextView android:id="@+id/cal261_dayname_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:textSize="11sp" android:textStyle="bold" android:textColor="#F0FFFFFF"/>
-<TextView android:id="@+id/cal261_dayname_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:textSize="11sp" android:textStyle="bold" android:textColor="#F0FFFFFF"/>
-<TextView android:id="@+id/cal261_dayname_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:textSize="11sp" android:textStyle="bold" android:textColor="#F0FFFFFF"/>
-<TextView android:id="@+id/cal261_dayname_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:textSize="11sp" android:textStyle="bold" android:textColor="#F0FFFFFF"/>
-<TextView android:id="@+id/cal261_dayname_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:textSize="11sp" android:textStyle="bold" android:textColor="#F0FFFFFF"/>
-<TextView android:id="@+id/cal261_dayname_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:textSize="11sp" android:textStyle="bold" android:textColor="#F0FFFFFF"/>
-</LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:paddingTop="1dp">
-<LinearLayout android:id="@+id/cal261_cell_0_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_0_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_0_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_0_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_0_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_0_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_0_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_0_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_0_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_0_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_0_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_0_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_0_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_0_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_0_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_0_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_0_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_0_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_0_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_0_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_0_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-</LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:paddingTop="1dp">
-<LinearLayout android:id="@+id/cal261_cell_1_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_1_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_1_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_1_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_1_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_1_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_1_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_1_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_1_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_1_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_1_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_1_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_1_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_1_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_1_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_1_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_1_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_1_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_1_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_1_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_1_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-</LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:paddingTop="1dp">
-<LinearLayout android:id="@+id/cal261_cell_2_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_2_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_2_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_2_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_2_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_2_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_2_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_2_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_2_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_2_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_2_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_2_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_2_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_2_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_2_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_2_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_2_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_2_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_2_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_2_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_2_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-</LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:paddingTop="1dp">
-<LinearLayout android:id="@+id/cal261_cell_3_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_3_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_3_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_3_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_3_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_3_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_3_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_3_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_3_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_3_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_3_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_3_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_3_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_3_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_3_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_3_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_3_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_3_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_3_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_3_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_3_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-</LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:paddingTop="1dp">
-<LinearLayout android:id="@+id/cal261_cell_4_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_4_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_4_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_4_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_4_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_4_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_4_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_4_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_4_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_4_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_4_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_4_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_4_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_4_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_4_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_4_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_4_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_4_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_4_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_4_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_4_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-</LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:paddingTop="1dp">
-<LinearLayout android:id="@+id/cal261_cell_5_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_5_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_5_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_5_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_5_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_5_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_5_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_5_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_5_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_5_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_5_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_5_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_5_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_5_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_5_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_5_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_5_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_5_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-<LinearLayout android:id="@+id/cal261_cell_5_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="2dp" android:orientation="vertical" android:gravity="top|center_horizontal">
-<TextView android:id="@+id/cal261_num_5_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="13sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-<TextView android:id="@+id/cal261_event_5_6" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textSize="9sp" android:textColor="#FFFFFFFF" android:background="@drawable/widget_calendar_chip_default_261" android:padding="2dp" android:visibility="gone" android:ellipsize="end" android:maxLines="2"/>
-</LinearLayout>
-</LinearLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/calendar261_root"
+ android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+ android:padding="4dp" android:background="@drawable/widget_calendar_bg_261">
+ <LinearLayout android:layout_width="match_parent" android:layout_height="34dp" android:orientation="horizontal" android:gravity="center_vertical">
+ <TextView android:id="@+id/calendar261_prev" android:layout_width="36dp" android:layout_height="match_parent" android:gravity="center"
+ android:text="‹" android:textColor="#FFFFFFFF" android:textSize="24sp" />
+ <TextView android:id="@+id/calendar261_title" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+ android:gravity="center_vertical" android:text="A.M.B. · Calendario" android:textSize="15sp" android:textStyle="bold"
+ android:textColor="#FFFFFFFF" android:singleLine="true" />
+ <TextView android:id="@+id/calendar261_count" android:layout_width="wrap_content" android:layout_height="match_parent"
+ android:gravity="center_vertical" android:textColor="#FFDEB2E9" android:textSize="10sp" android:maxWidth="65dp" android:singleLine="true" />
+ <TextView android:id="@+id/calendar261_next" android:layout_width="36dp" android:layout_height="match_parent" android:gravity="center"
+ android:text="›" android:textColor="#FFFFFFFF" android:textSize="24sp" />
+ </LinearLayout>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="23dp" android:orientation="horizontal">
+ <TextView android:id="@+id/cal261_dayname_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+ android:gravity="center" android:text="LUN" android:textColor="#FFDFE6F2" android:textSize="10sp" android:textStyle="bold" />
+ <TextView android:id="@+id/cal261_dayname_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+ android:gravity="center" android:text="MAR" android:textColor="#FFDFE6F2" android:textSize="10sp" android:textStyle="bold" />
+ <TextView android:id="@+id/cal261_dayname_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+ android:gravity="center" android:text="MER" android:textColor="#FFDFE6F2" android:textSize="10sp" android:textStyle="bold" />
+ <TextView android:id="@+id/cal261_dayname_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+ android:gravity="center" android:text="GIO" android:textColor="#FFDFE6F2" android:textSize="10sp" android:textStyle="bold" />
+ <TextView android:id="@+id/cal261_dayname_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+ android:gravity="center" android:text="VEN" android:textColor="#FFDFE6F2" android:textSize="10sp" android:textStyle="bold" />
+ <TextView android:id="@+id/cal261_dayname_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+ android:gravity="center" android:text="SAB" android:textColor="#FFDFE6F2" android:textSize="10sp" android:textStyle="bold" />
+ <TextView android:id="@+id/cal261_dayname_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"
+ android:gravity="center" android:text="DOM" android:textColor="#FFFF8996" android:textSize="10sp" android:textStyle="bold" />
+ </LinearLayout>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+  <LinearLayout android:id="@+id/cal261_cell_0_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_0_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_0_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_0_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_0_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_0_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_0_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_0_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_0_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_0_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_0_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_0_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_0_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_0_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_0_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_0_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_0_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_0_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_0_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_0_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_0_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+ </LinearLayout>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+  <LinearLayout android:id="@+id/cal261_cell_1_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_1_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_1_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_1_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_1_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_1_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_1_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_1_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_1_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_1_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_1_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_1_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_1_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_1_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_1_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_1_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_1_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_1_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_1_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_1_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_1_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+ </LinearLayout>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+  <LinearLayout android:id="@+id/cal261_cell_2_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_2_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_2_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_2_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_2_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_2_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_2_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_2_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_2_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_2_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_2_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_2_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_2_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_2_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_2_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_2_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_2_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_2_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_2_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_2_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_2_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+ </LinearLayout>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+  <LinearLayout android:id="@+id/cal261_cell_3_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_3_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_3_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_3_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_3_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_3_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_3_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_3_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_3_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_3_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_3_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_3_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_3_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_3_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_3_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_3_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_3_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_3_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_3_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_3_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_3_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+ </LinearLayout>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+  <LinearLayout android:id="@+id/cal261_cell_4_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_4_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_4_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_4_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_4_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_4_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_4_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_4_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_4_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_4_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_4_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_4_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_4_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_4_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_4_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_4_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_4_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_4_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_4_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_4_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_4_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+ </LinearLayout>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+  <LinearLayout android:id="@+id/cal261_cell_5_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_5_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_5_0" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_5_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_5_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_5_1" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_5_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_5_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_5_2" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_5_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_5_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_5_3" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_5_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_5_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_5_4" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_5_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_5_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_5_5" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+  <LinearLayout android:id="@+id/cal261_cell_5_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:padding="1dp">
+   <TextView android:id="@+id/cal261_num_5_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:singleLine="true" android:textSize="12sp" android:textColor="#FFFFFFFF" android:textStyle="bold" />
+   <TextView android:id="@+id/cal261_event_5_6" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:gravity="center" android:ellipsize="end" android:maxLines="2" android:textSize="8sp" android:textColor="#FFB0D4EF" android:visibility="gone" />
+  </LinearLayout>
+ </LinearLayout>
 </LinearLayout>

@@ -3,13 +3,14 @@ plugins { id 'com.android.application' }
 android {
     namespace 'com.apexmotoriblaj.amb'
     compileSdk 36
+    buildFeatures { buildConfig true }
 
     defaultConfig {
         applicationId 'com.apexmotoriblaj.amb'
         minSdk 29
         targetSdk 35
-        versionCode 264
-        versionName '2.6.1-rc4'
+        versionCode 265
+        versionName '2.6.1-rc5'
     }
     buildTypes {
         release {

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.graphics.Color;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -53,6 +54,16 @@ public final class WidgetListService extends RemoteViewsService {
         }
         @Override public int getCount(){return data.size();}
         @Override public RemoteViews getViewAt(int position) {
+            try { return buildRow(position); }
+            catch (RuntimeException | OutOfMemoryError error) {
+                Log.e("AMB-WidgetList","Error creating item "+position,error);
+                RemoteViews fallback=new RemoteViews(c.getPackageName(),R.layout.widget_row_compact);
+                fallback.setTextViewText(R.id.widget_headline,"Apri A.M.B. per aggiornare");
+                fallback.setViewVisibility(R.id.widget_image,View.GONE);
+                return fallback;
+            }
+        }
+        private RemoteViews buildRow(int position) {
             if(position<0 || position>=data.size())return null;
             JSONObject o=data.get(position);
             String rowSize=WidgetPrefs.rowSize(c,id);
@@ -77,7 +88,19 @@ public final class WidgetListService extends RemoteViewsService {
                 String url=o.optString("image","");
                 if(url.isEmpty()&&o.optString("source","").contains("TmRexh"))url=WidgetNewsSync.TMREXH_BRAND_ICON;
                 String path=WidgetNewsSync.thumbnailFile(c,url);
-                if(path!=null)image=BitmapFactory.decodeFile(path);
+                if(path!=null) {
+                    BitmapFactory.Options bounds=new BitmapFactory.Options();
+                    bounds.inJustDecodeBounds=true;
+                    BitmapFactory.decodeFile(path,bounds);
+                    if(bounds.outWidth>0 && bounds.outHeight>0) {
+                        BitmapFactory.Options options=new BitmapFactory.Options();
+                        options.inSampleSize=1;
+                        while(bounds.outWidth/options.inSampleSize>160 || bounds.outHeight/options.inSampleSize>160)
+                            options.inSampleSize*=2;
+                        options.inPreferredConfig=Bitmap.Config.RGB_565;
+                        image=BitmapFactory.decodeFile(path,options);
+                    }
+                }
             }
             if(image!=null) {rv.setImageViewBitmap(R.id.widget_image,image);rv.setViewVisibility(R.id.widget_image,View.VISIBLE);}
             else rv.setViewVisibility(R.id.widget_image,View.GONE);

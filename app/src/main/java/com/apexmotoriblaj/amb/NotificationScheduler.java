@@ -26,6 +26,7 @@ public final class NotificationScheduler extends JobService {
     private static final ExecutorService WORK=Executors.newSingleThreadExecutor();
     static void enable(Context c){
         c.getSharedPreferences("amb_shared",MODE_PRIVATE).edit().putBoolean("notifications_enabled",true).apply();
+        UpdateCheckJobService.schedule(c);
         if(Build.VERSION.SDK_INT>=26){
             NotificationManager n=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);
             if(n!=null)n.createNotificationChannel(new NotificationChannel(CHANNEL,"A.M.B. · Motorsport",NotificationManager.IMPORTANCE_DEFAULT));

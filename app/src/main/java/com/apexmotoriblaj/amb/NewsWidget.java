@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.util.Log;
 import android.os.Build;
 import android.widget.RemoteViews;
 import android.view.View;
@@ -24,6 +25,19 @@ public final class NewsWidget extends AppWidgetProvider {
         manager.notifyAppWidgetViewDataChanged(ids, R.id.widget_list);
     }
     static void updateOne(Context context, AppWidgetManager mgr, int id) {
+        try { render(context,mgr,id); }
+        catch (RuntimeException | LinkageError error) {
+            Log.e("AMB-NewsWidget","News rendering failed; using safe layout",error);
+            try {
+                RemoteViews safe=new RemoteViews(context.getPackageName(),R.layout.widget_fallback_news);
+                safe.setOnClickPendingIntent(R.id.widget_fallback_root,
+                    PendingIntent.getActivity(context,id,new Intent(context,MainActivity.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE));
+                mgr.updateAppWidget(id,safe);
+            } catch(RuntimeException ignored) { Log.e("AMB-NewsWidget","Fallback failed",ignored); }
+        }
+    }
+    private static void render(Context context, AppWidgetManager mgr, int id) {
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_shell);
         String mode=WidgetPrefs.appearance(context,id);
         boolean dark = "amoled".equals(mode) || "dark".equals(mode) ||
@@ -64,8 +78,10 @@ public final class NewsWidget extends AppWidgetProvider {
     }
     @Override public void onUpdate(Context c,AppWidgetManager mgr,int[] ids) {
         for(int id:ids) updateOne(c,mgr,id);
-        WidgetNewsSync.refreshAsync(c.getApplicationContext(),false);
-        WidgetNewsSync.prefetchWidgetImagesAsync(c.getApplicationContext());
+        try {
+            WidgetNewsSync.refreshAsync(c.getApplicationContext(),false);
+            WidgetNewsSync.prefetchWidgetImagesAsync(c.getApplicationContext());
+        }catch(RuntimeException error){Log.e("AMB-NewsWidget","Refresh request failed",error);}
     }
     @Override public void onReceive(Context c,Intent intent) {
         super.onReceive(c,intent);
@@ -73,6 +89,9 @@ public final class NewsWidget extends AppWidgetProvider {
             WidgetNewsSync.refreshAsync(c.getApplicationContext(),true);
             WidgetNewsSync.prefetchWidgetImagesAsync(c.getApplicationContext());
         }
+    }
+    @Override public void onRestored(Context c,int[] oldIds,int[] newIds){
+        onUpdate(c,AppWidgetManager.getInstance(c),newIds);
     }
     @Override public void onDeleted(Context c,int[] ids) { for(int id:ids) WidgetPrefs.remove(c,id); }
 }
