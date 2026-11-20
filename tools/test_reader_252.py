@@ -15,8 +15,8 @@ for old in ['__amb251Filter', 'function reject()', 'onetrust-banner-sdk', 'qc-cm
     assert old not in ad, f'Unsafe cosmetic/consent handling survives: {old}'
 assert 'request.isForMainFrame()' in reader
 assert 'if(!adBlockEnabled || request.isForMainFrame())return null' in reader
-assert "versionName '2.5.2'" in (root/'app/build.gradle').read_text()
-assert "APP_VERSION='2.5.2'" in (root/'app/src/main/assets/index.html').read_text()
+assert "versionName '2.6.1-rc3'" in (root/'app/build.gradle').read_text()
+assert "APP_VERSION='2.6.1-rc3'" in (root/'app/src/main/assets/index.html').read_text()
 # Browser-simulated CMP gate: the site's own buttons remain tappable, and scrolling
 # unlocks only after an explicit choice. The application no longer injects a script.
 from playwright.sync_api import sync_playwright
@@ -48,4 +48,4 @@ with sync_playwright() as p:
         assert page.evaluate('window.scrollY')>0
         page.close()
     browser.close()
-print('PASS reader v2.5.2 source checks + consent/scroll fixture at 320/393/820px (not Android test)')
+print('PASS reader regression checks + consent/scroll fixture at 320/393/820px (not Android test)')

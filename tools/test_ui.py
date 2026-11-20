@@ -10,6 +10,10 @@ with sync_playwright() as p:
         errors=[]
         page.on('pageerror',lambda exc: errors.append(str(exc)))
         page.route('https://example.com/**',lambda r: r.fulfill(status=200,content_type='image/png',body=bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000b49444154789c636000020000050001a5f645400000000049454e44ae426082')))
+        # The isolated Chromium about:blank test forbids localStorage. Stub the Android WebView
+        # storage API explicitly; this is a browser fixture, not an Android installation test.
+        page.add_init_script("""Object.defineProperty(window,'localStorage',{configurable:true,value:(function(){const map=new Map();return {getItem:k=>map.has(k)?map.get(k):null,setItem:(k,v)=>map.set(k,String(v)),removeItem:k=>map.delete(k),clear:()=>map.clear()}})()});""")
+        page.goto('about:blank')
         page.set_content(html,wait_until='load')
         page.evaluate("ambShowPermission=()=>{};ambDismissPermission()")
         page.evaluate('''() => { state.settings.auto = false;state.items = Array.from({length:12},(_,i) => ({id:'id'+i,link:'https://example.com/article/'+i,title:'Notizie e risultati del campionato mondiale motorsport, prossime gare e classifiche',category:['F1','WRC','GT3'][i%3],source:'A.M.B.',date:Date.now()-10000*i,image:'https://example.com/picture.png',desc:'',custom:false}));render(); }''')
@@ -34,7 +38,7 @@ with sync_playwright() as p:
         assert 'Calendario motorsport' in page.locator('#main').inner_text()
         page.locator('#tab-settings').click()
         assert 'Created & Developed by ManicApe' in page.locator('#main').inner_text()
-        assert '2.6.0' in page.locator('#main').inner_text()
+        assert '2.6.1' in page.locator('#main').inner_text()
         assert page.get_by_text('AMOLED',exact=True).count() >= 1
         # Layout choices are functional and persist without horizontal overflow.
         page.evaluate("go('news')")

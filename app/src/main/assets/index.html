@@ -325,7 +325,7 @@ body.spacious[data-article-layout="stacked"] .article-info{min-height:120px}
 </nav>
 <script>
 'use strict';
-const APP_VERSION='2.5.2';
+const APP_VERSION='2.6.1-rc3';
 const TMREXH_BRAND_ICON='https://www.google.com/s2/favicons?domain=tmrexh.it&sz=256';
 
 const CATS=['Tutte','F1','WRC','WEC','GT3','MotoGP','Auto','Personali'];
@@ -1034,9 +1034,10 @@ const ambRawSourcesView=sourcesView;
 sourcesView=function(){
  let html=ambRawSourcesView();
  const controls='<div class="amb-lang-filter"><span>Lingua delle fonti</span><div class="segment">'+[['all','Tutte'],['it','Italiano'],['en','English']].map(([v,t])=>'<button class="'+(ambSourceLang===v?'active':'')+'" onclick="ambSourceLang=\''+v+'\';render()">'+t+'</button>').join('')+'</div></div>';
- html=html.replace('<div class="sources-list">',controls+'<div class="sources-list">');
+ html=html.replace('<div class="sources-list">',controls+'<div class="amb-source-bulk"><button class="btn primary tiny" onclick="ambToggleAllSources(true)">✓ Attiva tutte</button><button class="btn tiny" onclick="ambToggleAllSources(false)">Disattiva tutte</button></div><div class="sources-list">');
  return html;
 };
+function ambToggleAllSources(enabled){state.sources.forEach(source=>source.enabled=enabled);persist();syncWidgetSources();render();if(enabled)loadFeeds(true)}
 function ambPhotoFailure(image){
  const holder=image.closest('.article-photo');if(!holder)return;
  const article=holder.closest('.article');
@@ -1149,13 +1150,35 @@ loadCalendar=async function(force){
  await ambBaseLoadCalendar(force);
  try{window.AMBAndroid?.setCalendarData(JSON.stringify(calendar.items.slice(0,500).map(e=>({id:e.id,name:e.name,date:e.date,place:e.place,category:e.category}))))}catch(e){}
 };
+const AMB_REGIONAL_SOURCES=["Abruzzo", "Basilicata", "Calabria", "Campania", "Emilia-Romagna", "Friuli-Venezia Giulia", "Lazio", "Liguria", "Lombardia", "Marche", "Molise", "Piemonte", "Puglia", "Sardegna", "Sicilia", "Toscana", "Trentino-Alto Adige", "Umbria", "Valle d’Aosta", "Veneto"];
+const AMB_VERIFIED_EVENT_LINKS=[
+ ['ACI Sport · calendario nazionale','https://www.acisport.it/it/acisport/calendari/11/2026/0/0'],
+ ['ACI Sport · Coppa Rally di Zona','https://www.acisport.it/it/CRZ/calendario-e-risultati/2026'],
+ ['ACI Sport · CIAR Rally','https://www.acisport.it/it/CIAR/home'],
+ ['Rallylink · calendario nazionale','https://www.rallylink.com/home_it.htm'],
+ ['ASI · calendario eventi storici','https://asifed.it/calendario/'],
+ ['ASI · manifestazioni','https://asifed.it/eventi-asi/'],
+ ['ACI Storico · Ruote nella Storia','https://www.clubacistorico.it/'],
+ ['FAMS · San Marino','https://fams.sm/calendario/'],
+ ['FAMS · aggiornamenti','https://fams.sm/news/'],
+ ['A.S.V.A. Torino · raduni','https://www.asvaclub.com/raduni-ed-eventi/'],
+ ['Cuneodice · notizie rally (CN)','https://www.cuneodice.it/tag/rally.html'],
+ ['Cuneodice · motori (CN)','https://www.cuneodice.it/news/sport/motori/'],
+ ['Umbria24 · notizie locali','https://www.umbria24.it/'],
+ ['Classic Club Italia · raduni','https://www.classicclubitalia.it/classic/calendario-eventi-2026/'],
+ ['BMW Auto Club Italia · eventi','https://bmwautoclubitalia.it/calendario']
+];
 const ambOriginalCalendarSourcesView=calendarSourcesView;
 calendarSourcesView=function(){
- let html=ambOriginalCalendarSourcesView();
- const directory='<section class="panel"><div class="panel-heading"><h2>Calendari e manifestazioni locali</h2></div><p class="helper">Consulta i programmi originali e aggiungi un feed .ics quando pubblicato. Questi siti non vengono convertiti automaticamente in eventi senza dati strutturati verificabili.</p><div class="amb-directory">'+[
- ['ACI Sport','https://www.acisport.it/'],['Rallylink','https://www.rallylink.it/'],['FIA','https://www.fia.com/'],['FIM','https://www.fim-moto.com/'],['FIA WEC','https://www.fiawec.com/'],['GT World Challenge','https://www.gt-world-challenge-europe.com/']
- ].map(([n,u])=>'<a class="cal-link" href="'+u+'">'+n+'</a>').join('')+'</div></section>';
- return html.replace('<div class="section-head">',directory+'<div class="section-head">');
+ const html=ambOriginalCalendarSourcesView();
+ const regional=AMB_REGIONAL_SOURCES.map(r=>{
+  const q1=encodeURIComponent('rally '+r+' calendario 2026 gara motorsport');
+  const q2=encodeURIComponent('raduno auto storiche '+r+' 2026 calendario');
+  return '<div class="amb-local-source-row"><strong>'+esc(r)+'</strong><div class="amb-local-links"><a href="https://news.google.com/search?q='+q1+'&hl=it&gl=IT&ceid=IT%3Ait" target="_blank" rel="noopener">Rally e gare ↗</a><a href="https://news.google.com/search?q='+q2+'&hl=it&gl=IT&ceid=IT%3Ait" target="_blank" rel="noopener">Raduni e storiche ↗</a></div></div>';
+ }).join('');
+ const official=AMB_VERIFIED_EVENT_LINKS.map(([name,url])=>'<a class="cal-link" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+' ↗</a>').join('');
+ const block='<section class="panel amb-local-directory"><h2>Fonti nazionali, regionali e San Marino</h2><p class="helper">Fonti ufficiali e testate locali consultabili. Le ricerche per regione raccolgono segnalazioni giornalistiche da verificare: non sono feed .ics e non inseriscono automaticamente eventi privi di data ufficiale.</p><h3>Organizzatori e testate di settore</h3><div class="amb-directory">'+official+'</div><h3>Segnalazioni locali · tutte le 20 regioni</h3><div class="amb-regional-source-grid">'+regional+'</div><p class="helper">Apri il calendario o il programma dell’organizzatore, verifica eventuali rinvii e aggiungi il suo feed .ics, se disponibile, con «Aggiungi .ics». Per San Marino consulta FAMS qui sopra.</p></section>';
+ return html.replace('<div class="section-head">',block+'<div class="section-head">');
 };
 // Local event is a valid calendar category for user-added .ics feeds.
 if(!RACE_CATS.includes('Locali'))RACE_CATS.push('Locali');
@@ -1362,59 +1385,205 @@ calendarView=function(){
  '<p class="cal-foot">Le ore sono convertite in Europe/Rome. Le disponibilità TV sono indicazioni generali, non conferme di trasmissione. Le manifestazioni locali richiedono fonti con dati verificabili.</p>';
 };
 const ambSettingsBefore251=settingsView;
-settingsView=function(){return ambSettingsBefore251().replaceAll('Versione 2.5 ·','Versione 2.6.1 ·').replaceAll('· v2.5','· v2.6.0').replace('Rosso A.M.B. rimane quella predefinita.','Il colore scelto sostituisce l’accento dell’intera interfaccia.')};
+settingsView=function(){return ambSettingsBefore251().replaceAll('Versione 2.5 ·','Versione 2.6.1 ·').replaceAll('· v2.5','· v2.6.1 RC3').replace('Rosso A.M.B. rimane quella predefinita.','Il colore scelto sostituisce l’accento dell’intera interfaccia.')};
 
 render();syncWidgetSources();if(state.items.length)syncWidgetNews();if(state.settings.auto||!state.items.length)maybeAutoNews();if(state.settings.calAuto)maybeAutoCalendar();document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(state.settings.calAuto)maybeAutoCalendar();if(state.settings.auto)maybeAutoNews()}});
 </script>
 <script>
-/* AMB26_VIDEO_MODULE */
+/* AMB26_VIDEO_MODULE: incremental channel feeds and news-style cards */
 (function(){
- const storage='amb26_youtube_channels';
- const initial=[['ManicApe','https://www.youtube.com/@maniccape'],['FIA World Rally Championship','https://www.youtube.com/@wrc'],['AutoTopNL','https://www.youtube.com/@AutoTopnl'],["Misha Charoudin","https://www.youtube.com/@mgcharoudin"],["carwow","https://www.youtube.com/@carwow"],["AutoAlex Cars","https://www.youtube.com/@AutoalexCars"],["Mat Armstrong","https://www.youtube.com/@MatArmstrongbmx"],["Top Gear","https://www.youtube.com/@TopGear"],["Motor1","https://www.youtube.com/@Motor1"],["Formula 1","https://www.youtube.com/@F1"],["MotoGP","https://www.youtube.com/@motogp"],["FIA World Endurance Championship","https://www.youtube.com/@FIAWEC"],["Red Bull Motorsports","https://www.youtube.com/@RedBullMotorsports"],["Drift Games","https://www.youtube.com/@DriftGamesLife"],["Donut","https://www.youtube.com/@Donut"]];
- const safe=t=>String(t||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- function channels(){let saved;try{saved=JSON.parse(localStorage.getItem(storage))}catch(e){};const arr=Array.isArray(saved)?saved:initial;const featured=['ManicApe','https://www.youtube.com/@maniccape'];return [featured,...initial.filter(x=>x[1]!==featured[1]&&!arr.some(y=>Array.isArray(y)&&y[1]===x[1])),...arr.filter(x=>Array.isArray(x)&&x[1]!==featured[1])]}
- function save(items){localStorage.setItem(storage,JSON.stringify(items))}
- function valid(u){try{const x=new URL(u);return x.protocol==='https:' && ['youtube.com','www.youtube.com','m.youtube.com'].includes(x.hostname) && /^\/(?:@[^/]+|channel\/UC[\w-]+|c\/[^/]+|user\/[^/]+)\/?$/.test(x.pathname)}catch(e){return false}}
- function render(){
-  const main=document.getElementById('main');if(!main)return;
-  document.querySelectorAll('.navtab').forEach(n=>n.classList.remove('active'));
-  document.getElementById('tab-videos26')?.classList.add('active');
-  main.innerHTML='<h1 class="page-title">Video automotive</h1><p class="lede">Creator, motorsport e sim racing. I video si aprono sulla piattaforma originale.</p><div class="amb26-panel"><label for="amb26-link">Aggiungi canale YouTube tramite link</label><input id="amb26-link" type="url" placeholder="https://www.youtube.com/@canale"><button class="amb26-btn" id="amb26-add">Aggiungi</button><p id="amb26-error" role="status"></p></div><div id="amb26-list"></div>';
-  document.getElementById('amb26-add').onclick=()=>{const u=document.getElementById('amb26-link').value.trim();if(!valid(u)){document.getElementById('amb26-error').textContent='Inserisci un link valido al canale YouTube.';return}const items=channels();if(!items.some(x=>x[1]===u)){items.push([new URL(u).pathname.slice(1),u]);save(items)}render()};
-  document.getElementById('amb26-list').innerHTML=channels().map((c,i)=>'<div class="amb26-panel"><strong>'+(c[1]==='https://www.youtube.com/@maniccape'?'⭐ IN PRIMO PIANO · ':'')+safe(c[0])+'</strong><br><a href="'+safe(c[1])+'" target="_blank" rel="noopener noreferrer">Apri canale originale ↗</a><br><button class="amb26-btn" data-remove="'+i+'">Rimuovi</button></div>').join('');
-  document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{const a=channels();a.splice(Number(b.dataset.remove),1);save(a);render()});
+ 'use strict';
+ const KEY='amb26_youtube_channels', CACHE='amb261_video_cache_v3', IDS='amb261_youtube_ids_v3', HIDDEN='amb261_hidden_channels';
+ // Verified channel IDs are optional. These official IDs avoid costly channel-page discovery.
+ const defaults=[
+  ['ManicApe','https://www.youtube.com/@maniccape',''],
+  ['Quattroruote · Italia','https://www.youtube.com/channel/UCQHfCaKLtI3LLCWec7s6p_A','UCQHfCaKLtI3LLCWec7s6p_A'],
+  ['Motor1 Italia','https://www.youtube.com/channel/UC3u7URxSqN70zuJ5Yb_ryPg','UC3u7URxSqN70zuJ5Yb_ryPg'],
+  ['alVolante · Italia','https://www.youtube.com/channel/UCEmDaSQydEXeNHxSMkD7_Pw','UCEmDaSQydEXeNHxSMkD7_Pw'],
+  ['DriveK Italia','https://www.youtube.com/channel/UC8OSnuUszO3azYnEwrajPDw','UC8OSnuUszO3azYnEwrajPDw'],
+  ['RED Live · Italia','https://www.youtube.com/channel/UCDK9ZKXTQzjap69xcDZYywg','UCDK9ZKXTQzjap69xcDZYywg'],
+  ['Dueruote · Italia','https://www.youtube.com/channel/UC-8sb-VaKDImIkfoiX98Ggg','UC-8sb-VaKDImIkfoiX98Ggg'],
+  ['FIA World Rally Championship','https://www.youtube.com/@wrc',''],
+  ['AutoTopNL','https://www.youtube.com/@AutoTopnl',''],
+  ['Misha Charoudin','https://www.youtube.com/@mgcharoudin',''],
+  ['Carwow','https://www.youtube.com/@carwow',''],
+  ['Top Gear','https://www.youtube.com/@TopGear',''],
+  ['Formula 1','https://www.youtube.com/@F1',''],
+  ['MotoGP','https://www.youtube.com/@motogp',''],
+  ['FIA WEC','https://www.youtube.com/@FIAWEC',''],
+  ['Drift Games','https://www.youtube.com/@DriftGamesLife',''],
+  ['Mat Armstrong','https://www.youtube.com/@MatArmstrongbmx',''],
+  ['AutoAlex','https://www.youtube.com/@AutoalexCars',''],
+  ['Donut','https://www.youtube.com/@Donut',''],
+  ['Red Bull Motorsports','https://www.youtube.com/@RedBullMotorsports','']
+ ];
+ const featured='https://www.youtube.com/@maniccape';
+ // A small, clearly labeled verified selection keeps the Video tab useful if RSS is blocked.
+ // These are NOT advertised as new uploads or as a substitute for a live creator feed.
+ const curated=[
+  {id:'TNLWIIFK_yI',title:'Ho STRESSATO il SUV PLUG-in che fa 200 KM in elettrico 😰 Lynk & Co 08',description:'Prova del SUV Lynk & Co 08: parcheggio, bagagliaio e autonomia elettrica dichiarata.',channel:'Motor1 Italia',source:'https://www.youtube.com/channel/UC3u7URxSqN70zuJ5Yb_ryPg',published:'2026-07-21',featured:false,curated:true},
+  {id:'IV2qmxoN330',title:'ROAD TEST: 2026 Fiat 500 Hybrid Convertible',description:'Prova su strada della Fiat 500 Hybrid Cabrio 2026, con attenzione a guida, consumi e prezzo.',channel:'Motor1 Italia',source:'https://www.youtube.com/channel/UC3u7URxSqN70zuJ5Yb_ryPg',published:'2026-06-24',featured:false,curated:true},
+  {id:'l4IJ2v25iXQ',title:'CFMOTO 800MT-X e Voge Valico 800DSX Rally · Test a testa',description:'Le due adventure a confronto, anche in fuoristrada, nel video di Dueruote.',channel:'Dueruote · Italia',source:'https://www.youtube.com/channel/UC-8sb-VaKDImIkfoiX98Ggg',published:'2026-03-30',featured:false,curated:true}
+ ];
+ const escapeHtml=s=>String(s||'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]));
+ function read(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v===null?fallback:v}catch(e){return fallback}}
+ function channelList(){
+  const stored=read(KEY,null),fromStore=Array.isArray(stored)?stored:[],hidden=new Set(read(HIDDEN,[]));
+  const mapped=new Map();
+  for(const row of [defaults[0],...fromStore,...defaults.slice(1)]){
+   if(!Array.isArray(row)||!row[1])continue;
+   const url=String(row[1]);if(!/^https:\/\/(?:www\.)?youtube\.com\//.test(url)||mapped.has(url)||(hidden.has(url)&&url!==featured))continue;
+   mapped.set(url,[String(row[0]),url,String(row[2]||defaults.find(d=>d[1]===url)?.[2]||'')]);
+  }
+  return [...mapped.values()];
  }
- window.AMB26={openVideos:render};
- // Show release notes once, after the original app has initialized.
- function welcome(){if(localStorage.getItem('amb26_welcome_done'))return;const box=document.createElement('div');box.className='amb26-modal';box.id='amb26-welcome';box.innerHTML='<img src="amb_logo_26.png" alt="A.M.B."><h1>A.M.B. 2.6.1 — Novità</h1><p>Nuovo logo, sezione Video separata, feed creator YouTube, download di MP4 autorizzati con preferenza Wi-Fi/dati mobili e palette viola LMR. Altre funzioni della roadmap restano in sviluppo.</p><button class="amb26-btn" id="amb26-dismiss">Continua</button>';document.body.appendChild(box);document.getElementById('amb26-dismiss').onclick=()=>{localStorage.setItem('amb26_welcome_done','1');box.remove()}}
- document.addEventListener('DOMContentLoaded',()=>setTimeout(welcome,600));
+ function validChannel(raw){try{const u=new URL(raw);return u.protocol==='https:'&&['www.youtube.com','youtube.com','m.youtube.com'].includes(u.hostname)&&/^\/(?:@[^/]+|channel\/UC[\w-]{20,}|user\/[^/]+|c\/[^/]+)\/?$/.test(u.pathname)}catch(e){return false}}
+ function saveChannels(arr){localStorage.setItem(KEY,JSON.stringify(arr));}
+ function videoId(s){return /^[\w-]{11}$/.test(s||'');}
+ function nodeText(n){return n?(n.textContent||'').trim():'';}
+ function xmlVideos(raw,label,url){
+  const doc=new DOMParser().parseFromString(raw,'application/xml');
+  if(doc.querySelector('parsererror'))throw Error('Feed XML malformato');
+  const entries=[...doc.getElementsByTagName('entry')],out=[];
+  for(const e of entries){
+   const id=nodeText(e.getElementsByTagNameNS('*','videoId')[0]);if(!videoId(id))continue;
+   const title=nodeText(e.getElementsByTagName('title')[0]);if(!title)continue;
+   const group=e.getElementsByTagNameNS('*','group')[0];
+   const description=nodeText(group?.getElementsByTagNameNS('*','description')[0]);
+   const thumb=group?.getElementsByTagNameNS('*','thumbnail')[0]?.getAttribute('url')||'';
+   const published=nodeText(e.getElementsByTagName('published')[0]);
+   out.push({id,title,description:description.slice(0,420),channel:label,source:url,thumb,published,featured:url===featured});
+  }
+  return out;
+ }
+ // Supports both legacy ytInitialData videoRenderer and richItemRenderer content.
+ function extractObject(text,needle){
+  let start=text.indexOf(needle);if(start<0)return null;
+  start=text.indexOf('{',start+needle.length);if(start<0)return null;
+  let depth=0,inString=false,escaped=false;
+  for(let i=start;i<text.length&&i<start+5000000;i++){
+   const c=text[i];if(inString){if(escaped)escaped=false;else if(c==='\\')escaped=true;else if(c==='"')inString=false;continue;}
+   if(c==='"'){inString=true;continue;}if(c==='{')depth++;else if(c==='}'&&--depth===0){try{return JSON.parse(text.slice(start,i+1))}catch(e){return null}}
+  }
+  return null;
+ }
+ function videosInHtml(html,label,url){
+  const root=extractObject(html,'var ytInitialData =')||extractObject(html,'window["ytInitialData"] =')||extractObject(html,'ytInitialData =');
+  if(!root)return [];
+  const out=[],seen=new Set();let visited=0;
+  function run(n){if(!n||typeof n!=='object'||++visited>60000)return;
+   for(const [key,val] of Object.entries(n)){
+    if(['videoRenderer','gridVideoRenderer','reelItemRenderer','compactVideoRenderer'].includes(key)&&val&&typeof val==='object'){
+     const id=val.videoId||val.navigationEndpoint?.reelWatchEndpoint?.videoId||'';
+     const title=(val.title?.runs||[]).map(x=>x.text||'').join('')||val.title?.simpleText||val.headline?.simpleText||'';
+     if(videoId(id)&&title&&!seen.has(id)){
+      seen.add(id);const description=(val.descriptionSnippet?.runs||val.detailedMetadataSnippets?.[0]?.snippetText?.runs||[]).map(x=>x.text||'').join('');
+      const thumbs=val.thumbnail?.thumbnails||val.thumbnailRenderer?.showCustomThumbnail?.thumbnail?.thumbnails||[];
+      out.push({id,title,description:description.slice(0,420),channel:label,source:url,thumb:thumbs[thumbs.length-1]?.url||'',published:'',featured:url===featured});
+     }
+    }
+    if(val&&typeof val==='object')run(val);
+   }
+  }
+  run(root);return out.slice(0,35);
+ }
+ function pageId(html){
+  return html.match(/"(?:channelId|externalId|browseId)"\s*:\s*"(UC[\w-]{20,})"/)?.[1]||
+    html.match(/(?:https:\/\/www\.youtube\.com\/channel\/)(UC[\w-]{20,})/)?.[1]||'';
+ }
+ let runNumber=0,rendered=[],filter='';
+ function status(msg){const el=document.getElementById('amb26-feed-status');if(el)el.textContent=msg;}
+ function renderCards(){
+  const feed=document.getElementById('amb26-feed');if(!feed)return;
+  const selected=rendered.filter(v=>(v.title+' '+v.channel+' '+v.description).toLocaleLowerCase('it').includes(filter));
+  feed.innerHTML=selected.slice(0,120).map(v=>{
+   const fallback='https://i.ytimg.com/vi/'+encodeURIComponent(v.id)+'/hqdefault.jpg';
+   const img=/^https:\/\//.test(v.thumb||'')?v.thumb:fallback;
+   const desc=v.description?.trim()||'Descrizione non presente nel feed pubblico del creator.';
+   const link='https://www.youtube.com/watch?v='+encodeURIComponent(v.id);
+   return '<article class="amb26-video amb-video-news-card">'+(v.curated?'<div class="amb-video-curated">SELEZIONE · NON IN TEMPO REALE</div>':'')+(v.featured?'<div class="amb26-featured-label">⭐ MANICAPE · IN PRIMO PIANO</div>':'')+
+    '<button type="button" class="amb-video-cover-button" data-play="'+escapeHtml(v.id)+'" aria-label="Riproduci '+escapeHtml(v.title)+'">'+
+    '<img class="amb26-cover" loading="lazy" src="'+escapeHtml(img)+'" onerror="this.onerror=null;this.src=\''+fallback+'\'" alt="Miniatura: '+escapeHtml(v.title)+'"><span class="amb-video-play-badge">▶</span></button>'+
+    '<div class="amb-video-content"><p class="amb-video-creator">'+escapeHtml(v.channel)+'</p><h3>'+escapeHtml(v.title)+'</h3><p class="amb-video-desc">'+escapeHtml(desc).slice(0,310)+'</p>'+
+    '<div class="amb-video-actions"><button type="button" class="amb26-btn" data-play="'+escapeHtml(v.id)+'">▶ Guarda con YouTube</button><a href="'+link+'" rel="noopener noreferrer" target="_blank">Apri su YouTube ↗</a></div></div></article>';
+  }).join('')||(rendered.length?'<div class="amb26-panel">Nessun video corrisponde alla ricerca.</div>':'<div class="amb26-panel">Nessun video ricevuto. Controlla la connessione e lo stato dei feed. Puoi comunque aprire i canali qui sotto.</div>');
+  feed.querySelectorAll('[data-play]').forEach(el=>el.addEventListener('click',()=>{
+    const id=el.dataset.play;if(!videoId(id))return;
+    if(window.AMBAndroid?.openYoutubeVideo)window.AMBAndroid.openYoutubeVideo(id);
+    else if(window.AMB261?.playVideo)window.AMB261.playVideo(id);
+    else window.open('https://www.youtube.com/watch?v='+encodeURIComponent(id),'_blank','noopener');
+  }));
+ }
+ function storeCache(){try{localStorage.setItem(CACHE,JSON.stringify({at:Date.now(),videos:rendered.slice(0,180)}))}catch(e){}}
+ function merge(newVideos){
+  if(!newVideos.length)return;
+  const map=new Map();for(const v of [...rendered,...newVideos])if(videoId(v.id)){const prev=map.get(v.id);if(!prev||!prev.featured||v.featured)map.set(v.id,v);}
+  rendered=[...map.values()].sort((a,b)=>Number(b.featured)-Number(a.featured)||(String(b.published).localeCompare(String(a.published))));
+  renderCards();storeCache();
+ }
+ async function loadChannel([label,url,id],cachedIds){
+  let html='',channelId=id||cachedIds[url]||'';
+  const pageUrl=url.replace(/\/$/,'')+'/videos';
+  if(!channelId){
+   html=await fetchText(pageUrl,20000);
+   channelId=pageId(html);
+   if(channelId){cachedIds[url]=channelId;localStorage.setItem(IDS,JSON.stringify(cachedIds));}
+  }
+  if(channelId){
+   try{
+    const raw=await fetchText('https://www.youtube.com/feeds/videos.xml?channel_id='+encodeURIComponent(channelId),15000);
+    const items=xmlVideos(raw,label,url);if(items.length)return items;
+   }catch(e){ /* YouTube RSS may return 404/429: try channel HTML fallback. */ }
+  }
+  if(!html)html=await fetchText(pageUrl,20000);
+  const fallback=videosInHtml(html,label,url);
+  if(!fallback.length)throw Error('Video non estraibili dal canale');
+  return fallback;
+ }
+ async function refresh(){
+  const serial=++runNumber,all=channelList();
+  const button=document.getElementById('amb26-loadfeed');if(button)button.disabled=true;
+  const cachedIds=read(IDS,{});let done=0,failed=0;let index=0;
+  status('Aggiornamento video: 0/'+all.length+' canali · '+rendered.length+' video in cache');
+  async function worker(){while(index<all.length&&serial===runNumber){const item=all[index++];try{const found=await loadChannel(item,cachedIds);if(serial===runNumber)merge(found);}catch(e){failed++;}done++;if(serial===runNumber)status('Canali '+done+'/'+all.length+' · '+rendered.length+' video'+(failed?' · '+failed+' feed non disponibili':''));}}
+  await Promise.all(Array.from({length:Math.min(4,all.length)},worker));
+  if(serial!==runNumber)return;
+  if(button)button.disabled=false;
+  status(rendered.length?rendered.length+' video disponibili · '+done+' canali controllati'+(failed?' · '+failed+' non disponibili':''):'Nessun video recuperato. YouTube può limitare i feed e le pagine dei canali; apri il canale originale dai link sotto.');
+  renderCards();
+ }
+ function openVideos(){
+  state.tab='videos26';runNumber++;
+  document.querySelectorAll('.navtab').forEach(b=>b.classList.toggle('active',b.id==='tab-videos26'));
+  const main=document.getElementById('main');if(!main)return;
+  main.innerHTML='<div class="kicker">MOTORSPORT · VIDEO · CREATOR</div><h1 class="page-title">Video automotive</h1><p class="lede">Ultimi video dai creator italiani e internazionali, presentati come le notizie. Riproduzione con il player ufficiale YouTube, annunci inclusi.</p>'+
+    '<section class="amb26-panel amb-video-tools"><div class="amb-video-toolbar"><input id="amb26-video-search" type="search" placeholder="Cerca video, creator o descrizione" aria-label="Cerca video"><button class="amb26-btn" id="amb26-loadfeed">↻ Aggiorna</button></div><p id="amb26-feed-status" role="status" aria-live="polite"></p></section>'+
+    '<div id="amb26-feed" aria-label="Ultimi video"></div>'+
+    '<details class="amb26-panel amb-video-channel-panel"><summary>Gestisci i canali YouTube · '+channelList().length+' creator</summary><label for="amb26-link">Aggiungi un canale tramite link</label><div class="amb-video-toolbar"><input id="amb26-link" type="url" placeholder="https://www.youtube.com/@canale"><button class="amb26-btn" id="amb26-add">＋ Aggiungi</button></div><p id="amb26-error" role="status"></p><div id="amb26-list"></div></details>';
+  document.getElementById('amb26-video-search').oninput=e=>{filter=e.target.value.toLocaleLowerCase('it');renderCards()};
+  document.getElementById('amb26-loadfeed').onclick=()=>refresh();
+  document.getElementById('amb26-add').onclick=()=>{
+   const u=document.getElementById('amb26-link').value.trim(),err=document.getElementById('amb26-error');
+   if(!validChannel(u)){err.textContent='Inserisci un link HTTPS di un canale YouTube valido.';return;}
+   const items=channelList();if(items.some(v=>v[1]===u)){err.textContent='Canale già presente.';return;}
+   const name=new URL(u).pathname.split('/').filter(Boolean).pop().replace(/^@/,'');items.push([name,u,'']);saveChannels(items);openVideos();
+  };
+  document.getElementById('amb26-list').innerHTML=channelList().map((c,i)=>'<div class="amb-video-channel-row"><div><strong>'+escapeHtml(c[0])+'</strong><br><a href="'+escapeHtml(c[1])+'" rel="noopener noreferrer" target="_blank">Apri canale ↗</a></div>'+(c[1]===featured?'<small>⭐ Fisso</small>':'<button class="amb26-btn" data-remove="'+i+'">Rimuovi</button>')+'</div>').join('');
+  document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{
+   const items=channelList();const i=Number(b.dataset.remove);if(!items[i]||items[i][1]===featured)return;
+   const hidden=new Set(read(HIDDEN,[]));hidden.add(items[i][1]);localStorage.setItem(HIDDEN,JSON.stringify([...hidden]));
+   saveChannels(items.filter((_,j)=>j!==i));openVideos();
+  });
+  const saved=read(CACHE,null);
+  rendered=saved&&Array.isArray(saved.videos)?saved.videos.filter(x=>videoId(x.id)):[];
+  if(rendered.length){status('Video salvati in cache, aggiornamento in corso…');renderCards();}
+  else {rendered=curated.slice();status('Selezione verificata · aggiornamento dei video recenti in corso…');renderCards();}
+  // Load in background, incrementally; never wait for all channels to render cards.
+  setTimeout(()=>{if(document.getElementById('amb26-loadfeed'))refresh();},50);
+ }
+ window.AMB26={openVideos,refreshVideos:refresh,videoId,xmlVideos,videosInHtml};
 })();
-</script>
-<script>
-/* AMB26_RSS_VIDEO_DISCOVERY */
-(function(){
-const clean=s=>String(s||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
-const parseXML=t=>new DOMParser().parseFromString(t,'application/xml');
-const original=window.AMB26.openVideos;
-window.AMB26.openVideos=function(){original();const main=document.getElementById('main');if(!main)return;
- const controls=document.createElement('section');controls.className='amb26-panel';controls.innerHTML='<h2>Ultimi video dei creator</h2><p class="lede">I feed pubblici vengono caricati dai canali YouTube selezionati. Riproduzione tramite il servizio originale.</p><button class="amb26-btn" id="amb26-loadfeed">Carica video recenti</button><input id="amb26-video-search" placeholder="Cerca tra i video caricati" aria-label="Cerca video"><div id="amb26-feed-status" role="status"></div><div id="amb26-feed"></div>';main.appendChild(controls);
- const stored=JSON.parse(localStorage.getItem('amb26_youtube_channels')||'null')||[['FIA World Rally Championship','https://www.youtube.com/@wrc'],['AutoTopNL','https://www.youtube.com/@AutoTopnl'],["Misha Charoudin","https://www.youtube.com/@mgcharoudin"],["carwow","https://www.youtube.com/@carwow"],["AutoAlex Cars","https://www.youtube.com/@AutoalexCars"],["Mat Armstrong","https://www.youtube.com/@MatArmstrongbmx"],["Top Gear","https://www.youtube.com/@TopGear"],["Motor1","https://www.youtube.com/@Motor1"],["Formula 1","https://www.youtube.com/@F1"],["MotoGP","https://www.youtube.com/@motogp"],["FIA World Endurance Championship","https://www.youtube.com/@FIAWEC"],["Red Bull Motorsports","https://www.youtube.com/@RedBullMotorsports"],["Drift Games","https://www.youtube.com/@DriftGamesLife"],["Donut","https://www.youtube.com/@Donut"]];
- const featured=['ManicApe','https://www.youtube.com/@maniccape'];
- const defaults=[['FIA World Rally Championship','https://www.youtube.com/@wrc'],['AutoTopNL','https://www.youtube.com/@AutoTopnl'],["Misha Charoudin","https://www.youtube.com/@mgcharoudin"],["carwow","https://www.youtube.com/@carwow"],["AutoAlex Cars","https://www.youtube.com/@AutoalexCars"],["Mat Armstrong","https://www.youtube.com/@MatArmstrongbmx"],["Top Gear","https://www.youtube.com/@TopGear"],["Motor1","https://www.youtube.com/@Motor1"],["Formula 1","https://www.youtube.com/@F1"],["MotoGP","https://www.youtube.com/@motogp"],["FIA World Endurance Championship","https://www.youtube.com/@FIAWEC"],["Red Bull Motorsports","https://www.youtube.com/@RedBullMotorsports"],["Drift Games","https://www.youtube.com/@DriftGamesLife"],["Donut","https://www.youtube.com/@Donut"]];const items=[featured,...defaults.filter(x=>!stored.some(y=>y[1]===x[1])),...stored.filter(x=>x[1]!==featured[1])];
- let videos=[];
- const draw=()=>{const q=document.getElementById('amb26-video-search').value.toLowerCase();document.getElementById('amb26-feed').innerHTML=videos.filter(x=>x.title.toLowerCase().includes(q)).slice(0,100).map(x=>'<article class="amb26-video">'+(x.featured?'<div class="amb26-featured-label">⭐ MANICAPE · IN PRIMO PIANO</div>':'')+'<img class="amb26-cover" loading="lazy" src="https://i.ytimg.com/vi/'+encodeURIComponent(x.id)+'/hqdefault.jpg" alt="Anteprima video"><strong>'+clean(x.title)+'</strong><br><small>'+clean(x.channel)+'</small><br><a href="https://www.youtube.com/watch?v='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener noreferrer">Riproduci su YouTube ↗</a></article>').join('')||'<p>Nessun video disponibile.</p>'};
- document.getElementById('amb26-video-search').oninput=draw;
- document.getElementById('amb26-loadfeed').onclick=async()=>{const status=document.getElementById('amb26-feed-status');status.textContent='Caricamento feed…';videos=[];let errors=0;
-  for(const [label,url] of items){try{const u=new URL(url);let id=u.pathname.match(/^\/channel\/(UC[\w-]+)/)?.[1];
-   if(!id){const page=await fetchText(url,16000);id=page.match(/\"channelId\"\s*:\s*\"(UC[\w-]+)\"/)?.[1]||page.match(/<meta[^>]+itemprop="channelId"[^>]+content="(UC[\w-]+)"/)?.[1];}
-   if(!id)throw Error('ID canale non disponibile');
-   const xml=parseXML(await fetchText('https://www.youtube.com/feeds/videos.xml?channel_id='+encodeURIComponent(id),16000));
-   for(const entry of xml.getElementsByTagName('entry')){const vid=entry.getElementsByTagName('videoId')[0]?.textContent||entry.getElementsByTagNameNS('*','videoId')[0]?.textContent;const title=entry.getElementsByTagName('title')[0]?.textContent;const published=entry.getElementsByTagName('published')[0]?.textContent||'';if(vid&&title)videos.push({id:vid,title,published,channel:label,featured:url==='https://www.youtube.com/@maniccape'});}
-  }catch(e){errors++;}}
-  videos=[...new Map(videos.map(v=>[v.id,v])).values()].sort((a,b)=>Number(b.featured)-Number(a.featured)||String(b.published).localeCompare(String(a.published)));status.textContent=videos.length+' video trovati'+(errors?' · '+errors+' canali non disponibili':'');draw();
- };
-};
-})();
+
 </script>
 <script>
 /* AMB26_DOWNLOAD_OPTIONS */
@@ -1463,12 +1632,37 @@ window.AMBAndroid.downloadAuthorizedVideo(url,mode==='ask'?'all':mode);msg.textC
  function playVideo(id){if(!/^[\w-]{11}$/.test(id))return;const el=document.createElement('div');el.className='amb261-player';el.innerHTML='<button aria-label="Chiudi player">✕ Chiudi player</button><iframe title="Video YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1"></iframe>';document.body.appendChild(el);el.querySelector('button').onclick=()=>el.remove()}
  function playMP4(url){try{const u=new URL(url);if(u.protocol!=='https:'||!u.pathname.toLowerCase().endsWith('.mp4'))throw Error();const el=document.createElement('div');el.className='amb261-player';el.innerHTML='<button>✕ Chiudi player</button><video controls autoplay playsinline></video>';el.querySelector('video').src=url;document.body.appendChild(el);el.querySelector('button').onclick=()=>{el.querySelector('video').pause();el.remove()}}catch(e){alert('Inserisci un URL HTTPS diretto a un MP4 autorizzato.')}}
  const old=window.AMB26.openVideos;
- window.AMB26.openVideos=function(){old();const feed=document.getElementById('amb26-feed');if(feed){const observer=new MutationObserver(()=>{feed.querySelectorAll('.amb26-video').forEach(card=>{if(card.querySelector('.amb261-play'))return;const a=card.querySelector('a[href*="watch?v="]');if(!a)return;const id=new URL(a.href).searchParams.get('v');if(!id)return;const b=document.createElement('button');b.className='amb26-btn amb261-play';b.textContent='▶ Player interno';b.onclick=()=>playVideo(id);card.appendChild(b)})});observer.observe(feed,{childList:true});}const s=document.createElement('div');s.className='amb26-panel';s.innerHTML='<h2>Player MP4 autorizzati</h2><p>Riproduzione integrata dei file diretti; i video YouTube utilizzano il player incorporato ufficiale, se consentito dal creator.</p><input type="url" id="amb261-mp4" placeholder="https://esempio.it/video.mp4"><button class="amb26-btn" id="amb261-playmp4">▶ Riproduci</button>';document.getElementById('main').appendChild(s);document.getElementById('amb261-playmp4').onclick=()=>playMP4(document.getElementById('amb261-mp4').value.trim());};
+ window.AMB26.openVideos=function(){old();const main=document.getElementById('main');if(!main)return;
+  const section=document.createElement('details');section.className='amb26-panel amb-video-channel-panel';
+  section.innerHTML='<summary>Riproduci file MP4 autorizzato</summary><p>Player integrato per file MP4 diretti. I video YouTube usano il player ufficiale e conservano gli annunci.</p><input type="url" id="amb261-mp4" placeholder="https://esempio.it/video.mp4"><button class="amb26-btn" id="amb261-playmp4">▶ Riproduci MP4</button>';
+  main.appendChild(section);
+  document.getElementById('amb261-playmp4').onclick=()=>playMP4(document.getElementById('amb261-mp4').value.trim());
+ };
  async function checkUpdates(){const target=document.getElementById('amb261-update-status');if(!target)return;target.textContent='Verifica GitHub…';try{const t=await fetchText('https://api.github.com/repos/ManiccApe/-Apex-Motori-Blaj/releases/latest',12000);const j=JSON.parse(t);const tag=String(j.tag_name||'');if(!/^v?\d+\.\d+\.\d+/.test(tag))throw Error('Release non riconosciuta');const version=tag.replace(/^v/,'').split('-')[0].split('.').map(Number),current=[2,6,1];const newer=version.some((n,i)=>n>current[i]&&version.slice(0,i).every((v,k)=>v===current[k]));target.textContent=newer?'Aggiornamento disponibile: '+tag:'Nessuna versione stabile più recente rilevata ('+tag+').';if(newer){const a=document.createElement('a');a.textContent='Apri release ufficiale ↗';a.href=j.html_url;a.target='_blank';a.rel='noopener noreferrer';target.appendChild(document.createElement('br'));target.appendChild(a)}}catch(e){target.textContent='Controllo non disponibile: verifica la connessione o le release GitHub.'}}
  const oldSettings=settingsView;settingsView=function(){const s=oldSettings();return s+'<section class="setting-group"><h2>Aggiornamenti A.M.B.</h2><p>Controlla le release ufficiali GitHub. Nessuna installazione automatica.</p><button class="amb26-btn" onclick="AMB261.checkUpdates()">Controlla aggiornamenti</button><p id="amb261-update-status" role="status"></p><button class="amb26-btn" onclick="AMB261.welcome()">Novità 2.6.1</button></section>'};
  function welcome(){const d=document.createElement('div');d.className='amb26-modal';d.innerHTML='<img src="amb_logo_26.png" alt="A.M.B."><h2>A.M.B. 2.6.1</h2><p>Nuovo Brief, notifica serale, più creator e miniature, player interno per video consentiti, controlli GitHub e due widget: Notizie e Calendario.</p><button class="amb26-btn">Continua</button>';document.body.appendChild(d);d.querySelector('button').onclick=()=>{localStorage.setItem('amb261_welcome','1');d.remove()}};
  document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{if(!localStorage.getItem('amb261_welcome'))welcome()},900)});
- window.AMB261={showBrief,enableBrief,checkUpdates,welcome};
+ window.AMB261={showBrief,enableBrief,checkUpdates,welcome,playVideo};
 })();
 </script>
-</body></html>
+<style>.amb-video-desc{font-size:.82rem;line-height:1.5;color:var(--sub);margin:8px 0 10px;white-space:pre-line}.amb26-video{margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:15px;background:var(--card)}.amb26-cover{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:11px;margin-bottom:10px}.amb-source-bulk{display:flex;justify-content:flex-end;gap:8px;margin:0 0 12px}</style><style>
+.amb-video-tools{margin:10px 0 14px}.amb-video-toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.amb-video-toolbar input{flex:1;min-width:160px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.amb-video-news-card{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--card);margin:12px 0;box-shadow:var(--shadow)}
+.amb-video-cover-button{display:block;width:100%;position:relative;background:var(--faint);padding:0;border:0;cursor:pointer}
+.amb-video-news-card .amb26-cover{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;margin:0;border-radius:0}
+.amb-video-play-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.4rem;background:#CC090909;border:1px solid #77FFFFFF;border-radius:20px;color:white;padding:9px 16px}
+.amb-video-content{padding:13px 15px 15px}.amb-video-content h3{font-size:1.13rem;line-height:1.3;margin:5px 0 7px;color:var(--ink)}.amb-video-creator{margin:0;font-size:.78rem;color:var(--accentInk);font-weight:800}
+.amb-video-news-card .amb-video-desc{margin:0 0 13px;font-size:.88rem;line-height:1.5;color:var(--sub);white-space:normal;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.amb-video-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.amb-video-actions a{color:var(--accentInk);font-size:.82rem;font-weight:650}
+.amb-video-channel-panel{margin:15px 0}.amb-video-channel-panel summary{cursor:pointer;font-size:1rem;font-weight:750;margin-bottom:12px}.amb-video-channel-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:9px 0}.amb-video-channel-row a{font-size:.75rem;color:var(--accentInk)}
+.amb-local-directory{margin:12px 0 18px}.amb-local-directory h3{font-size:.93rem;margin:20px 0 8px}.amb-regional-source-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:7px}.amb-local-source-row{padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--card)}.amb-local-source-row strong{font-size:.85rem}.amb-local-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:8px}.amb-local-links a{font-size:.76rem;color:var(--accentInk);text-decoration:none}
+</style>
+<script>
+window.AMBCalendarOpenDate=function(iso){
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(String(iso||'')))return;
+ const parts=iso.split('-').map(Number);
+ ambCalendarYear=parts[0];ambCalendarMonth=parts[1]-1;
+ ambCalendarSelected=new Date(parts[0],parts[1]-1,parts[2]);
+ calendar.manage=false;go('calendar');
+};
+</script><style>.amb-video-curated{background:var(--accentSoft);color:var(--accentInk);padding:8px 13px;font-size:.68rem;font-weight:850;letter-spacing:.08em}.brandmark,.brandmark:before{background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important}</style></body></html>

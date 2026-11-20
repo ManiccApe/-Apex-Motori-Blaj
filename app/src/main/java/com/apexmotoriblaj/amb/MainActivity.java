@@ -54,6 +54,14 @@ public final class MainActivity extends Activity {
         web.addJavascriptInterface(new Bridge(), "AMBAndroid");
         web.setWebChromeClient(new WebChromeClient());
         web.setWebViewClient(new WebViewClient() {
+            @Override public void onPageFinished(WebView view,String url){
+                String day=getIntent().getStringExtra("amb_calendar_date");
+                if(day!=null&&day.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}")){
+                    getIntent().removeExtra("amb_calendar_date");
+                    view.evaluateJavascript("window.AMBCalendarOpenDate("+JSONObject.quote(day)+")",null);
+                }
+            }
+
             private boolean allow(String s) {
                 if (s.startsWith("file:///android_asset/")) return false;
                 if (s.startsWith("https://") || s.startsWith("http://")) {
@@ -90,7 +98,7 @@ public final class MainActivity extends Activity {
             if (requestId == null || requestId.length() > 100 || url == null) return;
             io.execute(() -> {
                 String data = null, error = null;
-                try { data = WidgetNewsSync.readHttps(url, 3_000_000); }
+                try { data = WidgetNewsSync.readHttps(url, url.startsWith("https://www.youtube.com/") ? 6_000_000 : 3_000_000); }
                 catch (Exception e) { error = (e.getMessage() == null ? "Fonte non disponibile" : e.getMessage()); }
                 final String result = "window.AMBBridgeResult(" + JSONObject.quote(requestId) + "," +
                     (data == null ? "null" : JSONObject.quote(data)) + "," +
@@ -188,6 +196,14 @@ public final class MainActivity extends Activity {
                     .putExtra(CalendarContract.Events.ALL_DAY,e.optBoolean("allDay",false));
                 runOnUiThread(()->{try{startActivity(intent);}catch(Exception ex){Toast.makeText(MainActivity.this,"Nessun calendario disponibile",Toast.LENGTH_SHORT).show();}});
             }catch(Exception ignored){}
+        }
+        @JavascriptInterface public void openYoutubeVideo(String id) {
+            if(id==null||!id.matches("[A-Za-z0-9_-]{11}"))return;
+            runOnUiThread(()->{
+                Intent intent=new Intent(MainActivity.this,VideoPlayerActivity.class);
+                intent.putExtra(VideoPlayerActivity.EXTRA_VIDEO_ID,id);
+                startActivity(intent);
+            });
         }
         @JavascriptInterface public void downloadAuthorizedVideo(String link,String network){
             if(link==null||link.length()>3000||!("wifi".equals(network)||"all".equals(network)))return;

@@ -74,7 +74,9 @@ public final class WidgetNewsSync {
         HttpURLConnection conn=(HttpURLConnection)url.openConnection();
         try {
             conn.setConnectTimeout(8000);conn.setReadTimeout(10000);
-            conn.setRequestProperty("User-Agent","ApexMotoriBlaj/2.5 (Android RSS Reader)");
+            boolean youtube="youtube.com".equalsIgnoreCase(url.getHost()) || "www.youtube.com".equalsIgnoreCase(url.getHost());
+            conn.setRequestProperty("User-Agent",youtube?"Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36":"ApexMotoriBlaj/2.6.1 (Android RSS Reader)");
+            if(youtube)conn.setRequestProperty("Accept-Language","it-IT,it;q=0.9,en;q=0.7");
             conn.setRequestProperty("Accept","application/rss+xml, application/atom+xml, text/calendar, application/xml, text/xml, */*");
             conn.setInstanceFollowRedirects(true);
             if(conn.getResponseCode()<200 || conn.getResponseCode()>299)throw new Exception("HTTP "+conn.getResponseCode());

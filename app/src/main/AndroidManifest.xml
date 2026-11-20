@@ -5,6 +5,7 @@
     <application
         android:label="Apex Motori Blaj"
         android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:allowBackup="true"
         android:usesCleartextTraffic="false"
@@ -19,6 +20,7 @@
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" /></intent-filter>
         </activity>
         <activity android:name=".ArticleActivity" android:exported="false" />
+        <activity android:name=".VideoPlayerActivity" android:exported="false" android:configChanges="orientation|screenSize|keyboardHidden" />
         <receiver android:name=".NewsWidget" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

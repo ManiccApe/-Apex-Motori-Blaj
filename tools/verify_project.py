@@ -16,8 +16,7 @@ assert len(java) >= 11
 web = (root/'app/src/main/assets/index.html').read_text()
 for q in ['Apex Motori Blaj','ManicApe','Widget Android','GreenFlag','Calendario','20, 40 o 60','AMBAndroid','GT3','AMOLED','amoled']:
     assert q in web, q
-for exclusion in ['Nürburgring','Misha Charoudin']:
-    assert exclusion not in web
+# RC3 intentionally includes motorsport video creators such as Misha Charoudin.
 js = web[web.index('<script>')+8:web.index('</script>')]
 from tempfile import NamedTemporaryFile
 with NamedTemporaryFile(mode='w',suffix='.js') as f:
@@ -29,7 +28,7 @@ assert 'limitedResults(active,4,readFeed)' in web
 assert 'auto-topic-select' in web
 assert 'transparent' in (root/'app/src/main/java/com/apexmotoriblaj/amb/WidgetConfigActivity.java').read_text()
 assert 'minSdk 29' in (root/'app/build.gradle').read_text()
-assert "versionName '2.5.2'" in (root/'app/build.gradle').read_text()
+assert "versionName '2.6.1-rc3'" in (root/'app/build.gradle').read_text()
 for cls in ['OfflineStore','TranslateManager','AdBlock','NotificationScheduler']:
     assert (root/f'app/src/main/java/com/apexmotoriblaj/amb/{cls}.java').is_file(), cls
 assert 'auto-tmrexh' in web and 'ambCalFilters' in web and 'ambCardTap' in web
@@ -38,4 +37,4 @@ assert 'ambCalendarPick' in web and 'ambCalendarAddEvent' in web
 assert 'amb_logo.webp' in web and (root/'app/src/main/assets/amb_logo.webp').is_file()
 assert 'amb_tmrexh_archive_251' in web
 assert (root/'app/src/main/res/drawable/ic_racing_car_notification.xml').is_file()
-print('OK: JS syntax, >=8 Android classes, category filters and widget themes verified')
+print('OK: JS source, Android components, category filters and widget themes verified for RC3')
