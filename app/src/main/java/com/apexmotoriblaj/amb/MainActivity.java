@@ -167,7 +167,7 @@ public final class MainActivity extends Activity {
         }
         @JavascriptInterface public void setCalendarData(String json){
             if(json==null||json.length()>300_000)return;
-            getSharedPreferences("amb_shared",MODE_PRIVATE).edit().putString("calendar_events",json).apply();
+            getSharedPreferences("amb_shared",MODE_PRIVATE).edit().putString("calendar_events",json).apply();CalendarWidget.refresh(getApplicationContext());
         }
         /** Opens the device's calendar editor; no calendar write permission or silent insertion. */
         @JavascriptInterface public void addCalendarEvent(String json) {
@@ -206,6 +206,7 @@ public final class MainActivity extends Activity {
                 if(manager!=null)manager.enqueue(request);
             }catch(Exception ignored){}
         }
+        @JavascriptInterface public void enableDailyBrief(){runOnUiThread(()->{NotificationScheduler.enable(getApplicationContext());DailyBriefReceiver.schedule(getApplicationContext());});}
         @JavascriptInterface public void updateWidget() { WidgetNewsSync.refreshAsync(getApplicationContext(), true); }
 
     }

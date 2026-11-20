@@ -26,6 +26,8 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info" />
         </receiver>
+        <receiver android:name=".DailyBriefReceiver" android:exported="false" />
+        <receiver android:name=".CalendarWidget" android:exported="true"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_calendar_261_info" /></receiver>
         <service android:name=".NotificationScheduler" android:permission="android.permission.BIND_JOB_SERVICE" android:exported="true" />
         <service android:name=".WidgetListService" android:permission="android.permission.BIND_REMOTEVIEWS" android:exported="false" />
     </application>

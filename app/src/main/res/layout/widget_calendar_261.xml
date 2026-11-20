@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/calendar261_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp" android:background="#080808">
+<TextView android:id="@+id/calendar261_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="18sp" />
+<TextView android:id="@+id/calendar261_count" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="#E7A5F5" android:textSize="14sp" />
+<TextView android:id="@+id/calendar261_agenda" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="#DDDDDD" android:maxLines="6" android:textSize="13sp" />
+</LinearLayout>
